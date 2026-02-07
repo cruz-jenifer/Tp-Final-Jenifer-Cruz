@@ -152,3 +152,12 @@ INNER JOIN mascotas m ON h.id_mascota = m.id
 INNER JOIN duenos d ON m.id_dueno = d.id
 INNER JOIN veterinarios v ON h.id_veterinario = v.id
 ORDER BY h.fecha_registro DESC;
+
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) DEFAULT 'user',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

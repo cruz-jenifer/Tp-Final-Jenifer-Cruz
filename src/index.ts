@@ -1,9 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-import { connectDB } from './config/database';
-
-dotenv.config();
+import routes from './routes';
+import { errorMiddleware } from './middlewares/error.middleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,20 +9,10 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-app.get('/api/health', (req, res) => {
-    res.json({ 
-        ok: true, 
-        message: 'API Patitas Felices funcionando correctamente',
-        env: process.env.NODE_ENV 
-    });
+app.use('/api', routes);
+
+app.use(errorMiddleware);
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-const startServer = async () => {
-    await connectDB();
-    
-    app.listen(PORT, () => {
-        console.log(`Servidor corriendo en el puerto ${PORT}`);
-    });
-};
-
-startServer();
