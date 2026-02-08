@@ -1,17 +1,26 @@
-
-//  Definimos los roles permitidos exactamente como están en MySQL
+// DEFINICION DE ROLES
 export type RolUsuario = 'admin' | 'veterinario' | 'cliente';
 
-//  Definimos la estructura del Token (Payload)
-
+// ESTRUCTURA DEL PAYLOAD JWT
 export interface UserPayload {
     id: number;
     email: string;
     rol: RolUsuario;
 }
 
-//  Extendemos la interfaz de Request de Express
+// RESPUESTA DEL LOGIN ENRIQUECIDO
+export interface LoginResponse {
+    token: string;
+    user: {
+        id: number;
+        email: string;
+        rol: RolUsuario;
+        nombre?: string;
+        apellido?: string;
+    };
+}
 
+// EXTENSION DE REQUEST EXPRESS
 declare global {
     namespace Express {
         interface Request {

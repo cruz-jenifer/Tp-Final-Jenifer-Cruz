@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as authService from '../services/auth.service';
 
-// REGISTRO
+// REGISTRO DE USUARIO
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = await authService.register(req.body);
@@ -11,7 +11,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     }
 };
 
-// LOGIN
+// LOGIN DE USUARIO
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body;
@@ -21,4 +21,3 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         next(error);
     }
 };
-

@@ -1,10 +1,12 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import * as userModel from '../models/usuarios.model';
-import { Usuario } from '../models/usuarios.model';
+import * as duenoModel from '../models/dueno.model'; // IMPORTACION CLAVE
+import { IUsuario } from '../models/usuarios.model';
+import { LoginResponse, RolUsuario } from '../types/auth.types';
 
 // REGISTRO DE USUARIO
-export const register = async (userData: Usuario) => {
+export const register = async (userData: IUsuario) => {
     const existingUser = await userModel.findByEmail(userData.email);
     if (existingUser) {
         throw new Error('EL USUARIO YA EXISTE');
@@ -12,41 +14,48 @@ export const register = async (userData: Usuario) => {
 
     const hashedPassword = await bcrypt.hash(userData.password!, 10);
     
-    // GUARDAMOS CON ROL POR DEFECTO SI NO VIENE
+    // CREACION DE USUARIO
     const newUser = await userModel.create({ 
-        ...userData, 
+        email: userData.email, 
         password: hashedPassword,
         rol: userData.rol || 'cliente' 
     });
     
-    // RETORNAMOS USUARIO SIN PASSWORD
-    const { password, ...userWithoutPassword } = newUser;
-    return userWithoutPassword;
+    return newUser;
 };
 
-// LOGIN DE USUARIO
-export const login = async (credentials: { email: string, password: string }) => {
+// LOGIN DE USUARIO ENRIQUECIDO
+export const login = async (credentials: { email: string, password: string }): Promise<LoginResponse> => {
     const user = await userModel.findByEmail(credentials.email);
     
     if (!user || !user.password) {
-        throw new Error('CREDENCIALES INVÁLIDAS');
+        throw new Error('CREDENCIALES INVALIDAS');
     }
 
     const isMatch = await bcrypt.compare(credentials.password, user.password);
     if (!isMatch) {
-        throw new Error('CREDENCIALES INVÁLIDAS');
+        throw new Error('CREDENCIALES INVALIDAS');
     }
-const token = jwt.sign(
-    { id: user.id, rol: user.rol }, 
-    'UTN_PATITAS_2024', 
-    { expiresIn: '2h' }
-);
-    
-   /* const token = jwt.sign(
-        { id: user.id, rol: user.rol }, 
-        process.env.JWT_SECRET || 'patitas_secreta_123',
-        { expiresIn: '1h' }
-    );*/
 
-    return { token, user: { id: user.id, email: user.email, rol: user.rol } };
+    // GENERACION DE TOKEN
+    const token = jwt.sign(
+        { id: user.id, email: user.email, rol: user.rol }, 
+        'UTN_PATITAS_2024', 
+        { expiresIn: '2h' }
+    );
+
+    // BUSQUEDA DE PERFIL ASOCIADO
+    const perfil = await duenoModel.findByUserId(user.id);
+
+    // RESPUESTA CON TEXTO PLANO Y DATOS DE PERFIL
+    return { 
+        token, 
+        user: { 
+            id: user.id, 
+            email: user.email, 
+            rol: user.rol as RolUsuario,
+            nombre: perfil ? perfil.nombre : undefined,
+            apellido: perfil ? perfil.apellido : undefined
+        } 
+    };
 };
