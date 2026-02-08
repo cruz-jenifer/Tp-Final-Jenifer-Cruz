@@ -161,3 +161,19 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(20) DEFAULT 'user',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+-- Agrega esto a tu script SQL existente o ejecútalo en tu DB
+USE veterinaria_patitas_felices;
+
+-- Tabla Reservas (Adaptada para Veterinaria)
+CREATE TABLE IF NOT EXISTS reservas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    motivo VARCHAR(255) NOT NULL, -- Ej: Vacunación, Consulta, Corte de pelo
+    estado VARCHAR(50) DEFAULT 'pendiente', -- pendiente, confirmada, cancelada
+    user_id INT NOT NULL,
+    mascota_id INT, -- Opcional, si sabemos qué mascota es
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (mascota_id) REFERENCES mascotas(id) ON DELETE SET NULL
+);
