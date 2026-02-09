@@ -133,3 +133,18 @@ INSERT INTO historial_medico (mascota_id, veterinario_id, fecha, diagnostico, tr
 (1, 1, '2024-01-15 14:30:00', 'Saludable, peso normal', 'Continuar alimentación actual'),
 (2, 1, '2024-02-10 16:00:00', 'Necesita vacunación', 'Agendar para próximo mes'),
 (1, 1, '2023-12-05 10:30:00', 'Dermatitis leve', 'Crema especial por 7 días');
+
+
+
+
+CREATE TABLE historiales (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    mascota_id INT NOT NULL,
+    veterinario_id INT NOT NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    diagnostico TEXT NOT NULL,
+    tratamiento TEXT NOT NULL,
+    observaciones TEXT,
+    FOREIGN KEY (mascota_id) REFERENCES mascotas(id) ON DELETE CASCADE,
+    FOREIGN KEY (veterinario_id) REFERENCES veterinarios(id) ON DELETE CASCADE
+);

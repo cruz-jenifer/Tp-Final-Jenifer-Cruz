@@ -60,4 +60,32 @@ export class TurnoModel {
         const [rows] = await pool.query<RowDataPacket[]>(query, [duenoId]);
         return rows;
     }
+<<<<<<< HEAD
+=======
+
+    // NUEVO METODO: OBTENER AGENDA GLOBAL POR FECHA
+    static async findAllByFecha(fecha: string): Promise<any[]> {
+        const query = `
+            SELECT 
+                t.id, 
+                t.fecha_hora, 
+                t.estado, 
+                t.motivo,
+                m.nombre as mascota, 
+                d.nombre as dueno_nombre, 
+                d.apellido as dueno_apellido,
+                s.nombre as servicio
+            FROM turnos t
+            JOIN mascotas m ON t.mascota_id = m.id
+            JOIN duenos d ON m.dueno_id = d.id
+            JOIN servicios s ON t.servicio_id = s.id
+            WHERE DATE(t.fecha_hora) = ?
+            ORDER BY t.fecha_hora ASC
+        `;
+        
+        // MYSQL2 ESPERA LA FECHA EN FORMATO 'YYYY-MM-DD'
+        const [rows] = await pool.query<RowDataPacket[]>(query, [fecha]);
+        return rows;
+    }
+>>>>>>> 0b51d21 (Feat 8: Panel Profesional (Roles)Objetivo: Endpoints exclusivos para empleados.)
 }

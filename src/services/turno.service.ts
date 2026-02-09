@@ -6,7 +6,10 @@ export class TurnoService {
     // RESERVAR TURNO CON VALIDACIONES
     static async reservarTurno(usuarioId: number, datosTurno: ITurno) {
         // OBTENER PERFIL DE DUENO
+<<<<<<< HEAD
        
+=======
+>>>>>>> 0b51d21 (Feat 8: Panel Profesional (Roles)Objetivo: Endpoints exclusivos para empleados.)
         const dueno = await DuenoModel.findByUserId(usuarioId); 
         
         // MANEJO DE RETORNO DE DUENO 
@@ -52,4 +55,24 @@ export class TurnoService {
 
         return await TurnoModel.findAllByDuenoId(duenoData.id);
     }
+<<<<<<< HEAD
+=======
+
+    //  VER AGENDA DEL DIA
+    static async obtenerAgendaGlobal(fecha?: string) {
+        
+        // SI NO HAY FECHA, USAR LA DE HOY
+       
+        const fechaBusqueda = fecha || new Date().toISOString().split('T')[0];
+
+        // LLAMAR AL MODELO
+        const turnos = await TurnoModel.findAllByFecha(fechaBusqueda);
+        
+        return {
+            fecha: fechaBusqueda,
+            total_turnos: turnos.length,
+            turnos: turnos
+        };
+    }
+>>>>>>> 0b51d21 (Feat 8: Panel Profesional (Roles)Objetivo: Endpoints exclusivos para empleados.)
 }

@@ -2,6 +2,16 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../config/database';
 import { IMascota } from './interfaces/mascota.interface';
 
+// BUSCAR MASCOTA POR ID
+
+export const findById = async (id: number) => {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        'SELECT * FROM mascotas WHERE id = ?',
+        [id]
+    );
+    return rows.length > 0 ? rows[0] : null;
+};
+
 // BUSCAR MASCOTAS POR DUENO
 export const findByDuenoId = async (duenoId: number): Promise<IMascota[]> => {
     const [rows] = await pool.query<IMascota[]>(
