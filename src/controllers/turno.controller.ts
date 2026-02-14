@@ -18,6 +18,61 @@ export class TurnoController {
         }
     }
 
+    // CANCELAR TURNO
+    static async cancelarTurno(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user?.id;
+            const turnoId = Number(req.params.id);
+
+            if (!userId) throw new Error('USUARIO NO IDENTIFICADO');
+            if (isNaN(turnoId)) throw new Error('ID DE TURNO INVALIDO');
+
+            const resultado = await TurnoService.cancelarTurno(turnoId, userId);
+
+            res.json(resultado);
+        } catch (error: any) {
+            if (error.message.includes('No tienes permiso')) {
+                return res.status(403).json({ message: error.message });
+            }
+            if (error.message.includes('pendiente')) {
+                return res.status(409).json({ message: error.message });
+            }
+            next(error);
+        }
+    }
+
+    // REPROGRAMAR TURNO
+    static async reprogramar(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user?.id;
+            const turnoId = Number(req.params.id);
+
+            if (!userId) throw new Error('USUARIO NO IDENTIFICADO');
+            if (isNaN(turnoId)) throw new Error('ID DE TURNO INVALIDO');
+
+            await TurnoService.reprogramarTurno(turnoId, userId, req.body);
+
+            res.json({ message: 'TURNO REPROGRAMADO EXITOSAMENTE' });
+        } catch (error: any) {
+            next(error);
+        }
+    }
+
+    // OBTENER DETALLE
+    static async getOne(req: Request, res: Response, next: NextFunction) {
+        try {
+            const turnoId = Number(req.params.id);
+            if (isNaN(turnoId)) throw new Error('ID DE TURNO INVALIDO');
+
+            const turno = await TurnoService.obtenerDetalle(turnoId);
+            if (!turno) return res.status(404).json({ message: 'Turno no encontrado' });
+
+            res.json({ data: turno });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     // METODO: RESERVAR
 
     static async reservar(req: Request, res: Response, next: NextFunction) {

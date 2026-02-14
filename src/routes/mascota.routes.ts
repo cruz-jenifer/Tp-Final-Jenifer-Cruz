@@ -10,5 +10,8 @@ router.use(authMiddleware);
 // RUTAS DE MASCOTAS (ENDPOINT: /api/mascotas)
 router.post('/', mascotaController.createMascota);
 router.get('/', mascotaController.getAll);
+router.get('/:id', mascotaController.getOne);
+router.put('/:id', mascotaController.updateMascota);
+router.delete('/:id', mascotaController.deleteMascota);
 
 export default router;

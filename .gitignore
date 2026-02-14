@@ -10,3 +10,5 @@ dist/
 # Logs y sistema
 npm-debug.log*
 .DS_Store
+scripts/verify_crud.js
+scripts/verify_full_flow.js

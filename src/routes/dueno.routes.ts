@@ -10,5 +10,10 @@ router.use(authMiddleware);
 // RUTAS DE PERFIL
 router.post('/perfil', duenoController.createPerfil);
 router.get('/perfil', duenoController.getMiPerfil);
+router.put('/perfil', duenoController.updatePerfil);
+
+// RUTAS ADMIN
+import { checkRole } from '../middlewares/role.middleware';
+router.delete('/:id', checkRole(['admin']), duenoController.deleteDueno);
 
 export default router;

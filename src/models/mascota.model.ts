@@ -9,7 +9,7 @@ export const findById = async (id: number) => {
         'SELECT * FROM mascotas WHERE id = ?',
         [id]
     );
-    return rows.length > 0 ? rows[0] : null;
+    return rows.length > 0 ? rows[0] as IMascota : null;
 };
 
 // BUSCAR MASCOTAS POR DUENO
@@ -26,13 +26,33 @@ export const create = async (mascota: Omit<IMascota, 'id'>): Promise<IMascota> =
     const [result] = await pool.execute<ResultSetHeader>(
         'INSERT INTO mascotas (nombre, especie, raza, fecha_nacimiento, advertencias, dueno_id) VALUES (?, ?, ?, ?, ?, ?)',
         [
-            mascota.nombre || null, 
-            mascota.especie || null, 
-            mascota.raza || null, 
-            mascota.fecha_nacimiento || null, 
-            mascota.advertencias || null, 
+            mascota.nombre || null,
+            mascota.especie || null,
+            mascota.raza || null,
+            mascota.fecha_nacimiento || null,
+            mascota.advertencias || null,
             mascota.dueno_id
         ]
     );
     return { id: result.insertId, ...mascota } as IMascota;
+};
+
+// ELIMINAR MASCOTA
+export const deleteById = async (id: number): Promise<void> => {
+    await pool.query('DELETE FROM mascotas WHERE id = ?', [id]);
+};
+
+// ACTUALIZAR MASCOTA
+export const update = async (id: number, mascota: Partial<IMascota>): Promise<void> => {
+    await pool.query(
+        'UPDATE mascotas SET nombre = ?, especie = ?, raza = ?, fecha_nacimiento = ?, advertencias = ? WHERE id = ?',
+        [
+            mascota.nombre,
+            mascota.especie,
+            mascota.raza,
+            mascota.fecha_nacimiento,
+            mascota.advertencias,
+            id
+        ]
+    );
 };

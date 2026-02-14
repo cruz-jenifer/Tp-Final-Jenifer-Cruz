@@ -12,6 +12,15 @@ export interface ITurno {
     creado_en?: Date;
 }
 
+export interface ITurnoDetalle extends ITurno {
+    mascota?: string;
+    servicio?: string;
+    veterinario_nombre?: string;
+    veterinario_apellido?: string;
+    dueno_nombre?: string;
+    dueno_apellido?: string;
+}
+
 export class TurnoModel {
 
     // VALIDAR DISPONIBILIDAD
@@ -40,7 +49,7 @@ export class TurnoModel {
     }
 
     // BUSCAR POR DUENO
-    static async findAllByDuenoId(duenoId: number): Promise<any[]> {
+    static async findAllByDuenoId(duenoId: number): Promise<ITurnoDetalle[]> {
         const query = `
             SELECT 
                 t.id, 
@@ -58,11 +67,11 @@ export class TurnoModel {
             ORDER BY t.fecha_hora DESC
         `;
         const [rows] = await pool.query<RowDataPacket[]>(query, [duenoId]);
-        return rows;
+        return rows as ITurnoDetalle[];
     }
 
     // BUSCAR POR FECHA
-    static async findAllByFecha(fecha: string): Promise<any[]> {
+    static async findAllByFecha(fecha: string): Promise<ITurnoDetalle[]> {
         const query = `
             SELECT 
                 t.id, 
@@ -83,6 +92,34 @@ export class TurnoModel {
 
         // FORMATO MYSQL
         const [rows] = await pool.query<RowDataPacket[]>(query, [fecha]);
-        return rows;
+        return rows as ITurnoDetalle[];
+    }
+
+    // CANCELAR TURNO
+    static async updateStatus(id: number, estado: 'cancelado'): Promise<void> {
+        await pool.query(
+            'UPDATE turnos SET estado = ? WHERE id = ?',
+            [estado, id]
+        );
+    }
+
+    // BUSCAR POR ID
+    static async findById(id: number): Promise<ITurno | null> {
+        const [rows] = await pool.query<RowDataPacket[]>(
+            'SELECT * FROM turnos WHERE id = ?',
+            [id]
+        );
+        if (rows.length === 0) return null;
+        return rows[0] as ITurno;
+    }
+
+    // REPROGRAMAR (UPDATE)
+    static async update(id: number, datos: Partial<ITurno>): Promise<void> {
+        // Solo permitimos actualizar fecha, veterinario, motivo
+        // Construccion dinamica basica o fija
+        await pool.query(
+            'UPDATE turnos SET fecha_hora = COALESCE(?, fecha_hora), veterinario_id = COALESCE(?, veterinario_id), motivo = COALESCE(?, motivo) WHERE id = ?',
+            [datos.fecha_hora, datos.veterinario_id, datos.motivo, id]
+        );
     }
 }
