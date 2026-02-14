@@ -14,7 +14,7 @@ export interface ITurno {
 
 export class TurnoModel {
 
-    // VALIDAR DISPONIBILIDAD HORARIA
+    // VALIDAR DISPONIBILIDAD
     static async validarDisponibilidad(veterinarioId: number, fechaHora: string): Promise<boolean> {
         const [rows] = await pool.query<RowDataPacket[]>(
             'SELECT COUNT(*) as count FROM turnos WHERE veterinario_id = ? AND fecha_hora = ?',
@@ -23,7 +23,7 @@ export class TurnoModel {
         return rows[0].count === 0;
     }
 
-    // CREAR TURNO
+    // CREAR
     static async create(turno: ITurno): Promise<number> {
         const [result] = await pool.query<ResultSetHeader>(
             'INSERT INTO turnos (mascota_id, servicio_id, veterinario_id, fecha_hora, motivo, estado) VALUES (?, ?, ?, ?, ?, ?)',
@@ -39,7 +39,7 @@ export class TurnoModel {
         return result.insertId;
     }
 
-    // OBTENER TURNOS POR DUENO CON DETALLES
+    // BUSCAR POR DUENO
     static async findAllByDuenoId(duenoId: number): Promise<any[]> {
         const query = `
             SELECT 
@@ -61,7 +61,7 @@ export class TurnoModel {
         return rows;
     }
 
-    // NUEVO METODO: OBTENER AGENDA GLOBAL POR FECHA
+    // BUSCAR POR FECHA
     static async findAllByFecha(fecha: string): Promise<any[]> {
         const query = `
             SELECT 
@@ -81,7 +81,7 @@ export class TurnoModel {
             ORDER BY t.fecha_hora ASC
         `;
 
-        // MYSQL2 ESPERA LA FECHA EN FORMATO 'YYYY-MM-DD'
+        // FORMATO MYSQL
         const [rows] = await pool.query<RowDataPacket[]>(query, [fecha]);
         return rows;
     }

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { TurnoController } from '../controllers/turno.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
-import { checkRole } from '../middlewares/role.middleware'; 
+import { checkRole } from '../middlewares/role.middleware';
 
 const router = Router();
 

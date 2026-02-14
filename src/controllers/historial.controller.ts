@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { RowDataPacket } from 'mysql2';
 import { pool } from '../config/database';
-import * as historialModel from '../models/historial.model';
+import { HistorialModel } from '../models/historial.model';
 
 // CREAR NUEVA ENTRADA
 export const createHistorial = async (req: Request, res: Response, next: NextFunction) => {
@@ -16,7 +16,7 @@ export const createHistorial = async (req: Request, res: Response, next: NextFun
 
         // VALIDAR VETERINARIO
         const [vetRows] = await pool.query<RowDataPacket[]>(
-            'SELECT id FROM veterinarios WHERE usuario_id = ?', 
+            'SELECT id FROM veterinarios WHERE usuario_id = ?',
             [req.user.id]
         );
 
@@ -28,12 +28,12 @@ export const createHistorial = async (req: Request, res: Response, next: NextFun
         if (vetRows.length > 0) {
             veterinarioId = vetRows[0].id;
         } else if (req.user.rol === 'admin') {
-            veterinarioId = 1; // FALLBACK ADMIN
+            veterinarioId = 1; // ID DE SISTEMA
         } else {
             return res.status(403).json({ message: 'NO TIENES PERFIL PROFESIONAL PARA FIRMAR HISTORIAL' });
         }
 
-        const nuevoRegistro = await historialModel.create({
+        const nuevoRegistro = await HistorialModel.create({
             mascota_id,
             veterinario_id: veterinarioId,
             fecha,
@@ -53,10 +53,10 @@ export const getHistorialByMascota = async (req: Request, res: Response, next: N
     try {
         if (!req.user) throw new Error('NO AUTORIZADO');
 
-        const { id } = req.params; 
+        const { id } = req.params;
         const mascotaId = Number(id);
 
-        // VALIDACION DE PROPIEDAD PARA CLIENTES
+        // VALIDACION DE PROPIEDAD
         if (req.user.rol === 'cliente') {
             const [rows] = await pool.query<RowDataPacket[]>(
                 `SELECT m.id 
@@ -71,8 +71,8 @@ export const getHistorialByMascota = async (req: Request, res: Response, next: N
             }
         }
 
-        // SI PASA LA VALIDACION O ES VET/ADMIN, RETORNA DATOS
-        const historial = await historialModel.findByMascotaId(mascotaId);
+        // OBTENER DATOS
+        const historial = await HistorialModel.findByMascotaId(mascotaId);
         res.json({ data: historial });
     } catch (error) {
         next(error);

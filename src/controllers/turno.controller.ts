@@ -4,14 +4,14 @@ import { TurnoService } from '../services/turno.service';
 export class TurnoController {
 
     // METODO: LISTAR MIS TURNOS
- // DEBE LLAMARSE IGUAL QUE EN LAS RUTAS
+    // DEBE LLAMARSE IGUAL QUE EN LAS RUTAS
     static async listarMisTurnos(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;
             if (!userId) throw new Error('Usuario no identificado');
 
             const turnos = await TurnoService.obtenerMisTurnos(userId);
-            
+
             res.json({ data: turnos });
         } catch (error) {
             next(error);
@@ -19,7 +19,7 @@ export class TurnoController {
     }
 
     // METODO: RESERVAR
-    
+
     static async reservar(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;
@@ -28,9 +28,9 @@ export class TurnoController {
             // DELEGAMOS AL SERVICIO
             const nuevoTurno = await TurnoService.reservarTurno(userId, req.body);
 
-            res.status(201).json({ 
-                message: 'TURNO RESERVADO CON ÉXITO', 
-                data: nuevoTurno 
+            res.status(201).json({
+                message: 'TURNO RESERVADO CON ÉXITO',
+                data: nuevoTurno
             });
         } catch (error: any) {
             // MANEJO DE ERRORES CONOCIDOS

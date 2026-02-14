@@ -1,26 +1,23 @@
 import { TurnoModel, ITurno } from '../models/turno.model';
-import * as DuenoModel from '../models/dueno.model'; 
+import * as DuenoModel from '../models/dueno.model';
 
 export class TurnoService {
 
-    // RESERVAR TURNO CON VALIDACIONES
+    // RESERVAR TURNO
     static async reservarTurno(usuarioId: number, datosTurno: ITurno) {
-        // OBTENER PERFIL DE DUENO
+        // OBTENER DUENO
+        const dueno = await DuenoModel.findByUserId(usuarioId);
 
-
-        const dueno = await DuenoModel.findByUserId(usuarioId); 
-        
-        // MANEJO DE RETORNO DE DUENO 
         const duenoData = Array.isArray(dueno) ? dueno[0] : dueno;
 
         if (!duenoData || !duenoData.id) {
             throw new Error('El usuario no tiene un perfil de dueño registrado');
         }
 
-        // FORMATEAR FECHA PARA MYSQL
+        // FORMATEAR FECHA
         const fechaStr = new Date(datosTurno.fecha_hora).toISOString().slice(0, 19).replace('T', ' ');
 
-        // VERIFICAR DISPONIBILIDAD
+        // VALIDAR DISPONIBILIDAD
         const estaDisponible = await TurnoModel.validarDisponibilidad(
             datosTurno.veterinario_id,
             fechaStr
@@ -30,19 +27,19 @@ export class TurnoService {
             throw new Error('El horario seleccionado ya se encuentra ocupado');
         }
 
-        // PREPARAR DATOS
+        // DATOS TURNO
         const nuevoTurno: ITurno = {
             ...datosTurno,
             fecha_hora: fechaStr,
             estado: 'pendiente'
         };
 
-        // GUARDAR
+        // CREAR TURNO
         const id = await TurnoModel.create(nuevoTurno);
         return { id, ...nuevoTurno };
     }
 
-    // LISTAR TURNOS DEL USUARIO
+    // LISTAR TURNOS
     static async obtenerMisTurnos(usuarioId: number) {
         const dueno = await DuenoModel.findByUserId(usuarioId);
         const duenoData = Array.isArray(dueno) ? dueno[0] : dueno;
@@ -54,20 +51,20 @@ export class TurnoService {
         return await TurnoModel.findAllByDuenoId(duenoData.id);
     }
 
-    //  VER AGENDA DEL DIA
+    // AGENDA DIARIA
     static async obtenerAgendaGlobal(fecha?: string) {
-        
-        // SI NO HAY FECHA, USAR LA DE HOY
-       
+
+        // FECHA ACTUAL
         const fechaBusqueda = fecha || new Date().toISOString().split('T')[0];
 
-        // LLAMAR AL MODELO
+        // BUSCAR TURNOS
         const turnos = await TurnoModel.findAllByFecha(fechaBusqueda);
-        
+
         return {
             fecha: fechaBusqueda,
             total_turnos: turnos.length,
             turnos: turnos
         };
     }
+
 }
