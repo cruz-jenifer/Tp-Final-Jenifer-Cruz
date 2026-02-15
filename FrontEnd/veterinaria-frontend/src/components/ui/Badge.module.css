@@ -1,0 +1,14 @@
+.badge {
+    padding: 2px 6px;
+    border: 1px solid #000;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+/* VARIANTES SOLO PARA DISTINCION BASICA */
+.primary { font-weight: bold; }
+.success { font-weight: bold; }
+.warning { font-weight: bold; }
+.danger { font-weight: bold; }
+.info { font-weight: bold; }
+.secondary { font-weight: bold; }

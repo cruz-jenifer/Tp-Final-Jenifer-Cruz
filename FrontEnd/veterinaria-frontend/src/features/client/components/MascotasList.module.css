@@ -1,0 +1,125 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem 0;
+}
+
+.petImage {
+    height: 12rem;
+    background-color: #FFF7ED; /* orange-50 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.petHeader {
+    padding: 1.5rem 1.5rem 0 1.5rem;
+}
+
+.petName {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1F2937;
+}
+
+.petBreed {
+    font-size: 0.875rem;
+    color: #6B7280;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+.petStats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+.statLabel {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.statValue {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 0.25rem;
+}
+
+.viewButton {
+    display: block;
+    width: calc(100% - 3rem);
+    margin: 0 1.5rem 1.5rem 1.5rem;
+    padding: 0.75rem;
+    border: 2px solid #E0E7FF;
+    color: #6384FF;
+    background: transparent;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.viewButton:hover {
+    background-color: #6384FF;
+    color: white;
+}
+
+.addCard {
+    background-color: #F9FAFB;
+    border: 2px dashed #E5E7EB;
+    border-radius: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 350px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.addCard:hover {
+    background-color: white;
+    border-color: #6384FF;
+}
+
+.addIcon {
+    width: 4rem;
+    height: 4rem;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #9CA3AF;
+    margin-bottom: 1rem;
+}
+
+.addCard:hover .addIcon {
+    color: #6384FF;
+}
+
+.addCard h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #4B5563;
+    margin: 0;
+}
+
+.addCard:hover h3 {
+    color: #6384FF;
+}

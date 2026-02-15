@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
 import { LoginForm } from '../features/auth/LoginForm';
+import ClientDashboard from '../features/client/ClientDashboard';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 
 // ENRUTADOR PRINCIPAL
@@ -10,8 +12,8 @@ export const AppRouter = () => {
                 <Route path="/login" element={<LoginForm />} />
 
                 <Route element={<ProtectedRoute />}>
-                    <Route path="/" element={<h1>Panel Principal (Protegido)</h1>} />
-                    {/* AGREGAR MAS RUTAS PROTEGIDAS AQUI */}
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/dashboard" element={<ClientDashboard />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/login" replace />} />

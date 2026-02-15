@@ -34,9 +34,15 @@ export const LoginForm: React.FC = () => {
             if (values.email === 'admin@admin.com' && values.password === '12345') {
                 dispatch(loginSuccess({
                     user: { id: 1, email: values.email, role: 'admin', nombre: 'Admin' },
-                    token: 'jwt-token-demo'
+                    token: 'jwt-token-admin'
                 }));
-                navigate('/');
+                navigate('/dashboard');
+            } else if (values.email === 'cliente@cliente.com' && values.password === '12345') {
+                dispatch(loginSuccess({
+                    user: { id: 2, email: values.email, role: 'cliente', nombre: 'Cliente Demo' },
+                    token: 'jwt-token-client'
+                }));
+                navigate('/dashboard');
             } else {
                 throw new Error('Credenciales inválidas');
             }
