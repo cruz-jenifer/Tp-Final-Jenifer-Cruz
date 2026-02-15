@@ -1,0 +1,18 @@
+:root {
+  /* COLORES */
+  --primary: #4a90e2;
+  --primary-hover: #357abd;
+  --secondary: #f5f5f5;
+  --text-dark: #333333;
+  --text-light: #ffffff;
+  --error: #e74c3c;
+  --success: #2ecc71;
+  
+  /* ESPACIADO */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  
+  /* TIPOGRAFIA */
+  --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+}

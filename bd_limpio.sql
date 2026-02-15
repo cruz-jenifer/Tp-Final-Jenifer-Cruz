@@ -148,3 +148,11 @@ CREATE TABLE historiales (
     FOREIGN KEY (mascota_id) REFERENCES mascotas(id) ON DELETE CASCADE,
     FOREIGN KEY (veterinario_id) REFERENCES veterinarios(id) ON DELETE CASCADE
 );
+
+
+ALTER TABLE turnos MODIFY COLUMN estado ENUM('pendiente', 'confirmado', 'completado', 'cancelado', 'realizado') DEFAULT 'pendiente';
+
+
+INSERT INTO historiales (mascota_id, veterinario_id, fecha, diagnostico, tratamiento)
+SELECT mascota_id, veterinario_id, fecha, diagnostico, tratamiento 
+FROM historial_medico;

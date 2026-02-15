@@ -6,7 +6,7 @@ import turnoRoutes from './turno.routes';
 import servicioRouter from './servicio.routes';
 import historialRouter from './historial.routes';
 import veterinarioRoutes from './veterinarios.routes';
-import pagoRoutes from './pago.routes';
+
 
 const router = Router();
 
@@ -18,6 +18,6 @@ router.use('/turnos', turnoRoutes);
 router.use('/servicios', servicioRouter);
 router.use('/historial', historialRouter);
 router.use('/veterinarios', veterinarioRoutes);
-router.use('/pagos', pagoRoutes);
+
 
 export default router;

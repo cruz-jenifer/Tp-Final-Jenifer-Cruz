@@ -1,14 +1,56 @@
 # Dependencias
 node_modules/
 
-# Build
+# Build y Distribución
 dist/
+dist-ssr/
+build/
+out/
+coverage/
 
-# Variables de entorno (Seguridad)
+# Variables de entorno y secretos
 .env
+.env.*
+!.env.example
 
-# Logs y sistema
+# Logs y Diagnósticos
+logs
+*.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Archivos de sistema y temporales
 .DS_Store
+Thumbs.db
+tsh_history
+.tmp/
+tmp/
+temp/
+
+# IDEs y Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Scripts locales o de prueba
 scripts/verify_crud.js
-scripts/verify_full_flow.js
+recursos/
+
+# Directorios de pruebas e2e generados 
+playwright-report/
+test-results/
+
+# Archivos de Agente (Ignorados)
+.agents/

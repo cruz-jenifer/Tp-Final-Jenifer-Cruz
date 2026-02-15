@@ -8,13 +8,13 @@ const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
     try {
-        //  Conectar a Base de Datos primero
+        // CONECTAR A BASE DE DATOS PRIMERO
         await connectDB();
 
-        //  Levantar el servidor
+        // LEVANTAR EL SERVIDOR
         app.listen(PORT, () => {
-            console.log(`🚀 Server running on port ${PORT}`);
-            console.log(`⭐️ Environment: ${process.env.NODE_ENV}`);
+            console.log(`🚀Servidor corriendo en el puerto ${PORT}`);
+            console.log(`⭐️Entorno: ${process.env.NODE_ENV}`);
         });
     } catch (error) {
         console.error('Error al iniciar el servidor:', error);
