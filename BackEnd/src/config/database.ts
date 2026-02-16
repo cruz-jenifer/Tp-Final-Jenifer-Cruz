@@ -1,4 +1,4 @@
-import { createPool } from 'mysql2/promise'; 
+import { createPool } from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -6,13 +6,14 @@ dotenv.config();
 // CONFIGURACION DEL POOL DE CONEXIONES
 export const pool = createPool({
     host: process.env.DB_HOST || 'localhost',
-    port: Number(process.env.DB_PORT) || 3306, 
+    port: Number(process.env.DB_PORT) || 3306,
     user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'veterinaria_patitas_felices',
+    password: process.env.DB_PASSWORD || 'root',
+    database: process.env.DB_NAME || 'veterinaria',
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    dateStrings: true // IMPORTANTE: Para que las fechas vengan como string y no como Date (evita conversiones UTC automáticas)
 });
 
 export const connectDB = async () => {

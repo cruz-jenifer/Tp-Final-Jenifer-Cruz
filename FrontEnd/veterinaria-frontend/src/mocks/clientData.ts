@@ -6,75 +6,73 @@ import type { Turno } from '../types/turno.types';
 // MOCK DE MASCOTAS
 export const mockPets: Pet[] = [
     {
-        id: '1',
+        id: 1,
         nombre: 'Firulais',
         especie: 'Perro',
         raza: 'Golden Retriever',
-        edad: 3,
-        peso: 25,
-        ownerId: 'u1',
-        imagenUrl: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=300&q=80'
+        fecha_nacimiento: '2020-01-01',
+        dueno_id: 1,
+        // advertencias: 'None'
     },
     {
-        id: '2',
+        id: 2,
         nombre: 'Michi',
         especie: 'Gato',
         raza: 'Siames',
-        edad: 2,
-        peso: 4,
-        ownerId: 'u1',
-        imagenUrl: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80'
+        fecha_nacimiento: '2021-05-15',
+        dueno_id: 1
     },
     {
-        id: '3',
+        id: 3,
         nombre: 'Rocky',
         especie: 'Perro',
         raza: 'Bulldog',
-        edad: 5,
-        peso: 18,
-        ownerId: 'u1'
+        fecha_nacimiento: '2018-08-20',
+        dueno_id: 1
     }
 ];
 
 // MOCK DE TURNOS
 export const mockTurnos: Turno[] = [
     {
-        id: 't1',
-        mascotaId: '1',
-        mascotaNombre: 'Firulais',
-        fecha: '2023-11-20',
-        hora: '10:00',
+        id: 1,
+        fecha_hora: '2023-11-20 10:00:00',
         motivo: 'Vacunación anual',
         estado: 'pendiente',
-        veterinarioNombre: 'Dr. House'
+        mascota: 'Firulais',
+        veterinario_nombre: 'Dr. House',
+        mascota_id: 1,
+        servicio_id: 1,
+        veterinario_id: 1
     },
     {
-        id: 't2',
-        mascotaId: '2',
-        mascotaNombre: 'Michi',
-        fecha: '2023-11-22',
-        hora: '15:30',
+        id: 2,
+        fecha_hora: '2023-11-22 15:30:00',
         motivo: 'Consulta general',
         estado: 'confirmado',
-        veterinarioNombre: 'Dra. Grey'
+        mascota: 'Michi',
+        veterinario_nombre: 'Dra. Grey',
+        mascota_id: 2,
+        servicio_id: 1,
+        veterinario_id: 2
     },
     {
-        id: 't3',
-        mascotaId: '1',
-        mascotaNombre: 'Firulais',
-        fecha: '2023-10-15',
-        hora: '09:00',
+        id: 3,
+        fecha_hora: '2023-10-15 09:00:00',
         motivo: 'Corte de uñas',
         estado: 'realizado',
-        veterinarioNombre: 'Dr. House'
+        mascota: 'Firulais',
+        veterinario_nombre: 'Dr. House',
+        mascota_id: 1,
+        servicio_id: 2,
+        veterinario_id: 1
     },
     {
-        id: 't4',
-        mascotaId: '3',
-        mascotaNombre: 'Rocky',
-        fecha: '2023-12-01',
-        hora: '11:00',
+        id: 4,
+        fecha_hora: '2023-12-01 11:00:00',
         motivo: 'Desparasitación',
-        estado: 'cancelado'
+        estado: 'cancelado',
+        mascota: 'Rocky',
+        mascota_id: 3
     }
 ];

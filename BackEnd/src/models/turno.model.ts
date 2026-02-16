@@ -54,7 +54,11 @@ export class TurnoModel {
             SELECT 
                 t.id, 
                 t.fecha_hora, 
-                t.estado, 
+                t.estado,
+                t.motivo,
+                t.mascota_id,
+                t.servicio_id,
+                t.veterinario_id,
                 m.nombre as mascota, 
                 s.nombre as servicio, 
                 v.nombre as veterinario_nombre,
@@ -64,7 +68,12 @@ export class TurnoModel {
             JOIN servicios s ON t.servicio_id = s.id
             JOIN veterinarios v ON t.veterinario_id = v.id
             WHERE m.dueno_id = ?
-            ORDER BY t.fecha_hora DESC
+            ORDER BY 
+                CASE 
+                    WHEN t.estado = 'cancelado' THEN 1 
+                    ELSE 0 
+                END ASC,
+                t.fecha_hora ASC
         `;
         const [rows] = await pool.query<RowDataPacket[]>(query, [duenoId]);
         return rows as ITurnoDetalle[];
@@ -103,6 +112,11 @@ export class TurnoModel {
         );
     }
 
+    // ELIMINAR FISICAMENTE
+    static async delete(id: number): Promise<void> {
+        await pool.query('DELETE FROM turnos WHERE id = ?', [id]);
+    }
+
     // BUSCAR POR ID
     static async findById(id: number): Promise<ITurno | null> {
         const [rows] = await pool.query<RowDataPacket[]>(
@@ -115,11 +129,16 @@ export class TurnoModel {
 
     // REPROGRAMAR (UPDATE)
     static async update(id: number, datos: Partial<ITurno>): Promise<void> {
-        // Solo permitimos actualizar fecha, veterinario, motivo
-        // Construccion dinamica basica o fija
+        // Ahora incluimos servicio_id y mascota_id si cambian
         await pool.query(
-            'UPDATE turnos SET fecha_hora = COALESCE(?, fecha_hora), veterinario_id = COALESCE(?, veterinario_id), motivo = COALESCE(?, motivo) WHERE id = ?',
-            [datos.fecha_hora, datos.veterinario_id, datos.motivo, id]
+            `UPDATE turnos SET 
+                fecha_hora = COALESCE(?, fecha_hora), 
+                veterinario_id = COALESCE(?, veterinario_id), 
+                servicio_id = COALESCE(?, servicio_id),
+                mascota_id = COALESCE(?, mascota_id),
+                motivo = COALESCE(?, motivo) 
+             WHERE id = ?`,
+            [datos.fecha_hora, datos.veterinario_id, datos.servicio_id, datos.mascota_id, datos.motivo, id]
         );
     }
 }

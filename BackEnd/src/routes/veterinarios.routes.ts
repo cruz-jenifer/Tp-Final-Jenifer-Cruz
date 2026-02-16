@@ -8,6 +8,9 @@ const router = Router();
 // APLICAR SEGURIDAD A TODO EL MODULO
 router.use(authMiddleware);
 
+// RUTA: LISTAR TODOS LOS VETERINARIOS (PUBLICO PARA USUARIOS AUTENTICADOS)
+router.get('/', VeterinarioController.listarTodos);
+
 // RUTA: VER AGENDA GLOBAL DEL DIA
 // SOLO VETERINARIOS Y ADMINS
 router.get('/agenda', checkRole(['veterinario', 'admin']), VeterinarioController.verAgenda);

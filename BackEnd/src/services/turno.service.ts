@@ -15,7 +15,9 @@ export class TurnoService {
         }
 
         // FORMATEAR FECHA
-        const fechaStr = new Date(datosTurno.fecha_hora).toISOString().slice(0, 19).replace('T', ' ');
+        // FORMATEAR FECHA
+        // El frontend envía 'YYYY-MM-DD HH:mm:ss' (Local). Lo guardamos tal cual.
+        const fechaStr = datosTurno.fecha_hora as unknown as string;
 
         // VALIDAR DISPONIBILIDAD
         const estaDisponible = await TurnoModel.validarDisponibilidad(
@@ -77,10 +79,6 @@ export class TurnoService {
             throw new Error('Turno no encontrado');
         }
 
-        // VALIDAR PERMISO
-        // NECESITAMOS SABER SI EL USUARIO ES EL DUENO DE LA MASCOTA DEL TURNO
-        // SIMPLIFICACION: SI ES CLIENTE, VALIDAR RELACION. SI ES ADMIN/VET, PERMITIR.
-
         // VALIDAR ESTADO
         if (turno.estado !== 'pendiente') {
             throw new Error('Solo se pueden cancelar turnos pendientes');
@@ -90,6 +88,20 @@ export class TurnoService {
         await TurnoModel.updateStatus(turnoId, 'cancelado');
 
         return { message: 'Turno cancelado exitosamente' };
+    }
+
+    // ELIMINAR TURNO (FISICAMENTE)
+    static async eliminarTurno(turnoId: number, usuarioId: number) {
+        const turno = await TurnoModel.findById(turnoId);
+        if (!turno) throw new Error('Turno no encontrado');
+
+        // Solo permitir eliminar si ya está cancelado
+        if (turno.estado !== 'cancelado') {
+            throw new Error('Solo se pueden eliminar turnos cancelados');
+        }
+
+        await TurnoModel.delete(turnoId);
+        return { message: 'Turno eliminado definitivamente' };
     }
 
     // REPROGRAMAR TURNO
@@ -103,7 +115,9 @@ export class TurnoService {
 
         // VALIDAR NUEVA DISPONIBILIDAD SI CAMBIA FECHA
         if (datos.fecha_hora && datos.veterinario_id) {
-            const fechaStr = new Date(datos.fecha_hora).toISOString().slice(0, 19).replace('T', ' ');
+            const fechaStr = datos.fecha_hora instanceof Date
+                ? datos.fecha_hora.toISOString().slice(0, 19).replace('T', ' ')
+                : datos.fecha_hora;
             const disponible = await TurnoModel.validarDisponibilidad(datos.veterinario_id, fechaStr);
             if (!disponible) throw new Error('El nuevo horario no está disponible');
 

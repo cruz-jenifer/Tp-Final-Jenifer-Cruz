@@ -1,5 +1,5 @@
 import { RowDataPacket } from 'mysql2';
-import {pool} from '../config/database';
+import { pool } from '../config/database';
 
 export interface IVeterinario {
     id?: number;
@@ -17,9 +17,9 @@ export class VeterinarioModel {
             'SELECT * FROM veterinarios WHERE usuario_id = ?',
             [usuarioId]
         );
-        
+
         if (rows.length === 0) return null;
-        
+
         return rows[0] as IVeterinario;
     }
 
@@ -33,5 +33,14 @@ export class VeterinarioModel {
         if (rows.length === 0) return null;
 
         return rows[0] as IVeterinario;
+    }
+
+    // LISTAR TODOS LOS VETERINARIOS
+    static async findAll(): Promise<IVeterinario[]> {
+        const [rows] = await pool.query<RowDataPacket[]>(
+            'SELECT id, nombre, apellido, matricula FROM veterinarios ORDER BY apellido, nombre'
+        );
+
+        return rows as IVeterinario[];
     }
 }

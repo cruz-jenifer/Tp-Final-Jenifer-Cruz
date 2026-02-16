@@ -1,12 +1,11 @@
 // DEFINICION DE TIPOS PARA MASCOTAS
 
 export interface Pet {
-    id: string;
+    id: number; // BACKEND USA NUMBER
     nombre: string;
     especie: string;
     raza: string;
-    edad: number;
-    peso: number;
-    imagenUrl?: string;
-    ownerId: string;
+    fecha_nacimiento: string; // BACKEND ENVIA STRING/DATE
+    advertencias?: string;
+    dueno_id: number;
 }

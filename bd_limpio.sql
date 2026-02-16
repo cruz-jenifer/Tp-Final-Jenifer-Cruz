@@ -50,7 +50,6 @@ CREATE TABLE veterinarios (
 CREATE TABLE servicios (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
-    precio DECIMAL(10,2) NOT NULL,
     duracion_minutos INT DEFAULT 60
 );
 
@@ -69,16 +68,6 @@ CREATE TABLE turnos (
     FOREIGN KEY (veterinario_id) REFERENCES veterinarios(id)
 );
 
--- 7. TABLA: pagos
-CREATE TABLE pagos (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    turno_id INT NOT NULL,
-    monto DECIMAL(10,2) NOT NULL,
-    metodo ENUM('mercadopago', 'tarjeta', 'efectivo') NOT NULL,
-    estado ENUM('pendiente', 'completado', 'rechazado') DEFAULT 'pendiente',
-    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (turno_id) REFERENCES turnos(id) ON DELETE CASCADE
-);
 
 -- 8. TABLA: historial_medico
 CREATE TABLE historial_medico (
@@ -117,10 +106,10 @@ INSERT INTO mascotas (nombre, especie, raza, fecha_nacimiento, advertencias, due
 ('Luna', 'Perro', 'Caniche', '2019-11-20', 'No dar antiinflamatorios', 1);
 
 -- Servicios
-INSERT INTO servicios (nombre, precio, duracion_minutos) VALUES
-('Consulta general', 5000.00, 60),
-('Vacunación', 3000.00, 60),
-('Desparasitación', 2500.00, 60);
+INSERT INTO servicios (nombre, duracion_minutos) VALUES
+('Consulta general', 60),
+('Vacunación', 60),
+('Desparasitación', 60);
 
 -- Turnos
 INSERT INTO turnos (mascota_id, servicio_id, veterinario_id, fecha_hora, motivo, estado) VALUES

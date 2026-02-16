@@ -4,6 +4,5 @@ import { RowDataPacket } from 'mysql2';
 export interface IServicio extends RowDataPacket {
     id?: number;
     nombre: string;
-    precio: number;
     duracion_minutos: number;
 }

@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch BackEnd/src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node BackEnd/dist/server.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

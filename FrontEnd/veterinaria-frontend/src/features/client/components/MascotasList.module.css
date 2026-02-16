@@ -1,93 +1,188 @@
+/* ESTILOS LISTADO DE MASCOTAS */
+
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: 1fr;
     gap: 2rem;
-    padding: 1rem 0;
 }
 
-.petImage {
-    height: 12rem;
-    background-color: #FFF7ED; /* orange-50 */
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ESTILO BASE DE TARJETA */
+.card {
+    background-color: white;
+    border-radius: 1.5rem; /* 3XL */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f3f4f6;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.deleteBtn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 0.375rem;
+    border-radius: 9999px;
+    color: #f87171;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* AREA DE IMAGEN */
+.cardImageArea {
+    height: 12rem; /* 48 */
+    background-color: #f9fafb; /* GRIS 50 */
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 5rem;
-    border-bottom: 1px solid #F3F4F6;
 }
 
-.petHeader {
-    padding: 1.5rem 1.5rem 0 1.5rem;
+.cardIcon {
+    font-size: 6rem; /* EQUIVALENTE 8XL */
+    color: #e5e7eb;
+}
+
+.cardIcon span {
+    font-size: 6rem;
+}
+
+.speciesBadge {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #4b5563;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* AREA DE CONTENIDO */
+.cardContent {
+    padding: 1.5rem;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
 }
 
 .petName {
     font-size: 1.25rem;
     font-weight: 700;
+    color: #1f2937;
     margin: 0;
-    color: #1F2937;
 }
 
 .petBreed {
     font-size: 0.875rem;
-    color: #6B7280;
+    color: #6b7280;
     font-weight: 500;
-    margin-top: 0.25rem;
+    margin: 0;
 }
 
-.petStats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin: 1rem 1.5rem;
+.genderIcon {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 9999px;
+    background-color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+}
+
+.gendIcon span {
+    font-size: 1.125rem;
+}
+
+.statsGrid {
+    margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid #F3F4F6;
+    border-top: 1px solid #f3f4f6;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
 }
 
 .statLabel {
     font-size: 0.75rem;
+    color: #9ca3af;
     font-weight: 700;
-    color: #9CA3AF;
     text-transform: uppercase;
     margin: 0;
 }
 
 .statValue {
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: #374151;
-    margin-top: 0.25rem;
+    margin: 0;
 }
 
 .viewButton {
-    display: block;
-    width: calc(100% - 3rem);
-    margin: 0 1.5rem 1.5rem 1.5rem;
-    padding: 0.75rem;
-    border: 2px solid #E0E7FF;
-    color: #6384FF;
-    background: transparent;
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.625rem;
     border-radius: 0.75rem;
-    cursor: pointer;
+    border: 2px solid #f3f4f6;
+    background-color: transparent;
+    color: #6384FF;
     font-weight: 700;
     font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     transition: all 0.2s;
 }
 
 .viewButton:hover {
     background-color: #6384FF;
     color: white;
+    border-color: #6384FF;
 }
 
+/* AGREGAR TARJETA */
 .addCard {
-    background-color: #F9FAFB;
-    border: 2px dashed #E5E7EB;
+    background-color: #f9fafb;
     border-radius: 1.5rem;
+    border: 2px dashed #e5e7eb;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 350px;
+    padding: 2rem;
     cursor: pointer;
     transition: all 0.2s;
+    min-height: 300px;
 }
 
 .addCard:hover {
@@ -95,31 +190,34 @@
     border-color: #6384FF;
 }
 
-.addIcon {
-    width: 4rem;
+.addIconCircle {
     height: 4rem;
+    width: 4rem;
     background-color: white;
-    border-radius: 50%;
+    border-radius: 9999px;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    color: #9CA3AF;
     margin-bottom: 1rem;
 }
 
-.addCard:hover .addIcon {
-    color: #6384FF;
+.addIconCircle span {
+    font-size: 1.875rem;
+    color: #9ca3af;
 }
 
-.addCard h3 {
+.addTitle {
     font-size: 1.125rem;
     font-weight: 700;
-    color: #4B5563;
+    color: #4b5563;
     margin: 0;
 }
 
-.addCard:hover h3 {
-    color: #6384FF;
+.addSubtitle {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    text-align: center;
+    max-width: 200px;
+    margin-top: 0.5rem;
 }

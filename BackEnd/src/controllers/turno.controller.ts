@@ -18,17 +18,24 @@ export class TurnoController {
         }
     }
 
-    // CANCELAR TURNO
+    // CANCELAR O ELIMINAR TURNO
     static async cancelarTurno(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;
             const turnoId = Number(req.params.id);
+            const eliminarFisicamente = req.query.force === 'true'; // ?force=true para eliminar
 
             if (!userId) throw new Error('USUARIO NO IDENTIFICADO');
             if (isNaN(turnoId)) throw new Error('ID DE TURNO INVALIDO');
 
-            const resultado = await TurnoService.cancelarTurno(turnoId, userId);
+            if (eliminarFisicamente) {
+                // Verificar si es dueño o admin (por ahora solo dueño del turno)
+                // TODO: Verificar permisos mejor
+                await TurnoService.eliminarTurno(turnoId, userId);
+                return res.json({ message: 'TURNO ELIMINADO DEFINITIVAMENTE' });
+            }
 
+            const resultado = await TurnoService.cancelarTurno(turnoId, userId);
             res.json(resultado);
         } catch (error: any) {
             if (error.message.includes('No tienes permiso')) {

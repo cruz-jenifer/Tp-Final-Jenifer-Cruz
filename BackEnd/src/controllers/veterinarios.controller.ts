@@ -1,18 +1,29 @@
 import { Request, Response, NextFunction } from 'express';
 import { TurnoService } from '../services/turno.service';
 import { HistorialService } from '../services/historial.service';
+import { VeterinarioModel } from '../models/veterinarios.model';
 
 export class VeterinarioController {
+
+    // LISTAR TODOS LOS VETERINARIOS
+    static async listarTodos(req: Request, res: Response, next: NextFunction) {
+        try {
+            const veterinarios = await VeterinarioModel.findAll();
+            res.json(veterinarios);
+        } catch (error) {
+            next(error);
+        }
+    }
 
     // VER AGENDA GLOBAL DIARIA
     static async verAgenda(req: Request, res: Response, next: NextFunction) {
         try {
             // RECIBIMOS FECHA POR QUERY PARAM (?fecha=2023-10-27)
             const fecha = req.query.fecha as string;
-            
+
             // LLAMAMOS AL SERVICIO DE TURNOS (LOGICA GLOBAL)
             const agenda = await TurnoService.obtenerAgendaGlobal(fecha);
-            
+
             res.json(agenda);
         } catch (error) {
             next(error);

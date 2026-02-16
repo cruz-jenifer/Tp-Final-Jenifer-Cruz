@@ -1,45 +1,194 @@
+/* CSS DEL FORMULARIO DE INICIO DE SESION */
+
 .loginContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background-color: var(--secondary);
+    background: linear-gradient(135deg, #FFF5EB 0%, #E0E7FF 100%); /* DEGRADADO DE MARCA */
+    font-family: 'Quicksand', sans-serif;
+    padding: 1rem;
 }
 
 .formWrapper {
     background-color: white;
-    padding: var(--spacing-lg);
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+/* ENCABEZADO Y LOGO */
+.header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logoIcon {
+    font-size: 3rem;
+    color: #6384FF; /* PRIMARIO */
+    margin-bottom: 0.5rem;
 }
 
 .title {
-    margin-bottom: var(--spacing-lg);
-    text-align: center;
-    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0;
 }
 
+.subtitle {
+    font-size: 0.875rem;
+    color: #6B7280;
+    margin: 0;
+}
+
+/* INTERRUPTOR DE CAMBIO */
+.toggleContainer {
+    background-color: #F3F4F6;
+    border-radius: 0.75rem;
+    padding: 0.25rem;
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.toggleButton {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    color: #6B7280;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.toggleButton.active {
+    background-color: white;
+    color: #6384FF;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* ENTRADAS */
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 1rem;
+    color: #9CA3AF;
+    font-size: 1.1rem;
+}
+
+.inputField {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.75rem; /* ESPACIO PARA ICONO */
+    border: 1px solid #E5E7EB;
+    border-radius: 9999px; /* FORMA DE PILDORA */
+    background-color: #F9FAFB;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.inputField:focus {
+    outline: none;
+    border-color: #6384FF;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(99, 132, 255, 0.1);
+}
+
+.errorMessage {
+    color: #EF4444;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.forgotPassword {
+    text-align: right;
+    margin-top: -0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.forgotLink {
+    color: #6384FF;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.forgotLink:hover {
+    text-decoration: underline;
+}
+
+/* BOTON DE ENVIO */
 .submitButton {
     width: 100%;
-    padding: 0.75rem;
-    background-color: var(--primary);
+    padding: 0.875rem;
+    background: linear-gradient(to right, #6384FF, #818CF8);
     color: white;
     border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: background-color 0.2s;
-    margin-top: var(--spacing-md);
+    border-radius: 9999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(99, 132, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
-.submitButton:hover {
-    background-color: var(--primary-hover);
+.submitButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(99, 132, 255, 0.5);
 }
 
 .submitButton:disabled {
-    background-color: #ccc;
+    background: #D1D5DB;
     cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* PIE DE PAGINA (DERECHOS DE AUTOR) */
+.footer {
+    margin-top: 2rem;
+    text-align: center;
+    color: #9CA3AF;
+    font-size: 0.75rem;
 }

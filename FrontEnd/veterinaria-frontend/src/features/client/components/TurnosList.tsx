@@ -1,8 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { fetchTurnos } from '../../../store/slices/turnosSlice';
+import { fetchMisTurnos, cancelTurno, deleteTurno, updateTurno } from '../../../store/slices/turnosSlice';
+import { fetchMascotas } from '../../../store/slices/mascotasSlice';
 import { Badge, type BadgeVariant } from '../../../components/ui/Badge';
-import type { TurnoEstado } from '../../../types/turno.types';
+import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
+import { Modal } from '../../../components/ui/Modal';
+import { EditTurnoForm } from '../../turnos/EditTurnoForm';
+import type { TurnoEstado, Turno } from '../../../types/turno.types';
 import styles from './TurnosList.module.css';
 
 // MAPEO DE ESTADO A VARIANTE DE BADGE
@@ -16,65 +20,233 @@ const getStatusVariant = (status: TurnoEstado): BadgeVariant => {
     }
 };
 
+
+
 // COMPONENTE PARA MOSTRAR LA LISTA DE TURNOS (TABLA)
 export const TurnosList: React.FC = () => {
     const dispatch = useAppDispatch();
     const { turnos, loading, error } = useAppSelector((state) => state.turnos);
+    const { mascotas } = useAppSelector((state) => state.mascotas);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTurnoId, setSelectedTurnoId] = useState<number | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [turnoToEdit, setTurnoToEdit] = useState<Turno | null>(null);
+    const [motivoModalOpen, setMotivoModalOpen] = useState(false);
+    const [motivoToShow, setMotivoToShow] = useState('');
 
     useEffect(() => {
         if (turnos.length === 0) {
-            dispatch(fetchTurnos());
+            dispatch(fetchMisTurnos());
         }
-    }, [dispatch, turnos.length]);
+        if (mascotas.length === 0) {
+            dispatch(fetchMascotas());
+        }
+    }, [dispatch, turnos.length, mascotas.length]);
 
-    if (loading) return <p>Cargando turnos...</p>;
-    if (error) return <p>Error: {error}</p>;
+    const handleActionClick = (id: number) => {
+        setSelectedTurnoId(id);
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmAction = async () => {
+        if (selectedTurnoId) {
+            const turno = turnos.find(t => t.id === selectedTurnoId);
+            if (turno?.estado === 'cancelado') {
+                await dispatch(deleteTurno(selectedTurnoId));
+            } else {
+                await dispatch(cancelTurno(selectedTurnoId));
+            }
+            setIsModalOpen(false);
+            setSelectedTurnoId(null);
+            dispatch(fetchMisTurnos());
+        }
+    };
+
+    const handleEditClick = (turno: Turno) => {
+        setTurnoToEdit(turno);
+        setIsEditModalOpen(true);
+    };
+
+    const handleEditSubmit = async (formData: any) => {
+        if (!turnoToEdit) return;
+
+        const updateData = {
+            mascota_id: Number(formData.mascota_id),
+            servicio_id: Number(formData.servicio_id),
+            veterinario_id: Number(formData.veterinario_id),
+            fecha_hora: `${formData.fecha} ${formData.hora}:00`,
+            motivo: formData.motivo,
+        };
+
+        await dispatch(updateTurno({ id: turnoToEdit.id, data: updateData }));
+        setIsEditModalOpen(false);
+        setTurnoToEdit(null);
+        dispatch(fetchMisTurnos());
+    };
+
+    if (loading && turnos.length === 0) return <p>Cargando turnos...</p>;
+    if (error && turnos.length === 0) return <p>Error: {error}</p>;
+
+    // USAR ORDEN DEL BACKEND
+    const turnosSorted = turnos;
+
+    const getModalContent = () => {
+        const turno = turnos.find(t => t.id === selectedTurnoId);
+        const isDeleting = turno?.estado === 'cancelado';
+        return {
+            title: isDeleting ? "Eliminar Historial" : "Cancelar Turno",
+            message: isDeleting
+                ? "¿Deseas eliminar este registro permanentemente?"
+                : "¿Estás seguro de que deseas cancelar este turno? Esta acción no se puede deshacer.",
+            confirmText: isDeleting ? "Eliminar" : "Cancelar Turno",
+            isDanger: true
+        };
+    };
+
+    const modalContent = getModalContent();
 
     return (
+        <div className={styles.card}>
+            {/* STITCH: ENCABEZADO DE TARJETA */}
+            <div className={styles.cardHeader}>
+                <div className={styles.cardHeaderTitleGroup}>
+                    <span className="material-icons">schedule</span>
+                    <h3>Mis Citas Agendadas</h3>
+                </div>
+            </div>
 
-        <div className={styles.tableContainer}>
-            <table className={styles.table}>
-                <thead>
-                    <tr>
-                        {/* ENCABEZADOS DE TABLA SEGUN DISEÑO */}
-                        <th>FECHA</th>
-                        <th>HORA</th>
-                        <th>MASCOTA</th>
-                        <th>SERVICIO</th>
-                        <th style={{ textAlign: 'center' }}>ESTADO</th>
-                        <th style={{ textAlign: 'center' }}>ACCIONES</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {turnos.map((turno) => (
-                        <tr key={turno.id}>
-                            <td>{turno.fecha}</td>
-                            <td>{turno.hora}</td>
-                            <td>{turno.mascotaNombre}</td>
-                            <td>{turno.motivo}</td>
-                            <td style={{ textAlign: 'center' }}>
-                                <Badge
-                                    text={turno.estado.toUpperCase()}
-                                    variant={getStatusVariant(turno.estado)}
-                                />
-                            </td>
-                            <td className={styles.actions} style={{ justifyContent: 'center' }}>
-                                {/* BOTONES DE ACCION: EDITAR Y CANCELAR */}
-                                <button className={styles.actionButton} title="Editar turno">
-                                    Editar
-                                </button>
-                                <button
-                                    className={styles.actionButton}
-                                    style={{ color: 'red', borderColor: 'red' }}
-                                    title="Cancelar turno"
-                                >
-                                    Cancelar
-                                </button>
-                            </td>
+            {/* STITCH: CONTENEDOR DE TABLA */}
+            <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                    <thead>
+                        <tr className={styles.tableHeader}>
+                            <th className={styles.textLeft}>FECHA</th>
+                            <th className={styles.textLeft}>HORA</th>
+                            <th className={styles.textLeft}>MASCOTA</th>
+                            <th className={styles.textLeft}>SERVICIO</th>
+                            <th className={styles.textLeft}>MOTIVO</th>
+                            <th className={styles.textCenter}>ESTADO</th>
+                            <th className={styles.textCenter}>ACCIONES</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {turnosSorted.map((turno) => (
+                            <tr key={turno.id} className={styles.tableRow}>
+                                <td>
+                                    <div className={styles.cellWithIcon}>
+                                        <span className="material-icons">event</span>
+                                        <span>{new Date(turno.fecha_hora.replace(' ', 'T')).toLocaleDateString()}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className={styles.cellWithIcon}>
+                                        <span className="material-icons">schedule</span>
+                                        <span>{new Date(turno.fecha_hora.replace(' ', 'T')).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className={styles.cellWithIcon}>
+                                        <span className="material-icons">pets</span>
+                                        <span>{turno.mascota || 'N/A'}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className={styles.cellWithIcon}>
+                                        <span className="material-icons">medical_services</span>
+                                        <span>{turno.servicio || 'N/A'}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {turno.motivo && (
+                                        <button
+                                            onClick={() => { setMotivoToShow(turno.motivo || ''); setMotivoModalOpen(true); }}
+                                            className={styles.viewMotiveBtn}
+                                        >
+                                            <span className="material-icons" style={{ fontSize: '1rem' }}>visibility</span>
+                                            Ver motivo
+                                        </button>
+                                    )}
+                                </td>
+                                <td className={styles.textCenter}>
+                                    <Badge
+                                        text={turno.estado.toUpperCase()}
+                                        variant={getStatusVariant(turno.estado)}
+                                    />
+                                </td>
+                                <td className={styles.textCenter}>
+                                    <div className={styles.actions}>
+                                        {turno.estado !== 'cancelado' && turno.estado !== 'realizado' && (
+                                            <button
+                                                className={styles.actionBtn}
+                                                title="Editar turno"
+                                                onClick={() => handleEditClick(turno)}
+                                            >
+                                                <span className="material-icons">edit</span>
+                                            </button>
+                                        )}
+
+                                        {turno.estado !== 'realizado' && (
+                                            <button
+                                                className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
+                                                title={turno.estado === 'cancelado' ? "Eliminar registro" : "Cancelar turno"}
+                                                onClick={() => handleActionClick(turno.id)}
+                                            >
+                                                <span className="material-icons">
+                                                    {turno.estado === 'cancelado' ? 'delete' : 'close'}
+                                                </span>
+                                            </button>
+                                        )}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {(loading || turnos.length === 0) && !loading && (
+                <div className={styles.emptyState}>
+                    <span className="material-icons">event_busy</span>
+                    <p>No tienes turnos próximos.</p>
+                </div>
+            )}
+
+            <ConfirmationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={handleConfirmAction}
+                title={modalContent.title}
+                message={modalContent.message}
+                confirmText={modalContent.confirmText}
+                isDanger={modalContent.isDanger}
+            />
+
+            {/* MODAL DE EDICION */}
+            {isEditModalOpen && turnoToEdit && (
+                <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+                    <EditTurnoForm
+                        turno={turnoToEdit}
+                        onSubmit={handleEditSubmit}
+                        onCancel={() => setIsEditModalOpen(false)}
+                    />
+                </Modal>
+            )}
+
+            {/* MODAL DE MOTIVO */}
+            {motivoModalOpen && (
+                <Modal isOpen={motivoModalOpen} onClose={() => setMotivoModalOpen(false)}>
+                    <div style={{ padding: '1.5rem' }}>
+                        <h2 style={{ marginBottom: '1rem', fontSize: '1.25rem', fontWeight: 'bold' }}>Motivo de la consulta</h2>
+                        <p style={{ lineHeight: '1.6', color: '#374151' }}>{motivoToShow}</p>
+                        <button
+                            onClick={() => setMotivoModalOpen(false)}
+                            style={{ marginTop: '1.5rem', padding: '0.5rem 1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer' }}
+                        >
+                            Cerrar
+                        </button>
+                    </div>
+                </Modal>
+            )}
         </div>
     );
 };

@@ -2,6 +2,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import mascotasReducer from './slices/mascotasSlice';
 import turnosReducer from './slices/turnosSlice';
+import veterinariosReducer from './slices/veterinariosSlice';
+import serviciosReducer from './slices/serviciosSlice';
 
 // CONFIGURACION DEL STORE
 export const store = configureStore({
@@ -9,6 +11,8 @@ export const store = configureStore({
         auth: authReducer,
         mascotas: mascotasReducer,
         turnos: turnosReducer,
+        veterinarios: veterinariosReducer,
+        servicios: serviciosReducer,
     },
 });
 
