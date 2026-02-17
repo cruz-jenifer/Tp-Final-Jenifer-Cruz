@@ -1,17 +1,17 @@
+
 import { Router } from 'express';
+import { MascotaController } from '../controllers/mascota.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
-import * as mascotaController from '../controllers/mascota.controller';
 
 const router = Router();
 
-// PROTECCION DE TODAS LAS RUTAS
+// APLICAR MIDDLEWARE DE AUTH A TODAS LAS RUTAS
 router.use(authMiddleware);
 
-// RUTAS DE MASCOTAS (ENDPOINT: /api/mascotas)
-router.post('/', mascotaController.createMascota);
-router.get('/', mascotaController.getAll);
-router.get('/:id', mascotaController.getOne);
-router.put('/:id', mascotaController.updateMascota);
-router.delete('/:id', mascotaController.deleteMascota);
+// /api/mascotas
+router.get('/', MascotaController.listarMisMascotas);
+router.post('/', MascotaController.crearMascota);
+router.get('/:id', MascotaController.getMascotaById);
+router.delete('/:id', MascotaController.eliminarMascota);
 
 export default router;

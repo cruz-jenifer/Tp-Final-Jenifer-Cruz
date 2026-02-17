@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice';
 import mascotasReducer from './slices/mascotasSlice';
 import turnosReducer from './slices/turnosSlice';
 import veterinariosReducer from './slices/veterinariosSlice';
+import vetReducer from './slices/vetSlice';
 import serviciosReducer from './slices/serviciosSlice';
 
 // CONFIGURACION DEL STORE
@@ -12,6 +13,7 @@ export const store = configureStore({
         mascotas: mascotasReducer,
         turnos: turnosReducer,
         veterinarios: veterinariosReducer,
+        vet: vetReducer,
         servicios: serviciosReducer,
     },
 });

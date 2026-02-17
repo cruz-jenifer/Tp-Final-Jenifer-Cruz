@@ -1,0 +1,35 @@
+/* ESTILOS FORMULARIO HISTORIAL MEDICO */
+
+.cardOverride {
+    margin-bottom: 2rem;
+}
+
+.formRow {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start; 
+    padding: 0 0 1.5rem 0; 
+}
+
+.formGroupFlex {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* CAMPOS EXTRA */
+.extraFields {
+    display: flex;
+    gap: 1rem;
+    padding: 0 0 1rem 0;
+}
+
+.errorAlert {
+    margin: 0.5rem 0 1rem 0;
+    padding: 0.5rem 1rem;
+    background-color: #fef2f2;
+    color: #c0392b;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    border: 1px solid #fecaca;
+}

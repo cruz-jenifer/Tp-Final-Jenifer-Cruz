@@ -87,7 +87,9 @@ export class TurnoModel {
                 t.fecha_hora, 
                 t.estado, 
                 t.motivo,
+                t.mascota_id,
                 m.nombre as mascota, 
+                m.especie as mascota_especie,
                 d.nombre as dueno_nombre, 
                 d.apellido as dueno_apellido,
                 s.nombre as servicio
@@ -101,6 +103,33 @@ export class TurnoModel {
 
         // FORMATO MYSQL
         const [rows] = await pool.query<RowDataPacket[]>(query, [fecha]);
+        return rows as ITurnoDetalle[];
+    }
+
+    // BUSCAR POR VETERINARIO Y FECHA
+    static async findAllByVeterinarioIdAndFecha(veterinarioId: number, fecha: string): Promise<ITurnoDetalle[]> {
+        const query = `
+            SELECT 
+                t.id, 
+                t.fecha_hora, 
+                t.estado, 
+                t.motivo,
+                t.mascota_id,
+                m.nombre as mascota, 
+                m.especie as mascota_especie,
+                d.nombre as dueno_nombre, 
+                d.apellido as dueno_apellido,
+                s.nombre as servicio,
+                s.nombre as servicio_nombre
+            FROM turnos t
+            JOIN mascotas m ON t.mascota_id = m.id
+            JOIN duenos d ON m.dueno_id = d.id
+            JOIN servicios s ON t.servicio_id = s.id
+            WHERE t.veterinario_id = ? AND DATE(t.fecha_hora) = ?
+            ORDER BY t.fecha_hora ASC
+        `;
+
+        const [rows] = await pool.query<RowDataPacket[]>(query, [veterinarioId, fecha]);
         return rows as ITurnoDetalle[];
     }
 

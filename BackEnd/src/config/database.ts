@@ -1,3 +1,4 @@
+
 import { createPool } from 'mysql2/promise';
 import dotenv from 'dotenv';
 
@@ -13,7 +14,8 @@ export const pool = createPool({
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    dateStrings: true // IMPORTANTE: Para que las fechas vengan como string y no como Date (evita conversiones UTC automáticas)
+    dateStrings: true, // IMPORTANTE: Para que las fechas vengan como string y no como Date (evita conversiones UTC automáticas)
+    charset: 'utf8mb4' // IMPORTANTE: Para soportar emojis y caracteres especiales correctamente
 });
 
 export const connectDB = async () => {

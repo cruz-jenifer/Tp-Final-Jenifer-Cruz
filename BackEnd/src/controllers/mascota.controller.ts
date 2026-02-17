@@ -1,91 +1,93 @@
+
 import { Request, Response, NextFunction } from 'express';
-import * as mascotaService from '../services/mascota.service';
+import * as MascotaModel from '../models/mascota.model';
+import * as DuenoModel from '../models/dueno.model';
 
-// LISTAR MIS MASCOTAS
-export const getAll = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        if (!req.user) {
-            throw new Error('NO AUTORIZADO');
+export class MascotaController {
+
+    // LISTAR MIS MASCOTAS (CLIENTE)
+    static async listarMisMascotas(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user?.id;
+            if (!userId) throw new Error('Usuario no identificado');
+
+            const dueno = await DuenoModel.findByUserId(userId);
+            if (!dueno) {
+                // Si no es dueño, retornar array vacío o error según lógica negocio
+                // Para evitar errores en frontend, mejor array vacío si es un usuario válido pero sin perfil
+                return res.json({ data: [] });
+            }
+
+            const mascotas = await MascotaModel.findByDuenoId(dueno.id);
+            res.json({ data: mascotas });
+        } catch (error) {
+            next(error);
         }
-
-        const mascotas = await mascotaService.misMascotas(req.user.id);
-
-        res.json({ data: mascotas });
-    } catch (error) {
-        next(error);
     }
-};
 
-// REGISTRAR MASCOTA
-export const createMascota = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        if (!req.user) throw new Error('NO AUTORIZADO');
+    // OBTENER MASCOTA POR ID (DETALLE)
+    static async getMascotaById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const mascota = await MascotaModel.findById(Number(id));
 
-        const { nombre, especie, raza, fecha_nacimiento, advertencias } = req.body;
+            if (!mascota) {
+                return res.status(404).json({ message: 'Mascota no encontrada' });
+            }
 
-        if (!nombre || !especie) {
-            return res.status(400).json({ message: 'NOMBRE Y ESPECIE SON OBLIGATORIOS' });
+            // Opcional: Validar que la mascota pertenezca al usuario que la pide (si es cliente)
+            // O si es veterinario puede ver cualquiera.
+            // Por simplicidad ahora devolvemos la mascota.
+
+            res.json(mascota);
+        } catch (error) {
+            next(error);
         }
-
-        const nuevaMascota = await mascotaService.registrarMascota(req.user.id, {
-            nombre, especie, raza, fecha_nacimiento, advertencias
-        });
-
-        res.status(201).json({ message: 'MASCOTA REGISTRADA EXITOSAMENTE', data: nuevaMascota });
-    } catch (error) {
-        next(error);
     }
-};
 
-// OBTENER UNA MASCOTA
-export const getOne = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const id = Number(req.params.id);
-        if (isNaN(id)) throw new Error('ID INVALIDO');
+    // ELIMINAR MASCOTA
+    static async eliminarMascota(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const userId = req.user?.id;
 
-        const mascota = await mascotaService.obtenerMascota(id);
-        if (!mascota) return res.status(404).json({ message: 'Mascota no encontrada' });
+            // Validacion basica de propiedad
+            const mascota = await MascotaModel.findById(Number(id));
+            if (!mascota) return res.status(404).json({ message: 'Mascota no encontrada' });
 
-        res.json({ data: mascota });
-    } catch (error) {
-        next(error);
-    }
-};
+            const dueno = await DuenoModel.findByUserId(userId!);
 
-// ELIMINAR MASCOTA
-export const deleteMascota = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        if (!req.user) throw new Error('NO AUTORIZADO');
+            // Si es cliente, verificar que sea su mascota
+            if (req.user?.rol === 'cliente') {
+                if (!dueno || mascota.dueno_id !== dueno.id) {
+                    return res.status(403).json({ message: 'No tienes permiso para eliminar esta mascota' });
+                }
+            }
 
-        const id = Number(req.params.id);
-        if (isNaN(id)) throw new Error('ID INVALIDO');
+            await MascotaModel.deleteById(Number(id));
+            res.json({ message: 'Mascota eliminada correctamente' });
 
-        await mascotaService.eliminarMascota(id, req.user.id, req.user.rol);
-
-        res.json({ message: 'MASCOTA ELIMINADA EXITOSAMENTE' });
-    } catch (error: any) {
-        if (error.message.includes('No tienes permiso')) {
-            return res.status(403).json({ message: error.message });
+        } catch (error) {
+            next(error);
         }
-        next(error);
     }
-};
 
-// ACTUALIZAR MASCOTA
-export const updateMascota = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        if (!req.user) throw new Error('NO AUTORIZADO');
+    // CREAR MASCOTA (SI SE NECESITARA)
+    static async crearMascota(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user?.id;
+            const dueno = await DuenoModel.findByUserId(userId!);
 
-        const id = Number(req.params.id);
-        if (isNaN(id)) throw new Error('ID INVALIDO');
+            if (!dueno) throw new Error('Perfil de dueño no encontrado');
 
-        await mascotaService.actualizarMascota(id, req.user.id, req.body);
+            const nuevaMascota = await MascotaModel.create({
+                ...req.body,
+                dueno_id: dueno.id
+            });
 
-        res.json({ message: 'MASCOTA ACTUALIZADA EXITOSAMENTE' });
-    } catch (error: any) {
-        if (error.message.includes('No tienes permiso')) {
-            return res.status(403).json({ message: error.message });
+            res.status(201).json({ message: 'Mascota creada', data: nuevaMascota });
+        } catch (error) {
+            next(error);
         }
-        next(error);
     }
-};
+}

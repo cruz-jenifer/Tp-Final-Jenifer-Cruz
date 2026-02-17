@@ -7,7 +7,9 @@ import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
 import { Modal } from '../../../components/ui/Modal';
 import { EditTurnoForm } from '../../turnos/EditTurnoForm';
 import type { TurnoEstado, Turno } from '../../../types/turno.types';
-import styles from './TurnosList.module.css';
+import styles from '../../../components/ui/Table.module.css';
+import { ActionBtn } from '../../../components/ui/ActionBtn';
+import { Card, CardHeader, CardContent } from '../../../components/ui/Card';
 
 // MAPEO DE ESTADO A VARIANTE DE BADGE
 const getStatusVariant = (status: TurnoEstado): BadgeVariant => {
@@ -106,147 +108,144 @@ export const TurnosList: React.FC = () => {
     const modalContent = getModalContent();
 
     return (
-        <div className={styles.card}>
-            {/* STITCH: ENCABEZADO DE TARJETA */}
-            <div className={styles.cardHeader}>
-                <div className={styles.cardHeaderTitleGroup}>
-                    <span className="material-icons">schedule</span>
-                    <h3>Mis Citas Agendadas</h3>
-                </div>
-            </div>
+        <Card>
+            <CardHeader
+                title="Agenda del Día"
+                icon="today"
+            >
+                <span className={styles.nextVisitBadge}>
+                    HOY: {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
+                </span>
+            </CardHeader>
 
-            {/* STITCH: CONTENEDOR DE TABLA */}
-            <div className={styles.tableContainer}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr className={styles.tableHeader}>
-                            <th className={styles.textLeft}>FECHA</th>
-                            <th className={styles.textLeft}>HORA</th>
-                            <th className={styles.textLeft}>MASCOTA</th>
-                            <th className={styles.textLeft}>SERVICIO</th>
-                            <th className={styles.textLeft}>MOTIVO</th>
-                            <th className={styles.textCenter}>ESTADO</th>
-                            <th className={styles.textCenter}>ACCIONES</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {turnosSorted.map((turno) => (
-                            <tr key={turno.id} className={styles.tableRow}>
-                                <td>
-                                    <div className={styles.cellWithIcon}>
-                                        <span className="material-icons">event</span>
-                                        <span>{new Date(turno.fecha_hora.replace(' ', 'T')).toLocaleDateString()}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className={styles.cellWithIcon}>
-                                        <span className="material-icons">schedule</span>
-                                        <span>{new Date(turno.fecha_hora.replace(' ', 'T')).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className={styles.cellWithIcon}>
-                                        <span className="material-icons">pets</span>
-                                        <span>{turno.mascota || 'N/A'}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className={styles.cellWithIcon}>
-                                        <span className="material-icons">medical_services</span>
-                                        <span>{turno.servicio || 'N/A'}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    {turno.motivo && (
-                                        <button
-                                            onClick={() => { setMotivoToShow(turno.motivo || ''); setMotivoModalOpen(true); }}
-                                            className={styles.viewMotiveBtn}
-                                        >
-                                            <span className="material-icons" style={{ fontSize: '1rem' }}>visibility</span>
-                                            Ver motivo
-                                        </button>
-                                    )}
-                                </td>
-                                <td className={styles.textCenter}>
-                                    <Badge
-                                        text={turno.estado.toUpperCase()}
-                                        variant={getStatusVariant(turno.estado)}
-                                    />
-                                </td>
-                                <td className={styles.textCenter}>
-                                    <div className={styles.actions}>
-                                        {turno.estado !== 'cancelado' && turno.estado !== 'realizado' && (
-                                            <button
-                                                className={styles.actionBtn}
-                                                title="Editar turno"
-                                                onClick={() => handleEditClick(turno)}
-                                            >
-                                                <span className="material-icons">edit</span>
-                                            </button>
-                                        )}
-
-                                        {turno.estado !== 'realizado' && (
-                                            <button
-                                                className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
-                                                title={turno.estado === 'cancelado' ? "Eliminar registro" : "Cancelar turno"}
-                                                onClick={() => handleActionClick(turno.id)}
-                                            >
-                                                <span className="material-icons">
-                                                    {turno.estado === 'cancelado' ? 'delete' : 'close'}
-                                                </span>
-                                            </button>
-                                        )}
-                                    </div>
-                                </td>
+            <CardContent>
+                <div className={styles.tableContainer}>
+                    <table className={styles.table}>
+                        <thead>
+                            <tr className={styles.tableHeader}>
+                                <th className={styles.textLeft}>FECHA</th>
+                                <th className={styles.textLeft}>HORA</th>
+                                <th className={styles.textLeft}>MASCOTA</th>
+                                <th className={styles.textLeft}>SERVICIO</th>
+                                <th className={styles.textLeft}>MOTIVO</th>
+                                <th className={styles.textCenter}>ESTADO</th>
+                                <th className={styles.textCenter}>ACCIONES</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {turnosSorted.map((turno) => (
+                                <tr key={turno.id} className={styles.tableRow}>
+                                    <td>
+                                        <div className={styles.cellWithIcon}>
+                                            <span className="material-icons">event</span>
+                                            <span>{new Date(turno.fecha_hora.replace(' ', 'T')).toLocaleDateString()}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.cellWithIcon}>
+                                            <span className="material-icons">schedule</span>
+                                            <span>{new Date(turno.fecha_hora.replace(' ', 'T')).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.cellWithIcon}>
+                                            <span className="material-icons">pets</span>
+                                            <span>{turno.mascota || 'N/A'}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.cellWithIcon}>
+                                            <span className="material-icons">medical_services</span>
+                                            <span>{turno.servicio || 'N/A'}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {turno.motivo && (
+                                            <ActionBtn
+                                                onClick={() => { setMotivoToShow(turno.motivo || ''); setMotivoModalOpen(true); }}
+                                                icon="visibility"
+                                                label="Ver motivo"
+                                                variant="primary"
+                                            />
+                                        )}
+                                    </td>
+                                    <td className={styles.textCenter}>
+                                        <Badge
+                                            text={turno.estado.toUpperCase()}
+                                            variant={getStatusVariant(turno.estado)}
+                                        />
+                                    </td>
+                                    <td className={styles.textCenter}>
+                                        <div className={styles.actions}>
+                                            {turno.estado !== 'cancelado' && turno.estado !== 'realizado' && (
+                                                <ActionBtn
+                                                    onClick={() => handleEditClick(turno)}
+                                                    icon="edit"
+                                                    title="Editar turno"
+                                                    variant="secondary"
+                                                />
+                                            )}
 
-            {(loading || turnos.length === 0) && !loading && (
-                <div className={styles.emptyState}>
-                    <span className="material-icons">event_busy</span>
-                    <p>No tienes turnos próximos.</p>
+                                            {turno.estado !== 'realizado' && (
+                                                <ActionBtn
+                                                    onClick={() => handleActionClick(turno.id)}
+                                                    icon={turno.estado === 'cancelado' ? 'delete' : 'close'}
+                                                    title={turno.estado === 'cancelado' ? "Eliminar registro" : "Cancelar turno"}
+                                                    variant="danger"
+                                                />
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-            )}
 
-            <ConfirmationModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onConfirm={handleConfirmAction}
-                title={modalContent.title}
-                message={modalContent.message}
-                confirmText={modalContent.confirmText}
-                isDanger={modalContent.isDanger}
-            />
-
-            {/* MODAL DE EDICION */}
-            {isEditModalOpen && turnoToEdit && (
-                <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
-                    <EditTurnoForm
-                        turno={turnoToEdit}
-                        onSubmit={handleEditSubmit}
-                        onCancel={() => setIsEditModalOpen(false)}
-                    />
-                </Modal>
-            )}
-
-            {/* MODAL DE MOTIVO */}
-            {motivoModalOpen && (
-                <Modal isOpen={motivoModalOpen} onClose={() => setMotivoModalOpen(false)}>
-                    <div style={{ padding: '1.5rem' }}>
-                        <h2 style={{ marginBottom: '1rem', fontSize: '1.25rem', fontWeight: 'bold' }}>Motivo de la consulta</h2>
-                        <p style={{ lineHeight: '1.6', color: '#374151' }}>{motivoToShow}</p>
-                        <button
-                            onClick={() => setMotivoModalOpen(false)}
-                            style={{ marginTop: '1.5rem', padding: '0.5rem 1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer' }}
-                        >
-                            Cerrar
-                        </button>
+                {(loading || turnos.length === 0) && !loading && (
+                    <div className={styles.emptyState}>
+                        <span className="material-icons">event_busy</span>
+                        <p>No tienes turnos próximos.</p>
                     </div>
-                </Modal>
-            )}
-        </div>
+                )}
+
+                <ConfirmationModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleConfirmAction}
+                    title={modalContent.title}
+                    message={modalContent.message}
+                    confirmText={modalContent.confirmText}
+                    isDanger={modalContent.isDanger}
+                />
+
+                {/* MODAL DE EDICION */}
+                {isEditModalOpen && turnoToEdit && (
+                    <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+                        <EditTurnoForm
+                            turno={turnoToEdit}
+                            onSubmit={handleEditSubmit}
+                            onCancel={() => setIsEditModalOpen(false)}
+                        />
+                    </Modal>
+                )}
+
+                {/* MODAL DE MOTIVO */}
+                {motivoModalOpen && (
+                    <Modal isOpen={motivoModalOpen} onClose={() => setMotivoModalOpen(false)}>
+                        <div style={{ padding: '1.5rem' }}>
+                            <h2 style={{ marginBottom: '1rem', fontSize: '1.25rem', fontWeight: 'bold' }}>Motivo de la consulta</h2>
+                            <p style={{ lineHeight: '1.6', color: '#374151' }}>{motivoToShow}</p>
+                            <button
+                                onClick={() => setMotivoModalOpen(false)}
+                                style={{ marginTop: '1.5rem', padding: '0.5rem 1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer' }}
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </Modal>
+                )}
+            </CardContent>
+        </Card>
     );
 };

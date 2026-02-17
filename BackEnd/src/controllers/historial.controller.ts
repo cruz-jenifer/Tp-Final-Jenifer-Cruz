@@ -78,3 +78,55 @@ export const getHistorialByMascota = async (req: Request, res: Response, next: N
         next(error);
     }
 };
+
+// ELIMINAR HISTORIAL
+export const deleteHistorial = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (!req.user) throw new Error('NO AUTORIZADO');
+        const { id } = req.params;
+
+        const historial = await HistorialModel.findById(Number(id));
+        if (!historial) return res.status(404).json({ message: 'HISTORIAL NO ENCONTRADO' });
+
+        // VERIFICAR PERMISOS (SOLO ADMIN O EL VETERINARIO CREADOR)
+        if (req.user.rol !== 'admin') {
+            // BUSCAR SI EL USUARIO ES EL VETERINARIO CREADOR
+            const [vet] = await pool.query<RowDataPacket[]>('SELECT id FROM veterinarios WHERE usuario_id = ?', [req.user.id]);
+            if (!vet.length || vet[0].id !== historial.veterinario_id) {
+                return res.status(403).json({ message: 'NO TIENES PERMISO PARA ELIMINAR ESTE REGISTRO' });
+            }
+        }
+
+        await HistorialModel.delete(Number(id));
+        res.json({ message: 'HISTORIAL ELIMINADO' });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ACTUALIZAR HISTORIAL
+export const updateHistorial = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (!req.user) throw new Error('NO AUTORIZADO');
+        const { id } = req.params;
+        const { diagnostico, tratamiento, observaciones } = req.body;
+
+        const historial = await HistorialModel.findById(Number(id));
+        if (!historial) return res.status(404).json({ message: 'HISTORIAL NO ENCONTRADO' });
+
+        // VERIFICAR PERMISOS
+        if (req.user.rol !== 'admin') {
+            const [vet] = await pool.query<RowDataPacket[]>('SELECT id FROM veterinarios WHERE usuario_id = ?', [req.user.id]);
+            if (!vet.length || vet[0].id !== historial.veterinario_id) {
+                return res.status(403).json({ message: 'NO TIENES PERMISO PARA EDITAR ESTE REGISTRO' });
+            }
+        }
+
+        await HistorialModel.update(Number(id), { diagnostico, tratamiento, observaciones });
+        res.json({ message: 'HISTORIAL ACTUALIZADO' });
+
+    } catch (error) {
+        next(error);
+    }
+};

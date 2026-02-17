@@ -23,7 +23,7 @@ export const loginUser = createAsyncThunk(
             }
 
             const data = await response.json();
-            // Backend returns: { token: string, user: User }
+            // Backend : { token: string, user: User }
             return data;
         } catch (error: any) {
             return rejectWithValue(error.message);

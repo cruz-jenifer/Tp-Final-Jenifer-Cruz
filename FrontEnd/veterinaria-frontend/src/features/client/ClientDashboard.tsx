@@ -6,10 +6,21 @@ import styles from './ClientDashboard.module.css';
 import { Modal } from '../../components/ui/Modal';
 import { TurnoWizard } from '../turnos/TurnoWizard';
 import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { logout } from '../../store/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 // DASHBOARD PRINCIPAL DEL CLIENTE
 const ClientDashboard: React.FC = () => {
     const [isWizardOpen, setIsWizardOpen] = useState(false);
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const { user } = useAppSelector((state) => state.auth);
+
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate('/login');
+    };
 
     return (
         <div className={styles.container}>
@@ -40,13 +51,28 @@ const ClientDashboard: React.FC = () => {
 
                         <div className={styles.userProfile}>
                             <div className={styles.userInfo}>
-                                <p className={styles.welcomeText}>Bienvenida,</p>
-                                <p className={styles.userName}>María González</p>
+                                <p className={styles.welcomeText}>Bienvenido/a,</p>
+                                <p className={styles.userName}>{user?.nombre}</p>
                             </div>
                             <div className={styles.avatarCircle}>
-                                MG
+                                {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'U'}
                             </div>
                         </div>
+
+                        <button
+                            onClick={handleLogout}
+                            title="Cerrar Sesión"
+                            style={{
+                                background: 'none', border: 'none', color: '#6b7280',
+                                cursor: 'pointer', display: 'flex', alignItems: 'center',
+                                marginLeft: '0.5rem', padding: '0.5rem', borderRadius: '50%',
+                                transition: 'background-color 0.2s'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                            <span className="material-icons">logout</span>
+                        </button>
                     </div>
                 </div>
             </nav>

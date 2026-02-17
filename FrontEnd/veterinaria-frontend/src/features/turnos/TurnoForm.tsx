@@ -3,6 +3,10 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchMascotas } from '../../store/slices/mascotasSlice';
 import { createTurno } from '../../store/slices/turnosSlice';
 import styles from './TurnoForm.module.css';
+import { Input } from '../../components/ui/Input';
+import { Select } from '../../components/ui/Select';
+import { Textarea } from '../../components/ui/Textarea';
+import { Button } from '../../components/ui/Button';
 
 interface TurnoFormProps {
     onSuccess?: () => void;
@@ -50,8 +54,6 @@ export const TurnoForm: React.FC<TurnoFormProps> = ({ onSuccess, onCancel }) => 
 
         const fecha_hora = `${formData.fecha} ${formData.hora}:00`;
 
-        // MOCKEAR IDS DE SERVICIO/VETERINARIO SI NO SE SELECCIONAN (O SI NO TENEMOS ENDPOINTS PARA ELLOS TODAVIA)
-        // POR AHORA, ASUMIMOS ID 1 VALIDO PARA VETERINARIO SI ESTA VACIO
         const turnoData = {
             mascota_id: Number(formData.mascota_id),
             veterinario_id: Number(formData.veterinario_id) || 1, // ID POR DEFECTO/MOCK
@@ -72,91 +74,80 @@ export const TurnoForm: React.FC<TurnoFormProps> = ({ onSuccess, onCancel }) => 
 
     return (
         <form className={styles.form} onSubmit={handleSubmit} ref={formRef}>
-            <div className={styles.formGroup}>
-                <label htmlFor="mascota_id">Mascota *</label>
-                <select
-                    id="mascota_id"
-                    name="mascota_id"
-                    value={formData.mascota_id}
-                    onChange={handleChange}
-                    ref={firstInputRef}
-                    required
-                    className={styles.input}
-                >
-                    <option value="">Seleccione una mascota</option>
-                    {mascotas.map(pet => (
-                        <option key={pet.id} value={pet.id}>
-                            {pet.nombre} ({pet.especie})
-                        </option>
-                    ))}
-                </select>
-            </div>
+            <Select
+                id="mascota_id"
+                name="mascota_id"
+                label="Mascota *"
+                value={formData.mascota_id}
+                onChange={handleChange}
+                ref={firstInputRef}
+                required
+            >
+                <option value="">Seleccione una mascota</option>
+                {mascotas.map(pet => (
+                    <option key={pet.id} value={pet.id}>
+                        {pet.nombre} ({pet.especie})
+                    </option>
+                ))}
+            </Select>
 
             <div className={styles.row}>
-                <div className={styles.formGroup}>
-                    <label htmlFor="fecha">Fecha *</label>
-                    <input
+                <div style={{ flex: 1 }}>
+                    <Input
+                        label="Fecha *"
                         type="date"
                         id="fecha"
                         name="fecha"
                         value={formData.fecha}
                         onChange={handleChange}
                         required
-                        className={styles.input}
                     />
                 </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="hora">Hora *</label>
-                    <input
+                <div style={{ flex: 1 }}>
+                    <Input
+                        label="Hora *"
                         type="time"
                         id="hora"
                         name="hora"
                         value={formData.hora}
                         onChange={handleChange}
                         required
-                        className={styles.input}
                     />
                 </div>
             </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="veterinario_id">Veterinario (Opcional)</label>
-                <select
-                    id="veterinario_id"
-                    name="veterinario_id"
-                    value={formData.veterinario_id}
-                    onChange={handleChange}
-                    className={styles.input}
-                >
-                    <option value="">Cualquiera disponible</option>
-                    <option value="1">Dr. House (General)</option>
-                    <option value="2">Dra. Polo (Cirugía)</option>
-                </select>
-            </div>
+            <Select
+                id="veterinario_id"
+                name="veterinario_id"
+                label="Veterinario (Opcional)"
+                value={formData.veterinario_id}
+                onChange={handleChange}
+            >
+                <option value="">Cualquiera disponible</option>
+                <option value="1">Dr. House (General)</option>
+                <option value="2">Dra. Polo (Cirugía)</option>
+            </Select>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="motivo">Motivo de consulta *</label>
-                <textarea
-                    id="motivo"
-                    name="motivo"
-                    value={formData.motivo}
-                    onChange={handleChange}
-                    required
-                    rows={3}
-                    className={styles.textarea}
-                    placeholder="Describe brevemente la razón de la visita..."
-                />
-            </div>
+            <Textarea
+                id="motivo"
+                name="motivo"
+                label="Motivo de consulta *"
+                value={formData.motivo}
+                onChange={handleChange}
+                required
+                rows={3}
+                placeholder="Describe brevemente la razón de la visita..."
+            />
 
             <div className={styles.actions}>
                 {onCancel && (
-                    <button type="button" onClick={onCancel} className={styles.cancelButton}>
+                    <Button type="button" onClick={onCancel} variant="secondary">
                         Cancelar
-                    </button>
+                    </Button>
                 )}
-                <button type="submit" className={styles.submitButton}>
+                <Button type="submit" variant="primary">
                     Confirmar Turno
-                </button>
+                </Button>
             </div>
         </form>
     );

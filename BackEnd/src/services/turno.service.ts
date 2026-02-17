@@ -53,17 +53,36 @@ export class TurnoService {
         return await TurnoModel.findAllByDuenoId(duenoData.id);
     }
 
-    // AGENDA DIARIA
+    // AGENDA DIARIA GLOBAL (ADMIN)
     static async obtenerAgendaGlobal(fecha?: string) {
+        const fechaBusqueda = fecha || new Date().toISOString().split('T')[0];
+        const turnos = await TurnoModel.findAllByFecha(fechaBusqueda);
+        return {
+            fecha: fechaBusqueda,
+            total_turnos: turnos.length,
+            turnos: turnos
+        };
+    }
 
-        // FECHA ACTUAL
+    // AGENDA DIARIA INDIVIDUAL (VETERINARIO)
+    static async obtenerAgendaVeterinario(usuarioId: number, fecha?: string) {
+        // 1. Obtener perfil de veterinario
+        const { VeterinarioModel } = await import('../models/veterinarios.model'); // Importación dinámica para evitar ciclos
+        const veterinario = await VeterinarioModel.findByUserId(usuarioId);
+
+        if (!veterinario || !veterinario.id) {
+            throw new Error('Perfil de veterinario no encontrado para este usuario');
+        }
+
+        // 2. Definir fecha
         const fechaBusqueda = fecha || new Date().toISOString().split('T')[0];
 
-        // BUSCAR TURNOS
-        const turnos = await TurnoModel.findAllByFecha(fechaBusqueda);
+        // 3. Buscar turnos filtrados
+        const turnos = await TurnoModel.findAllByVeterinarioIdAndFecha(veterinario.id, fechaBusqueda);
 
         return {
             fecha: fechaBusqueda,
+            veterinario_id: veterinario.id,
             total_turnos: turnos.length,
             turnos: turnos
         };

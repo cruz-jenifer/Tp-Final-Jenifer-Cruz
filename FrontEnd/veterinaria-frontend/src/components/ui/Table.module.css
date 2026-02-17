@@ -126,59 +126,12 @@
     text-align: center;
 }
 
-/* BOTON VER MOTIVO */
-.viewMotiveBtn {
-    background: none;
-    border: 1px solid var(--primary);
-    color: var(--primary);
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px; /* PILDORA */
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.viewMotiveBtn:hover {
-    background-color: var(--primary);
-    color: white;
-    text-decoration: none;
-}
-
 /* ACCIONES */
 .actions {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-}
-
-.actionBtn {
-    padding: 0.5rem;
-    border-radius: 9999px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #6384FF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.actionBtn:hover {
-    background-color: #eff6ff;
-}
-
-.actionBtnDelete {
-    color: #ef4444;
-}
-
-.actionBtnDelete:hover {
-    background-color: #fef2f2;
 }
 
 .emptyState {

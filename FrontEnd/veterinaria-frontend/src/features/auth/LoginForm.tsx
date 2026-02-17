@@ -32,7 +32,7 @@ export const LoginForm: React.FC = () => {
             const result = await dispatch(loginUser(values) as any).unwrap();
 
             if (result && result.user) {
-                const userRole = result.user.rol || result.user.role;
+                const userRole = result.user.rol;
                 // VERIFICACION DE ROL DEL USUARIO
 
                 let roleMismatch = false;
@@ -52,7 +52,11 @@ export const LoginForm: React.FC = () => {
                 }
 
                 // SI TODO OK
-                navigate('/dashboard');
+                if (userRole === 'veterinario') {
+                    navigate('/veterinario');
+                } else {
+                    navigate('/dashboard');
+                }
             }
         } catch (err: any) {
             console.error('Login failed:', err);
@@ -127,10 +131,7 @@ export const LoginForm: React.FC = () => {
                         {errors.password && <div className={styles.errorMessage}>{errors.password}</div>}
                     </div>
 
-                    {/* OLVIDO SU CONTRASEÑA */}
-                    <div className={styles.forgotPassword}>
-                        <a href="#" className={styles.forgotLink}>¿Olvidaste tu contraseña?</a>
-                    </div>
+                
 
                     {/* RETROALIMENTACION DE ERROR */}
                     {(reduxError || localError) && (

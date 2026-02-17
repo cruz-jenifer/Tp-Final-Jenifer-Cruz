@@ -42,8 +42,51 @@ export class HistorialModel {
             WHERE h.mascota_id = ?
             ORDER BY h.fecha DESC
         `;
-        
+
         const [rows] = await pool.query<RowDataPacket[]>(query, [mascotaId]);
         return rows;
+    }
+
+    // OBTENER HISTORIALES RECIENTES POR VETERINARIO
+    static async findRecentByVeterinarioId(veterinarioId: number, limit: number = 5): Promise<any[]> {
+        const query = `
+            SELECT 
+                h.id, h.fecha, h.diagnostico, h.tratamiento,
+                h.mascota_id,
+                m.nombre as mascota_nombre,
+                m.especie as mascota_especie,
+                d.nombre as dueno_nombre,
+                d.apellido as dueno_apellido
+            FROM historiales h
+            JOIN mascotas m ON h.mascota_id = m.id
+            JOIN duenos d ON m.dueno_id = d.id
+            WHERE h.veterinario_id = ?
+            ORDER BY h.fecha DESC
+            LIMIT ?
+        `;
+
+        const [rows] = await pool.query<RowDataPacket[]>(query, [veterinarioId, limit]);
+        return rows;
+    }
+    // BUSCAR POR ID
+    static async findById(id: number): Promise<any> {
+        const [rows] = await pool.query<RowDataPacket[]>(
+            'SELECT * FROM historiales WHERE id = ?',
+            [id]
+        );
+        return rows.length ? rows[0] : null;
+    }
+
+    // ELIMINAR HISTORIAL
+    static async delete(id: number): Promise<void> {
+        await pool.query('DELETE FROM historiales WHERE id = ?', [id]);
+    }
+
+    // ACTUALIZAR HISTORIAL
+    static async update(id: number, data: Partial<IHistorial>): Promise<void> {
+        await pool.query(
+            'UPDATE historiales SET diagnostico = ?, tratamiento = ?, observaciones = ? WHERE id = ?',
+            [data.diagnostico, data.tratamiento, data.observaciones || null, id]
+        );
     }
 }

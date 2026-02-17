@@ -15,4 +15,8 @@ router.post('/', checkRole(['veterinario', 'admin']), historialController.create
 // LECTURA: ACCESIBLE A TODOS (EL CONTROLADOR FILTRARA PROPIEDAD LUEGO)
 router.get('/:id', checkRole(['cliente', 'veterinario', 'admin']), historialController.getHistorialByMascota);
 
+// MODIFICACION Y ELIMINACION
+router.delete('/:id', checkRole(['veterinario', 'admin']), historialController.deleteHistorial);
+router.put('/:id', checkRole(['veterinario', 'admin']), historialController.updateHistorial);
+
 export default router;

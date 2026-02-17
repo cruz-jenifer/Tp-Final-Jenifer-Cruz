@@ -19,4 +19,7 @@ router.get('/agenda', checkRole(['veterinario', 'admin']), VeterinarioController
 // SOLO VETERINARIOS (EL ADMIN TAMBIEN PUEDE POR SUPERVISION)
 router.post('/historial', checkRole(['veterinario', 'admin']), VeterinarioController.crearHistorial);
 
+// RUTA: OBTENER HISTORIAL RECIENTE
+router.get('/historial-reciente', checkRole(['veterinario', 'admin']), VeterinarioController.obtenerHistorialReciente);
+
 export default router;
