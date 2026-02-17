@@ -11,6 +11,16 @@ export const findByUserId = async (userId: number): Promise<IDueno | null> => {
     return rows.length ? rows[0] : null;
 };
 
+// OBTENER TODOS LOS DUENOS (ADMIN)
+export const findAll = async (): Promise<IDueno[]> => {
+    const [rows] = await pool.query<IDueno[]>(
+        `SELECT d.*, u.email 
+         FROM duenos d
+         JOIN usuarios u ON d.usuario_id = u.id`
+    );
+    return rows;
+};
+
 // CREAR NUEVO PERFIL DE DUENO
 export const create = async (dueno: Omit<IDueno, 'id'>): Promise<IDueno> => {
     const [result] = await pool.execute<ResultSetHeader>(

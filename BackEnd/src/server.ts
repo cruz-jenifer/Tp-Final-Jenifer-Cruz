@@ -1,4 +1,4 @@
-import app from './app';
+import app from './app'; // SERVER ENTRY POINT
 import { connectDB } from './config/database';
 import dotenv from 'dotenv';
 

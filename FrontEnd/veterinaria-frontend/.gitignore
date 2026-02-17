@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+netstat.txt
+schema_log.txt
+scripts/
+

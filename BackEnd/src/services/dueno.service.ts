@@ -41,3 +41,8 @@ export const eliminarDueno = async (duenoId: number): Promise<void> => {
 
     await duenoModel.deleteById(duenoId);
 };
+
+// OBTENER TODOS LOS DUENOS (ADMIN)
+export const obtenerTodos = async (): Promise<IDueno[]> => {
+    return await duenoModel.findAll();
+};

@@ -70,3 +70,13 @@ export const deleteDueno = async (req: Request, res: Response, next: NextFunctio
         next(error);
     }
 };
+
+// OBTENER TODOS LOS DUENOS (ADMIN)
+export const getAllDuenos = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const duenos = await duenoService.obtenerTodos();
+        res.json({ data: duenos });
+    } catch (error) {
+        next(error);
+    }
+};

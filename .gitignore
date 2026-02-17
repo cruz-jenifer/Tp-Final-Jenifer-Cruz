@@ -54,3 +54,6 @@ test-results/
 
 # Archivos de Agente (Ignorados)
 .agents/
+BackEnd/scripts/
+BackEnd/netstat.txt
+BackEnd/schema_log.txt

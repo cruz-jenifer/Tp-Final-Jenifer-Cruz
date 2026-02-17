@@ -5,6 +5,7 @@ import turnosReducer from './slices/turnosSlice';
 import veterinariosReducer from './slices/veterinariosSlice';
 import vetReducer from './slices/vetSlice';
 import serviciosReducer from './slices/serviciosSlice';
+import adminReducer from './slices/adminSlice';
 
 // CONFIGURACION DEL STORE
 export const store = configureStore({
@@ -15,6 +16,7 @@ export const store = configureStore({
         veterinarios: veterinariosReducer,
         vet: vetReducer,
         servicios: serviciosReducer,
+        admin: adminReducer,
     },
 });
 

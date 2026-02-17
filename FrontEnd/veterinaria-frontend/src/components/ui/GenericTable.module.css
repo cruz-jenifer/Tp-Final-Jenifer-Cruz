@@ -1,0 +1,98 @@
+/* ESTILOS DE LA TABLA GENERICA */
+
+.container {
+    overflow-x: auto;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    background-color: white;
+}
+
+.table {
+    min-width: 100%;
+    border-collapse: collapse;
+}
+
+.thead {
+    background-color: #f9fafb;
+}
+
+.th {
+    padding: 0.75rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: #6b7280;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.thRight {
+    text-align: right;
+}
+
+.tbody {
+    background-color: white;
+}
+
+.tr {
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tr:last-child {
+    border-bottom: none;
+}
+
+.tr:hover {
+    background-color: #f9fafb;
+}
+
+.td {
+    padding: 1rem 1.5rem;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    color: #111827;
+}
+
+.actionsCell {
+    text-align: right;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.actionsContainer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.actionButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #4f46e5; /* INDIGO-600 */
+    transition: color 0.2s;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+}
+
+.actionButton:hover {
+    color: #312e81; /* INDIGO-900 */
+    background-color: #e0e7ff;
+}
+
+/* ESTADOS DE CARGA Y VACIO */
+.loadingContainer {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+}
+
+.emptyContainer {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+    font-style: italic;
+}

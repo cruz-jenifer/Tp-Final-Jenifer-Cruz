@@ -1,0 +1,152 @@
+/* ESTILOS DEL FORMULARIO Y PAGINA DE DUEÑOS */
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.titleGroup {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.iconBox {
+    padding: 1rem;
+    background-color: white;
+    border-radius: 9999px;
+    color: #6384FF;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border: 4px solid #eff6ff; /* BLUE 50 RING */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pageTitle {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.pageSubtitle {
+    color: #6b7280;
+    font-weight: 500;
+    margin: 0;
+}
+
+.activeBadge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    background-color: #dbeafe; /* BLUE 100 */
+    color: #6384FF;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* TARJETA DE REGISTRO (CARD) */
+.registerCard {
+    background-color: white;
+    border-radius: 1.5rem; /* 3XL equivalent visually */
+    box-shadow: 0 20px 25px -5px rgba(30, 58, 138, 0.05); /* shadow-blue-900/5 */
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #eff6ff;
+}
+
+.cardCircleDeco {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20rem;
+    height: 20rem;
+    background-color: #eff6ff;
+    border-radius: 9999px;
+    margin-right: -5rem;
+    margin-top: -5rem;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #6384FF;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: flex-end;
+    position: relative;
+    z-index: 10;
+}
+
+@media (min-width: 768px) {
+    .formGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.inputGroup label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+    margin-left: 0.25rem;
+}
+
+.inputField {
+    width: 100%;
+    background-color: #f9fafb; /* gray-50 */
+    border: none;
+    border-radius: 1rem; /* 2xl */
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    color: #374151;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.inputField:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 132, 255, 0.2);
+}
+
+.addButton {
+    width: 100%;
+    background-color: #6384FF;
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.addButton:hover {
+    background-color: #4a6bff;
+    transform: translateY(-2px);
+}
