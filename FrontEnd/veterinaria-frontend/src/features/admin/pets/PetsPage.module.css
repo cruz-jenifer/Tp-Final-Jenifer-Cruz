@@ -1,0 +1,264 @@
+/* PetsPage.module.css */
+
+/* FORM GRID & INPUTS */
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: flex-end;
+    position: relative;
+    z-index: 10;
+}
+
+@media (min-width: 768px) {
+    .formGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.inputGroup label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+    margin-left: 0.25rem;
+}
+
+.inputField {
+    width: 100%;
+    background-color: #f9fafb;
+    border: none;
+    border-radius: 1rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    color: #374151;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.inputField:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 132, 255, 0.2);
+}
+
+.inputError {
+    border: 1px solid #ef4444;
+    background-color: #fef2f2;
+}
+
+.errorMessage {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    font-weight: 500;
+    display: block;
+}
+
+.actionButtonContainer {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.addButton {
+    width: 100%;
+    background-color: #6384FF; /* Main Blue */
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.addButton:hover:not(:disabled) {
+    background-color: #4a6bff;
+    transform: translateY(-2px);
+}
+
+.cancelButton {
+    padding: 0.75rem;
+    border-radius: 50%;
+    border: 1px solid #d1d5db;
+    background: white;
+    cursor: pointer;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* TABLE STYLES */
+.tableCard {
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 550px;
+    border: 1px solid #f3f4f6;
+}
+
+.tableHeader {
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.tableTitle {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+.tableContent {
+    flex-grow: 1;
+    padding: 0.5rem;
+    overflow-x: auto;
+}
+
+/* AVATAR & BADGES - MIGRADO A UI COMPONENTS */
+
+.nameText {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #374151;
+}
+
+.cellSubtitle {
+    color: #6384FF;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+/* BUTTONS */
+.btnEdit {
+    padding: 0.5rem;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+.btnDelete {
+    padding: 0.5rem;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: #ef4444;
+    background-color: #fef2f2;
+}
+
+.btnDetails {
+    padding: 0rem;
+    font-size: 0.75rem;
+    text-decoration: underline;
+    color: #6384FF;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* MODAL STYLES */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    backdrop-filter: blur(4px);
+}
+
+.modalCard {
+    background-color: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    border: 1px solid #eff6ff;
+}
+
+.closeModalBtn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #9ca3af;
+    cursor: pointer;
+}
+
+.closeModalBtn:hover {
+    color: #ef4444;
+}
+
+.detailsGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.detailItem {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+.detailItem label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+}
+
+.closeBtn {
+    padding: 0.75rem 2rem;
+    background-color: #f3f4f6;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #374151;
+}
+
+.closeBtn:hover {
+    background-color: #e5e7eb;
+}

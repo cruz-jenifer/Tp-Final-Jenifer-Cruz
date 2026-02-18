@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from '../../hooks/useForm';
 import { loginUser, logout } from '../../store/slices/authSlice';
-import type { RootState } from '../../store';
+import type { AppDispatch, RootState } from '../../store';
 import styles from './LoginForm.module.css';
 
 // FORMULARIO DE INICIO DE SESION
 export const LoginForm: React.FC = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { loading, error: reduxError } = useSelector((state: RootState) => state.auth);
     const [userType, setUserType] = React.useState<'dueno' | 'clinico'>('dueno');
@@ -29,7 +29,7 @@ export const LoginForm: React.FC = () => {
 
         try {
             // AUTENTICACION CON BACKEND
-            const result = await dispatch(loginUser(values) as any).unwrap();
+            const result = await dispatch(loginUser(values)).unwrap();
 
             if (result && result.user) {
                 const userRole = result.user.rol;
@@ -58,7 +58,7 @@ export const LoginForm: React.FC = () => {
                     navigate('/dashboard');
                 }
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Login failed:', err);
             // ERROR DE INICIO DE SESION
         }
@@ -131,7 +131,7 @@ export const LoginForm: React.FC = () => {
                         {errors.password && <div className={styles.errorMessage}>{errors.password}</div>}
                     </div>
 
-                
+
 
                     {/* RETROALIMENTACION DE ERROR */}
                     {(reduxError || localError) && (

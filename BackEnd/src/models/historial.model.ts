@@ -1,3 +1,4 @@
+
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import { pool } from '../config/database';
 
@@ -13,14 +14,14 @@ export interface IHistorial {
 
 export class HistorialModel {
 
-    // CREAR REGISTRO MEDICO
+    // CREAR HISTORIAL
     static async create(historial: IHistorial): Promise<number> {
         const [result] = await pool.query<ResultSetHeader>(
             'INSERT INTO historiales (mascota_id, veterinario_id, fecha, diagnostico, tratamiento, observaciones) VALUES (?, ?, ?, ?, ?, ?)',
             [
                 historial.mascota_id,
                 historial.veterinario_id,
-                historial.fecha || new Date(), // SI NO VIENE FECHA, PONEMOS AHORA
+                historial.fecha || new Date(),
                 historial.diagnostico,
                 historial.tratamiento,
                 historial.observaciones || null
@@ -47,7 +48,7 @@ export class HistorialModel {
         return rows;
     }
 
-    // OBTENER HISTORIALES RECIENTES POR VETERINARIO
+    // BUSCAR HISTORIALES RECIENTES POR VETERINARIO
     static async findRecentByVeterinarioId(veterinarioId: number, limit: number = 5): Promise<any[]> {
         const query = `
             SELECT 
@@ -68,6 +69,25 @@ export class HistorialModel {
         const [rows] = await pool.query<RowDataPacket[]>(query, [veterinarioId, limit]);
         return rows;
     }
+
+    // BUSCAR TODOS LOS HISTORIALES
+    static async findAll(): Promise<any[]> {
+        const query = `
+            SELECT 
+                h.id, h.fecha, h.diagnostico, h.tratamiento,
+                m.nombre as mascota_nombre, m.especie as mascota_especie,
+                d.nombre as dueno_nombre, d.apellido as dueno_apellido,
+                v.nombre as vet_nombre, v.apellido as vet_apellido
+            FROM historiales h
+            JOIN mascotas m ON h.mascota_id = m.id
+            JOIN duenos d ON m.dueno_id = d.id
+            JOIN veterinarios v ON h.veterinario_id = v.id
+            ORDER BY h.fecha DESC
+        `;
+        const [rows] = await pool.query<RowDataPacket[]>(query);
+        return rows;
+    }
+
     // BUSCAR POR ID
     static async findById(id: number): Promise<any> {
         const [rows] = await pool.query<RowDataPacket[]>(

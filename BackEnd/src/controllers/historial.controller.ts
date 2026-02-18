@@ -1,9 +1,10 @@
+
 import { Request, Response, NextFunction } from 'express';
 import { RowDataPacket } from 'mysql2';
 import { pool } from '../config/database';
 import { HistorialModel } from '../models/historial.model';
 
-// CREAR NUEVA ENTRADA
+// CREAR HISTORIAL
 export const createHistorial = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.user) throw new Error('NO AUTORIZADO');
@@ -20,9 +21,7 @@ export const createHistorial = async (req: Request, res: Response, next: NextFun
             [req.user.id]
         );
 
-        // NOTA: ADMIN TIENE PERMISO EN RUTAS, PERO SI NO ESTA EN TABLA VETERINARIOS
-        // NECESITAMOS UNA LOGICA DE FALLBACK O ERROR. 
-        // ASUMIMOS QUE ADMIN PUEDE ESCRIBIR SI TIENE PERFIL ASOCIADO O FORZAMOS ID 1 (SISTEMA)
+        // FALLBACK ADMIN
         let veterinarioId: number;
 
         if (vetRows.length > 0) {
@@ -48,7 +47,7 @@ export const createHistorial = async (req: Request, res: Response, next: NextFun
     }
 };
 
-// OBTENER HISTORIAL (PROTEGIDO)
+// OBTENER HISTORIAL POR MASCOTA
 export const getHistorialByMascota = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.user) throw new Error('NO AUTORIZADO');
@@ -79,6 +78,16 @@ export const getHistorialByMascota = async (req: Request, res: Response, next: N
     }
 };
 
+// OBTENER TODOS LOS HISTORIALES
+export const getAllHistorial = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const historiales = await HistorialModel.findAll();
+        res.json({ data: historiales });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // ELIMINAR HISTORIAL
 export const deleteHistorial = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -88,9 +97,9 @@ export const deleteHistorial = async (req: Request, res: Response, next: NextFun
         const historial = await HistorialModel.findById(Number(id));
         if (!historial) return res.status(404).json({ message: 'HISTORIAL NO ENCONTRADO' });
 
-        // VERIFICAR PERMISOS (SOLO ADMIN O EL VETERINARIO CREADOR)
+        // VERIFICAR PERMISOS
         if (req.user.rol !== 'admin') {
-            // BUSCAR SI EL USUARIO ES EL VETERINARIO CREADOR
+            // BUSCAR VETERINARIO
             const [vet] = await pool.query<RowDataPacket[]>('SELECT id FROM veterinarios WHERE usuario_id = ?', [req.user.id]);
             if (!vet.length || vet[0].id !== historial.veterinario_id) {
                 return res.status(403).json({ message: 'NO TIENES PERMISO PARA ELIMINAR ESTE REGISTRO' });

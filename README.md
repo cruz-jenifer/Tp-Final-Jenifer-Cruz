@@ -33,8 +33,38 @@ Backend para la gestión de una clínica veterinaria. Incluye autenticación de 
 
 ## 🔗 Endpoints Principales
 
+### Autenticación
 - `POST /api/auth/register` - Crear cuenta.
 - `POST /api/auth/login` - Iniciar sesión.
-- `GET /api/reservas` - Ver mis turnos (Requiere Token).
-- `POST /api/reservas` - Solicitar turno (Requiere Token).
-- `DELETE /api/reservas/:id` - Cancelar mi turno (Requiere Token).
+
+### Dueños
+- `GET /api/duenos` - Listar dueños (Requiere Token).
+- `POST /api/duenos` - Crear dueño (Requiere Token).
+- `PUT /api/duenos/:id` - Actualizar dueño (Requiere Token).
+- `DELETE /api/duenos/:id` - Eliminar dueño (Requiere Token).
+
+### Mascotas
+- `GET /api/mascotas` - Listar mascotas (Requiere Token).
+- `POST /api/mascotas` - Crear mascota (Requiere Token).
+- `PUT /api/mascotas/:id` - Actualizar mascota (Requiere Token).
+- `DELETE /api/mascotas/:id` - Eliminar mascota (Requiere Token).
+
+### Turnos
+- `GET /api/turnos` - Ver turnos (Requiere Token).
+- `POST /api/turnos` - Solicitar turno (Requiere Token).
+- `PUT /api/turnos/:id` - Actualizar turno (Requiere Token).
+- `DELETE /api/turnos/:id` - Cancelar turno (Requiere Token).
+
+### Historial Médico
+- `GET /api/historial` - Listar historiales (Requiere Token).
+- `POST /api/historial` - Crear historial (Requiere Token).
+- `PUT /api/historial/:id` - Actualizar historial (Requiere Token).
+- `DELETE /api/historial/:id` - Eliminar historial (Requiere Token).
+
+### Veterinarios
+- `GET /api/veterinarios` - Listar veterinarios (Requiere Token).
+- `GET /api/veterinarios/agenda` - Ver agenda del día (Requiere Token).
+- `GET /api/veterinarios/historial-reciente` - Historial reciente (Requiere Token).
+
+### Servicios
+- `GET /api/servicios` - Listar servicios disponibles (Requiere Token).

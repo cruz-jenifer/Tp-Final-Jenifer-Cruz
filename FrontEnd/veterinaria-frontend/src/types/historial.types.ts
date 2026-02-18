@@ -1,4 +1,6 @@
-export interface IHistorial {
+// DEFINICION DE TIPOS PARA HISTORIAL MEDICO Y AGENDA
+
+export interface Historial {
     id: number;
     mascota_id: number;
     veterinario_id: number;
@@ -6,31 +8,34 @@ export interface IHistorial {
     diagnostico: string;
     tratamiento: string;
     observaciones?: string;
+    mascota_nombre?: string;
+    dueno_nombre?: string;
+    dueno_apellido?: string;
     vet_nombre?: string;
     vet_apellido?: string;
     vet_matricula?: string;
 }
 
-export interface IHistorialPayload {
+export interface HistorialPayload {
     mascota_id: number;
     diagnostico: string;
     tratamiento: string;
     observaciones?: string;
 }
 
-export interface IHistorialDetalle {
-    id: number;
-    mascota_id: number;
-    fecha: string;
+export interface HistorialUpdatePayload {
     diagnostico: string;
     tratamiento: string;
-    mascota_nombre: string;
-    mascota_especie: string;
-    dueno_nombre: string;
-    dueno_apellido: string;
+    observaciones?: string;
 }
 
-export interface IAgendaItem {
+// Para detalles expandidos en vistas
+export interface HistorialDetalle extends Historial {
+    mascota_especie: string;
+}
+
+// Tipos de Agenda (Vets)
+export interface AgendaItem {
     id: number;
     fecha_hora: string;
     estado: 'pendiente' | 'confirmado' | 'completado' | 'cancelado' | 'realizado';
@@ -41,17 +46,4 @@ export interface IAgendaItem {
     dueno_nombre: string;
     dueno_apellido: string;
     servicio: string;
-}
-
-export interface IMascota {
-    id: number;
-    nombre: string;
-    especie: string;
-    raza: string;
-    fecha_nacimiento: string;
-    advertencias: string;
-    dueno_id: number;
-    // Agregamos campos opcionales por si vienen del join
-    dueno_nombre?: string;
-    dueno_apellido?: string;
 }

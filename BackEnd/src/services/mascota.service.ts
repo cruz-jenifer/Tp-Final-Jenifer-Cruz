@@ -2,34 +2,43 @@ import * as mascotaModel from '../models/mascota.model';
 import * as duenoModel from '../models/dueno.model';
 import { IMascota } from '../models/interfaces/mascota.interface';
 
-// REGISTRAR MASCOTA (Requiere que el usuario tenga perfil de Dueño)
-export const registrarMascota = async (userId: number, datosMascota: any): Promise<IMascota> => {
-    // Buscar el perfil de Dueño asociado al usuario
-    const dueno = await duenoModel.findByUserId(userId);
+// REGISTRAR MASCOTA
+// REGISTRAR MASCOTA
+export const registrarMascota = async (userId: number, datosMascota: any, userRole: string): Promise<IMascota> => {
+    let duenoId = datosMascota.dueno_id;
 
-    // Validación de negocio: Usuario debe tener perfil de Dueño
-    if (!dueno || !dueno.id) {
-        throw new Error('Debe completar su perfil de dueño antes de registrar mascotas.');
+    // VALIDAR ROL
+    if (userRole !== 'admin') {
+        const dueno = await duenoModel.findByUserId(userId);
+        if (!dueno || !dueno.id) {
+            throw new Error('DEBE COMPLETAR SU PERFIL DE DUENO ANTES DE REGISTRAR MASCOTAS');
+        }
+        duenoId = dueno.id;
+    } else {
+        // VALIDAR DUENO
+        if (!duenoId) {
+            throw new Error('DEBE ESPECIFICAR EL ID DEL DUENO');
+        }
     }
 
-    // Insertar mascota forzando el dueno_id del usuario autenticado
+    // INSERTAR MASCOTA
     return await mascotaModel.create({
         ...datosMascota,
-        dueno_id: dueno.id // Asignación automática y segura
+        dueno_id: duenoId
     });
 };
 
-// OBTENER MASCOTAS PROPIAS (Scope por Dueño)
+// OBTENER MASCOTAS PROPIAS
 export const misMascotas = async (userId: number): Promise<IMascota[]> => {
-    // Resolver el ID de dueño del usuario autenticado
+    // BUSCAR DUENO
     const dueno = await duenoModel.findByUserId(userId);
 
-    // Si no tiene perfil de Dueño, retornar array vacío
+    // SIN PERFIL
     if (!dueno || !dueno.id) {
         return [];
     }
 
-    // Filtrar mascotas exclusivamente por ese dueño
+    // FILTRAR POR DUENO
     return await mascotaModel.findByDuenoId(dueno.id);
 };
 
@@ -38,34 +47,43 @@ export const obtenerMascota = async (id: number): Promise<IMascota | null> => {
     return await mascotaModel.findById(id);
 };
 
-// ELIMINAR MASCOTA (Dueño o Admin)
+// OBTENER TODAS LAS MASCOTAS
+export const obtenerTodas = async (): Promise<any[]> => {
+    return await mascotaModel.findAll();
+};
+
+// ELIMINAR MASCOTA
 export const eliminarMascota = async (mascotaId: number, userId: number, userRole: string): Promise<void> => {
     const mascota = await mascotaModel.findById(mascotaId);
-    if (!mascota) throw new Error('Mascota no encontrada');
+    if (!mascota) throw new Error('MASCOTA NO ENCONTRADA');
 
-    // Si es admin, puede borrar directo
+    // ADMIN PUEDE BORRAR DIRECTO
     if (userRole === 'admin') {
         await mascotaModel.deleteById(mascotaId);
         return;
     }
 
-    // Si es cliente, verificar que sea el dueño
+    // VERIFICAR PERTENENCIA
     const dueno = await duenoModel.findByUserId(userId);
     if (!dueno || dueno.id !== mascota.dueno_id) {
-        throw new Error('No tienes permiso para eliminar esta mascota');
+        throw new Error('NO TIENE PERMISO PARA ELIMINAR ESTA MASCOTA');
     }
 
     await mascotaModel.deleteById(mascotaId);
 };
 
-// ACTUALIZAR MASCOTA (Solo Dueño)
+// ACTUALIZAR MASCOTA
 export const actualizarMascota = async (mascotaId: number, userId: number, datos: Partial<IMascota>): Promise<void> => {
     const mascota = await mascotaModel.findById(mascotaId);
-    if (!mascota) throw new Error('Mascota no encontrada');
+    if (!mascota) throw new Error('MASCOTA NO ENCONTRADA');
 
     const dueno = await duenoModel.findByUserId(userId);
-    if (!dueno || dueno.id !== mascota.dueno_id) {
-        throw new Error('No tienes permiso para editar esta mascota');
+
+    // VERIFICAR PERTENENCIA
+    if (datos.rol !== 'admin') {
+        if (!dueno || dueno.id !== mascota.dueno_id) {
+            throw new Error('NO TIENE PERMISO PARA EDITAR ESTA MASCOTA');
+        }
     }
 
     await mascotaModel.update(mascotaId, datos);

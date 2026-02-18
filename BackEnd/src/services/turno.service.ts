@@ -4,19 +4,23 @@ import * as DuenoModel from '../models/dueno.model';
 export class TurnoService {
 
     // RESERVAR TURNO
-    static async reservarTurno(usuarioId: number, datosTurno: ITurno) {
-        // OBTENER DUENO
-        const dueno = await DuenoModel.findByUserId(usuarioId);
+    static async reservarTurno(usuarioId: number, datosTurno: ITurno & { dueno_id_override?: number }) {
+        let duenoId: number;
 
-        const duenoData = Array.isArray(dueno) ? dueno[0] : dueno;
+        if (datosTurno.dueno_id_override) {
+            duenoId = datosTurno.dueno_id_override;
+        } else {
+            // OBTENER DUENO
+            const dueno = await DuenoModel.findByUserId(usuarioId);
+            const duenoData = Array.isArray(dueno) ? dueno[0] : dueno;
 
-        if (!duenoData || !duenoData.id) {
-            throw new Error('El usuario no tiene un perfil de dueño registrado');
+            if (!duenoData || !duenoData.id) {
+                throw new Error('EL USUARIO NO TIENE PERFIL DE DUENO');
+            }
+            duenoId = duenoData.id;
         }
 
         // FORMATEAR FECHA
-        // FORMATEAR FECHA
-        // El frontend envía 'YYYY-MM-DD HH:mm:ss' (Local). Lo guardamos tal cual.
         const fechaStr = datosTurno.fecha_hora as unknown as string;
 
         // VALIDAR DISPONIBILIDAD
@@ -26,7 +30,7 @@ export class TurnoService {
         );
 
         if (!estaDisponible) {
-            throw new Error('El horario seleccionado ya se encuentra ocupado');
+            throw new Error('EL HORARIO SELECCIONADO YA SE ENCUENTRA OCUPADO');
         }
 
         // DATOS TURNO
@@ -47,37 +51,50 @@ export class TurnoService {
         const duenoData = Array.isArray(dueno) ? dueno[0] : dueno;
 
         if (!duenoData || !duenoData.id) {
-            throw new Error('Perfil de dueño no encontrado');
+            throw new Error('PERFIL DE DUENO NO ENCONTRADO');
         }
 
         return await TurnoModel.findAllByDuenoId(duenoData.id);
     }
 
-    // AGENDA DIARIA GLOBAL (ADMIN)
+    // AGENDA GLOBAL
     static async obtenerAgendaGlobal(fecha?: string) {
-        const fechaBusqueda = fecha || new Date().toISOString().split('T')[0];
-        const turnos = await TurnoModel.findAllByFecha(fechaBusqueda);
+        if (!fecha) {
+            const turnos = await TurnoModel.findAll();
+            return {
+                fecha: 'Todos',
+                total_turnos: turnos.length,
+                turnos: turnos
+            };
+        }
+
+        const turnos = await TurnoModel.findAllByFecha(fecha);
         return {
-            fecha: fechaBusqueda,
+            fecha: fecha,
             total_turnos: turnos.length,
             turnos: turnos
         };
     }
 
-    // AGENDA DIARIA INDIVIDUAL (VETERINARIO)
+    // VERIFICAR DISPONIBILIDAD
+    static async checkDisponibilidad(veterinarioId: number, fechaHora: string): Promise<boolean> {
+        return await TurnoModel.validarDisponibilidad(veterinarioId, fechaHora);
+    }
+
+    // AGENDA VETERINARIO
     static async obtenerAgendaVeterinario(usuarioId: number, fecha?: string) {
-        // 1. Obtener perfil de veterinario
-        const { VeterinarioModel } = await import('../models/veterinarios.model'); // Importación dinámica para evitar ciclos
+        // BUSCAR PERFIL VETERINARIO
+        const { VeterinarioModel } = await import('../models/veterinarios.model');
         const veterinario = await VeterinarioModel.findByUserId(usuarioId);
 
         if (!veterinario || !veterinario.id) {
-            throw new Error('Perfil de veterinario no encontrado para este usuario');
+            throw new Error('PERFIL DE VETERINARIO NO ENCONTRADO');
         }
 
-        // 2. Definir fecha
+        // DEFINIR FECHA
         const fechaBusqueda = fecha || new Date().toISOString().split('T')[0];
 
-        // 3. Buscar turnos filtrados
+        // BUSCAR TURNOS
         const turnos = await TurnoModel.findAllByVeterinarioIdAndFecha(veterinario.id, fechaBusqueda);
 
         return {
@@ -95,12 +112,12 @@ export class TurnoService {
         const turno = await TurnoModel.findById(turnoId);
 
         if (!turno) {
-            throw new Error('Turno no encontrado');
+            throw new Error('TURNO NO ENCONTRADO');
         }
 
         // VALIDAR ESTADO
         if (turno.estado !== 'pendiente') {
-            throw new Error('Solo se pueden cancelar turnos pendientes');
+            throw new Error('SOLO SE PUEDEN CANCELAR TURNOS PENDIENTES');
         }
 
         // ACTUALIZAR A CANCELADO
@@ -109,14 +126,14 @@ export class TurnoService {
         return { message: 'Turno cancelado exitosamente' };
     }
 
-    // ELIMINAR TURNO (FISICAMENTE)
+    // ELIMINAR TURNO
     static async eliminarTurno(turnoId: number, usuarioId: number) {
         const turno = await TurnoModel.findById(turnoId);
-        if (!turno) throw new Error('Turno no encontrado');
+        if (!turno) throw new Error('TURNO NO ENCONTRADO');
 
-        // Solo permitir eliminar si ya está cancelado
+        // VALIDAR ESTADO
         if (turno.estado !== 'cancelado') {
-            throw new Error('Solo se pueden eliminar turnos cancelados');
+            throw new Error('SOLO SE PUEDEN ELIMINAR TURNOS CANCELADOS');
         }
 
         await TurnoModel.delete(turnoId);
@@ -126,21 +143,21 @@ export class TurnoService {
     // REPROGRAMAR TURNO
     static async reprogramarTurno(turnoId: number, usuarioId: number, datos: Partial<ITurno>) {
         const turno = await TurnoModel.findById(turnoId);
-        if (!turno) throw new Error('Turno no encontrado');
+        if (!turno) throw new Error('TURNO NO ENCONTRADO');
 
         if (turno.estado !== 'pendiente') {
-            throw new Error('Solo se pueden reprogramar turnos pendientes');
+            throw new Error('SOLO SE PUEDEN REPROGRAMAR TURNOS PENDIENTES');
         }
 
-        // VALIDAR NUEVA DISPONIBILIDAD SI CAMBIA FECHA
+        // VALIDAR DISPONIBILIDAD
         if (datos.fecha_hora && datos.veterinario_id) {
             const fechaStr = datos.fecha_hora instanceof Date
                 ? datos.fecha_hora.toISOString().slice(0, 19).replace('T', ' ')
                 : datos.fecha_hora;
             const disponible = await TurnoModel.validarDisponibilidad(datos.veterinario_id, fechaStr);
-            if (!disponible) throw new Error('El nuevo horario no está disponible');
+            if (!disponible) throw new Error('EL NUEVO HORARIO NO ESTA DISPONIBLE');
 
-            // Ajustar formato para SQL
+            // FORMATEAR FECHA
             datos.fecha_hora = fechaStr;
         }
 

@@ -1,106 +1,45 @@
 
-const API_URL = 'http://localhost:3000/api';
+import { api } from '../config/api';
+import type { HistorialPayload, HistorialUpdatePayload, AgendaItem, HistorialDetalle } from '../types/historial.types';
+import type { Mascota } from '../types/mascota.types';
 
+interface AgendaResponse {
+    fecha: string;
+    total_turnos: number;
+    turnos: AgendaItem[];
+}
+
+// SERVICIO PARA OPERACIONES DEL VETERINARIO
+// UTILIZA EL WRAPPER CENTRALIZADO DE API (config/api.ts)
 export const vetService = {
-    // Obtener Agenda del Día
-    getAgenda: async (fecha: string) => {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/veterinarios/agenda?fecha=${fecha}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al cargar la agenda');
-        }
-
-        return await response.json();
+    // OBTENER AGENDA DEL DIA
+    getAgenda: async (fecha: string): Promise<AgendaResponse> => {
+        return api.get<AgendaResponse>(`/veterinarios/agenda?fecha=${fecha}`);
     },
 
-    //  Obtener Historial Reciente (Últimos 5 registros)
-    getRecentRecords: async () => {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/veterinarios/historial-reciente`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al cargar historial reciente');
-        }
-
-        return await response.json();
+    // OBTENER HISTORIAL RECIENTE (ULTIMOS 5 REGISTROS)
+    getRecentRecords: async (): Promise<HistorialDetalle[]> => {
+        return api.get<HistorialDetalle[]>('/veterinarios/historial-reciente');
     },
 
-    //  Crear Historial Médico
-    createMedicalRecord: async (data: any) => {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/veterinarios/historial`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Error al guardar historial');
-        }
-
-        return await response.json();
+    // CREAR HISTORIAL MEDICO
+    createMedicalRecord: async (data: HistorialPayload): Promise<HistorialDetalle> => {
+        return api.post<HistorialDetalle>('/veterinarios/historial', data);
     },
 
-    //  Obtener Mascota por ID (Detalle completo)
-    getMascotaById: async (id: number) => {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/mascotas/${id}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al cargar datos de mascota');
-        }
-
-        return await response.json();
+    // OBTENER MASCOTA POR ID (DETALLE COMPLETO)
+    getMascotaById: async (id: number): Promise<Mascota> => {
+        return api.get<Mascota>(`/mascotas/${id}`);
     },
 
-    //  Eliminar Historial
-    deleteMedicalRecord: async (id: number) => {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/historial/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al eliminar historial');
-        }
+    // ELIMINAR HISTORIAL
+    deleteMedicalRecord: async (id: number): Promise<boolean> => {
+        await api.delete(`/historial/${id}`);
         return true;
     },
 
-    //  Actualizar Historial
-    updateMedicalRecord: async (id: number, data: any) => {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/historial/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al actualizar historial');
-        }
-        return await response.json();
+    // ACTUALIZAR HISTORIAL
+    updateMedicalRecord: async (id: number, data: HistorialUpdatePayload): Promise<HistorialDetalle> => {
+        return api.put<HistorialDetalle>(`/historial/${id}`, data);
     }
 };

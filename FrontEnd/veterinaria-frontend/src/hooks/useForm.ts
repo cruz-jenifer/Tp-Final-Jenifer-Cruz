@@ -13,11 +13,11 @@ type Validations<T> = Partial<Record<keyof T, ValidationRules>>;
 type Errors<T> = Partial<Record<keyof T, string>>;
 
 // HOOK PERSONALIZADO PARA FORMULARIOS
-export const useForm = <T extends Record<string, any>>(initialState: T, validations: Validations<T> = {}) => {
+export const useForm = <T extends Record<string, string>>(initialState: T, validations: Validations<T> = {}) => {
     const [values, setValues] = useState<T>(initialState);
     const [errors, setErrors] = useState<Errors<T>>({});
 
-    const validate = (name: keyof T, value: any): string => {
+    const validate = (name: keyof T, value: T[keyof T]): string => {
         const rules = validations[name];
         if (!rules) return '';
 
@@ -47,7 +47,7 @@ export const useForm = <T extends Record<string, any>>(initialState: T, validati
             [name]: value,
         }));
 
-        const error = validate(name, value);
+        const error = validate(name, value as T[keyof T]);
         setErrors((prev) => ({
             ...prev,
             [name]: error,

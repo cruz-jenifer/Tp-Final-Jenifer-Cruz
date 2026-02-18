@@ -4,40 +4,38 @@ import * as MascotaModel from '../models/mascota.model';
 
 export class HistorialService {
 
-    // REGISTRAR NUEVA FICHA MEDICA
+    // CREAR HISTORIAL
     static async crearFicha(usuarioId: number, datos: IHistorial) {
 
-        //  VALIDAR IDENTIDAD DEL VETERINARIO
-        // El token nos da el ID de usuario, buscamos su perfil profesional
+        // VALIDAR VETERINARIO
         const veterinario = await VeterinarioModel.findByUserId(usuarioId);
 
         if (!veterinario) {
-            throw new Error('ACCESO DENEGADO: El usuario no tiene perfil de veterinario.');
+            throw new Error('ACCESO DENEGADO');
         }
 
-        //  VALIDAR EXISTENCIA DE LA MASCOTA
-        // Usamos MascotaModel como objeto de funciones
+        // VALIDAR MASCOTA
         const mascota = await MascotaModel.findById(datos.mascota_id);
 
-        // Verificación defensiva (por si devuelve array o null)
+        // VERIFICAR EXISTENCIA
         const existeMascota = Array.isArray(mascota) ? mascota[0] : mascota;
 
         if (!existeMascota) {
-            throw new Error('La mascota indicada no existe en el sistema.');
+            throw new Error('MASCOTA NO ENCONTRADA');
         }
 
-        //  PREPARAR DATOS (Vinculamos al veterinario que agenda)
+        // PREPARAR DATOS
         const nuevaFicha: IHistorial = {
             ...datos,
             veterinario_id: veterinario.id!
         };
 
-        //  GUARDAR EN BASE DE DATOS
+        // GUARDAR
         const id = await HistorialModel.create(nuevaFicha);
         return { id, ...nuevaFicha };
     }
 
-    // VER HISTORIAL DE UN PACIENTE
+    // VER HISTORIAL POR MASCOTA
     static async verHistorial(mascotaId: number) {
 
         return await HistorialModel.findByMascotaId(mascotaId);
@@ -45,13 +43,18 @@ export class HistorialService {
 
     // OBTENER HISTORIALES RECIENTES DEL VETERINARIO
     static async obtenerRecientes(usuarioId: number) {
-        // Buscar perfil veterinario
+        // BUSCAR VETERINARIO
         const veterinario = await VeterinarioModel.findByUserId(usuarioId);
 
         if (!veterinario) {
-            throw new Error('ACCESO DENEGADO: El usuario no tiene perfil de veterinario.');
+            throw new Error('ACCESO DENEGADO');
         }
 
         return await HistorialModel.findRecentByVeterinarioId(veterinario.id!);
+    }
+
+    // OBTENER TODOS LOS HISTORIALES
+    static async obtenerTodos() {
+        return await HistorialModel.findAll();
     }
 }

@@ -69,7 +69,17 @@ export const TurnosList: React.FC = () => {
         setIsEditModalOpen(true);
     };
 
-    const handleEditSubmit = async (formData: any) => {
+    // TIPO DE DATOS DEL FORMULARIO DE EDICION
+    interface EditTurnoFormData {
+        mascota_id: string;
+        servicio_id: string;
+        veterinario_id: string;
+        fecha: string;
+        hora: string;
+        motivo: string;
+    }
+
+    const handleEditSubmit = async (formData: EditTurnoFormData) => {
         if (!turnoToEdit) return;
 
         const updateData = {

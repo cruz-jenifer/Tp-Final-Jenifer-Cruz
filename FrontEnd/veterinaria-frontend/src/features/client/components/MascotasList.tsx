@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { fetchMascotas, deleteMascota } from '../../../store/slices/mascotasSlice';
 import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
+import type { Mascota } from '../../../types/mascota.types';
 import styles from './MascotasList.module.css';
 
 // COMPONENTE PARA MOSTRAR LA LISTA DE MASCOTAS
@@ -11,7 +12,7 @@ export const MascotasList: React.FC = () => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
     const [viewModalOpen, setViewModalOpen] = useState(false);
-    const [selectedPet, setSelectedPet] = useState<any | null>(null);
+    const [selectedPet, setSelectedPet] = useState<Mascota | null>(null);
 
     useEffect(() => {
         if (mascotas.length === 0) {
@@ -32,7 +33,7 @@ export const MascotasList: React.FC = () => {
         }
     };
 
-    const handleViewClick = (pet: any) => {
+    const handleViewClick = (pet: Mascota) => {
         setSelectedPet(pet);
         setViewModalOpen(true);
     };

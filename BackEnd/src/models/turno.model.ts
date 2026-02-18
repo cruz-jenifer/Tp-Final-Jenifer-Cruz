@@ -32,7 +32,7 @@ export class TurnoModel {
         return rows[0].count === 0;
     }
 
-    // CREAR
+    // CREAR TURNO
     static async create(turno: ITurno): Promise<number> {
         const [result] = await pool.query<ResultSetHeader>(
             'INSERT INTO turnos (mascota_id, servicio_id, veterinario_id, fecha_hora, motivo, estado) VALUES (?, ?, ?, ?, ?, ?)',
@@ -101,8 +101,65 @@ export class TurnoModel {
             ORDER BY t.fecha_hora ASC
         `;
 
-        // FORMATO MYSQL
+
         const [rows] = await pool.query<RowDataPacket[]>(query, [fecha]);
+        return rows as ITurnoDetalle[];
+    }
+
+    // BUSCAR TURNOS FUTUROS
+    static async findAllFuture(): Promise<ITurnoDetalle[]> {
+        const query = `
+            SELECT 
+                t.id, 
+                t.fecha_hora, 
+                t.estado, 
+                t.motivo,
+                t.mascota_id,
+                m.nombre as mascota, 
+                m.especie as mascota_especie,
+                d.nombre as dueno_nombre, 
+                d.apellido as dueno_apellido,
+                s.nombre as servicio,
+                v.nombre as veterinario_nombre,
+                v.apellido as veterinario_apellido
+            FROM turnos t
+            JOIN mascotas m ON t.mascota_id = m.id
+            JOIN duenos d ON m.dueno_id = d.id
+            JOIN servicios s ON t.servicio_id = s.id
+            JOIN veterinarios v ON t.veterinario_id = v.id
+            WHERE t.fecha_hora >= CURDATE()
+            ORDER BY t.fecha_hora ASC
+        `;
+        const [rows] = await pool.query<RowDataPacket[]>(query);
+        return rows as ITurnoDetalle[];
+    }
+
+    // BUSCAR TODOS LOS TURNOS
+    static async findAll(): Promise<ITurnoDetalle[]> {
+        const query = `
+            SELECT 
+                t.id, 
+                t.fecha_hora, 
+                t.estado, 
+                t.motivo,
+                t.mascota_id,
+                t.veterinario_id,
+                t.servicio_id,
+                m.nombre as mascota, 
+                m.especie as mascota_especie,
+                d.nombre as dueno_nombre, 
+                d.apellido as dueno_apellido,
+                s.nombre as servicio,
+                v.nombre as veterinario_nombre,
+                v.apellido as veterinario_apellido
+            FROM turnos t
+            JOIN mascotas m ON t.mascota_id = m.id
+            JOIN duenos d ON m.dueno_id = d.id
+            JOIN servicios s ON t.servicio_id = s.id
+            JOIN veterinarios v ON t.veterinario_id = v.id
+            ORDER BY t.fecha_hora DESC
+        `;
+        const [rows] = await pool.query<RowDataPacket[]>(query);
         return rows as ITurnoDetalle[];
     }
 
@@ -141,7 +198,7 @@ export class TurnoModel {
         );
     }
 
-    // ELIMINAR FISICAMENTE
+    // ELIMINAR TURNO
     static async delete(id: number): Promise<void> {
         await pool.query('DELETE FROM turnos WHERE id = ?', [id]);
     }
@@ -156,9 +213,8 @@ export class TurnoModel {
         return rows[0] as ITurno;
     }
 
-    // REPROGRAMAR (UPDATE)
+    // ACTUALIZAR TURNO
     static async update(id: number, datos: Partial<ITurno>): Promise<void> {
-        // Ahora incluimos servicio_id y mascota_id si cambian
         await pool.query(
             `UPDATE turnos SET 
                 fecha_hora = COALESCE(?, fecha_hora), 

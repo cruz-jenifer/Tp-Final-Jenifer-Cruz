@@ -5,20 +5,19 @@ import { errorMiddleware } from './middlewares/error.middleware';
 
 const app = express();
 
-// Configuración de CORS 
-// Esto permite que el Front pueda hacer peticiones sin ser bloqueado
+// CONFIGURACION CORS
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || '*', 
+    origin: process.env.CORS_ORIGIN || '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
 
-// Rutas base
+// RUTAS
 app.use('/api', routes);
 
-// Middleware de errores (Siempre al final)
+// MIDDLEWARE DE ERRORES
 app.use(errorMiddleware);
 
 export default app;

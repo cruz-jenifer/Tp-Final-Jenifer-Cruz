@@ -13,11 +13,14 @@ const router = Router();
 // RUTAS PRINCIPALES
 router.use('/auth', authRoutes);
 router.use('/duenos', duenoRoutes);
-router.use('/mascotas', mascotaRoutes); // REGISTER MASCOTA ROUTES FOR GET BY ID
+router.use('/mascotas', mascotaRoutes);
 router.use('/turnos', turnoRoutes);
 router.use('/servicios', servicioRouter);
 router.use('/historial', historialRouter);
 router.use('/veterinarios', veterinarioRoutes);
+
+
+
 
 
 export default router;

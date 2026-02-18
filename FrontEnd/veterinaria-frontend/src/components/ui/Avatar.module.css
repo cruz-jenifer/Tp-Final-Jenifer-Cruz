@@ -1,0 +1,60 @@
+.avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+}
+
+/* SIZES */
+.sm {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.75rem;
+}
+
+.md {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+}
+
+.lg {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.25rem;
+}
+
+.xl {
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.5rem;
+}
+
+/* VARIANTS */
+.primary {
+    background-color: #6384FF;
+    color: white;
+}
+
+.orange {
+    background-color: #FFF4E5;
+    color: #FF9500;
+}
+
+.blue {
+    background-color: #E8F0FE;
+    color: #1A73E8;
+}
+
+.green {
+    background-color: #E6F4EA;
+    color: #1E8E3E;
+}
+
+.gray {
+    background-color: #F3F4F6;
+    color: #6B7280;
+}

@@ -1,11 +1,11 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { vetService } from '../../services/vetService';
-import type { IAgendaItem, IHistorialDetalle, IHistorialPayload } from '../../types/historia.types';
+import type { AgendaItem, HistorialDetalle, HistorialPayload, HistorialUpdatePayload } from '../../types/historial.types';
 
 interface VetState {
-    agenda: IAgendaItem[];
-    historialesRecientes: IHistorialDetalle[];
+    agenda: AgendaItem[];
+    historialesRecientes: HistorialDetalle[];
     loading: boolean;
     error: string | null;
 }
@@ -24,8 +24,9 @@ export const fetchAgenda = createAsyncThunk(
         try {
             const data = await vetService.getAgenda(fecha);
             return data.turnos; // El backend devuelve { fecha, total_turnos, turnos: [] }
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
@@ -35,21 +36,23 @@ export const fetchHistorialReciente = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             return await vetService.getRecentRecords();
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
 
 export const createHistorial = createAsyncThunk(
     'vet/createHistorial',
-    async (data: IHistorialPayload, { rejectWithValue, dispatch }) => {
+    async (data: HistorialPayload, { rejectWithValue, dispatch }) => {
         try {
             const result = await vetService.createMedicalRecord(data);
             dispatch(fetchHistorialReciente()); // Recargar lista
             return result;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
@@ -59,8 +62,9 @@ export const fetchMascotaById = createAsyncThunk(
     async (id: number, { rejectWithValue }) => {
         try {
             return await vetService.getMascotaById(id);
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
@@ -72,21 +76,23 @@ export const deleteHistorial = createAsyncThunk(
             await vetService.deleteMedicalRecord(id);
             dispatch(fetchHistorialReciente());
             return id;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
 
 export const updateHistorial = createAsyncThunk(
     'vet/updateHistorial',
-    async ({ id, data }: { id: number, data: any }, { rejectWithValue, dispatch }) => {
+    async ({ id, data }: { id: number, data: HistorialUpdatePayload }, { rejectWithValue, dispatch }) => {
         try {
             await vetService.updateMedicalRecord(id, data);
             dispatch(fetchHistorialReciente());
             return id;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
@@ -128,7 +134,7 @@ const vetSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload as string;
             })
-            
+
             .addCase(createHistorial.pending, (state) => {
                 state.loading = true;
             })
@@ -139,12 +145,12 @@ const vetSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload as string;
             })
-         
+
             .addCase(fetchMascotaById.pending, () => {
-                
+
             })
             .addCase(fetchMascotaById.fulfilled, () => {
-                  });
+            });
     }
 });
 

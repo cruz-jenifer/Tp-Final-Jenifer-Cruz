@@ -1,12 +1,18 @@
 // REMOVED UNUSED REACT IMPORT
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styles from './AdminLayout.module.css';
 import { logout } from '../../../store/slices/authSlice';
 import type { RootState } from '../../../store';
 
-// COMPONENTE LAYOUT PARA EL PANEL DE ADMINISTRADOR
-// INCLUYE BARRA LATERAL (SIDEBAR) Y BARRA SUPERIOR (NAVBAR)
+// SECCIONES
+import OwnersPage from '../owners/OwnersPage';
+import PetsPage from '../pets/PetsPage';
+import AppointmentsPage from '../appointments/AppointmentsPage';
+import HistoryPage from '../history/HistoryPage';
+import VetsPage from '../vets/VetsPage';
+
+// COMPONENTE LAYOUT PARA EL PANEL DE ADMINISTRADOR (SINGLE PAGE)
 export const AdminLayout = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -19,55 +25,33 @@ export const AdminLayout = () => {
     };
 
     return (
-        <div className={styles.container}>
+        <div className={styles.layoutContainer}>
             <nav className={styles.navbar}>
                 <div className={styles.navContainer}>
                     <div className={styles.navLeft}>
                         <div className={styles.logoCircle}>
-                            <span className="material-icons">pets</span>
+                            <span className="material-icons" style={{ color: '#6384FF' }}>pets</span>
                         </div>
                         <span className={styles.brandTitle}>patitas felices</span>
-                        <span className={styles.portalBadge}>Portal Admin</span>
                     </div>
 
-                    {/* CENTRO: ENLACES DE NAVEGACION */}
+                    {/* CENTRO: ENLACES DE NAVEGACION (ANCHORS) */}
                     <div className={styles.navCenter}>
-                        <NavLink
-                            to="/admin/owners"
-                            className={({ isActive }) => isActive ? styles.navLinkActive : styles.navLinkFade}
-                        >
-                            Dueños
-                        </NavLink>
-                        <NavLink
-                            to="/admin/pets"
-                            className={({ isActive }) => isActive ? styles.navLinkActive : styles.navLinkFade}
-                        >
-                            Pacientes
-                        </NavLink>
-                        <NavLink
-                            to="/admin/history"
-                            className={({ isActive }) => isActive ? styles.navLinkActive : styles.navLinkFade}
-                        >
-                            Historial
-                        </NavLink>
-                        <NavLink
-                            to="/admin/vets"
-                            className={({ isActive }) => isActive ? styles.navLinkActive : styles.navLinkFade}
-                        >
-                            Veterinarios
-                        </NavLink>
+                        <a href="#duenos" className={styles.navLink}>Dueños</a>
+                        <a href="#mascotas" className={styles.navLink}>Pacientes</a>
+                        <a href="#turnos" className={styles.navLink}>Turnos</a>
+                        <a href="#historial" className={styles.navLink}>Historial Med.</a>
+                        <a href="#veterinarios" className={styles.navLink}>Veterinarios</a>
                     </div>
 
                     {/* DERECHA: USUARIO Y NOTIFICACIONES */}
                     <div className={styles.navRight}>
-                        <div className={styles.userProfile}>
-                            <div className={styles.userInfo}>
-                                <p className={styles.welcomeText}>Bienvenido,</p>
-                                <p className={styles.userName}>{user?.nombre || 'Admin'}</p>
-                            </div>
-                            <div className={styles.avatarCircle}>
-                                {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'A'}
-                            </div>
+                        <button style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                            <span className="material-icons" style={{ color: 'white' }}>notifications</span>
+                        </button>
+
+                        <div className={styles.userAvatar}>
+                            {user?.nombre ? user.nombre.charAt(0).toUpperCase() + user.nombre.charAt(1).toUpperCase() : 'DR'}
                         </div>
 
                         <button
@@ -76,11 +60,8 @@ export const AdminLayout = () => {
                             style={{
                                 background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)',
                                 cursor: 'pointer', display: 'flex', alignItems: 'center',
-                                marginLeft: '0.5rem', padding: '0.5rem', borderRadius: '50%',
-                                transition: 'background-color 0.2s'
+                                marginLeft: '0.5rem'
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
-                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                             <span className="material-icons">logout</span>
                         </button>
@@ -89,8 +70,27 @@ export const AdminLayout = () => {
             </nav>
 
             <main className={styles.mainContent}>
-                <Outlet />
+                <section id="duenos" className={styles.section}>
+                    <OwnersPage />
+                </section>
+
+                <section id="mascotas" className={styles.section}>
+                    <PetsPage />
+                </section>
+
+                <section id="turnos" className={styles.section}>
+                    <AppointmentsPage />
+                </section>
+
+                <section id="historial" className={styles.section}>
+                    <HistoryPage />
+                </section>
+
+                <section id="veterinarios" className={styles.section}>
+                    <VetsPage />
+                </section>
             </main>
         </div>
     );
 };
+

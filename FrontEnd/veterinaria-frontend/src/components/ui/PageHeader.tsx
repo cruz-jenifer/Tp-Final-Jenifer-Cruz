@@ -1,43 +1,29 @@
 import React from 'react';
 import styles from './PageHeader.module.css';
 
-// PROPS DEL COMPONENTE ENCABEZADO DE PAGINA
 interface PageHeaderProps {
     title: string;
-    description?: string;
-    actionLabel?: string;
-    onAction?: () => void;
-    icon?: React.ReactNode;
+    subtitle?: string;
+    icon: string; // Material Icon name
+    badgeText?: string;
 }
 
-// COMPONENTE ENCABEZADO DE PAGINA REUTILIZABLE
-const PageHeader: React.FC<PageHeaderProps> = ({
-    title,
-    description,
-    actionLabel,
-    onAction,
-    icon
-}) => {
+export const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, icon, badgeText }) => {
     return (
-        <div className={styles.container}>
-            <div className={styles.titleContainer}>
-                <h1 className={styles.title}>
-                    {icon && <span className={styles.icon}>{icon}</span>}
-                    {title}
-                </h1>
-                {description && (
-                    <p className={styles.description}>
-                        {description}
-                    </p>
-                )}
+        <div className={styles.sectionHeader}>
+            <div className={styles.titleGroup}>
+                <div className={styles.iconBox}>
+                    <span className="material-icons" style={{ fontSize: '1.875rem' }}>{icon}</span>
+                </div>
+                <div>
+                    <h2 className={styles.pageTitle}>{title}</h2>
+                    {subtitle && <p className={styles.pageSubtitle}>{subtitle}</p>}
+                </div>
             </div>
-            {actionLabel && onAction && (
-                <button
-                    onClick={onAction}
-                    className={styles.actionButton}
-                >
-                    {actionLabel}
-                </button>
+            {badgeText && (
+                <span className={styles.activeBadge}>
+                    {badgeText}
+                </span>
             )}
         </div>
     );

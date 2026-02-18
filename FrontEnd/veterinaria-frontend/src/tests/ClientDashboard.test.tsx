@@ -6,10 +6,10 @@ import ClientDashboard from '../features/client/ClientDashboard';
 import mascotasReducer, { fetchMascotas } from '../store/slices/mascotasSlice';
 import turnosReducer, { fetchMisTurnos } from '../store/slices/turnosSlice';
 import type { Turno } from '../types/turno.types';
-import type { Pet } from '../types/pet.types';
+import type { Mascota } from '../types/mascota.types';
 
 // DATOS SIMULADOS LOCALES
-const localMockPets: Pet[] = [
+const localMockPets: Mascota[] = [
     {
         id: 1, nombre: 'Firulais', especie: 'Perro', raza: 'Golden', fecha_nacimiento: '2020-01-01', dueno_id: 1,
     },

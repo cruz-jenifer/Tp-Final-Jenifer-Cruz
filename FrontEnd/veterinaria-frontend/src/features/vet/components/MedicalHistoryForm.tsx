@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useAppDispatch } from '../../../store/hooks';
 import { createHistorial } from '../../../store/slices/vetSlice';
-import type { IAgendaItem } from '../../../types/historia.types';
+import type { AgendaItem } from '../../../types/historial.types';
 import styles from './MedicalHistoryForm.module.css';
+import vet from './VetComponents.module.css';
 import { Card, CardHeader, CardContent } from '../../../components/ui/Card';
 import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
 
 interface MedicalHistoryFormProps {
-    turno?: IAgendaItem | null;
+    turno?: AgendaItem | null;
     onSuccess: () => void;
 }
 
@@ -46,9 +47,10 @@ export const MedicalHistoryForm = ({ turno, onSuccess }: MedicalHistoryFormProps
             setLoading(false);
             onSuccess();
             alert('Historial guardado correctamente');
-        } catch (err: any) {
+        } catch (err: unknown) {
             setLoading(false);
-            setError(err || 'Error al guardar');
+            const message = err instanceof Error ? err.message : String(err);
+            setError(message || 'Error al guardar');
         }
     };
 
@@ -65,7 +67,7 @@ export const MedicalHistoryForm = ({ turno, onSuccess }: MedicalHistoryFormProps
                 <form onSubmit={handleSubmit}>
                     <div className={styles.formRow}>
                         {/* MASCOTA ID */}
-                        <div style={{ flex: '0 0 160px' }}>
+                        <div className={vet.flexFixed160}>
                             <Input
                                 label="Mascota ID"
                                 value={turno ? `#PET-${turno.mascota_id}` : ''}
@@ -76,7 +78,7 @@ export const MedicalHistoryForm = ({ turno, onSuccess }: MedicalHistoryFormProps
                         </div>
 
                         {/* FECHA CONSULTA */}
-                        <div style={{ flex: '0 0 180px' }}>
+                        <div className={vet.flexFixed180}>
                             <Input
                                 label="Fecha Consulta"
                                 type="date"
@@ -98,7 +100,7 @@ export const MedicalHistoryForm = ({ turno, onSuccess }: MedicalHistoryFormProps
                         </div>
 
                         {/* BOTON GUARDAR */}
-                        <div style={{ flex: '0 0 auto', paddingBottom: '2px' }}>
+                        <div className={vet.flexFixedAuto}>
                             <Button
                                 type="submit"
                                 variant="success"

@@ -1,6 +1,6 @@
 /* ESTILOS DEL LAYOUT DEL ADMIN (BASADO EN STICH) */
 
-.container {
+.layoutContainer {
     font-family: 'Quicksand', sans-serif;
     color: #1F2937;
     background-color: #FFFBF6; /* FONDO DE MARCA */
@@ -15,6 +15,7 @@
     position: fixed;
     width: 100%;
     top: 0;
+    left: 0;
     z-index: 50;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
@@ -45,23 +46,20 @@
     color: #6384FF;
 }
 
+.inputError {
+    border-color: #ef4444;
+}
+
+.inputSuccess {
+    border-color: #10b981;
+    background-color: #ecfdf5;
+}
+
 .brandTitle {
     font-size: 1.25rem;
     font-weight: 700;
     color: white;
     letter-spacing: 0.025em;
-}
-
-.portalBadge {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: white;
-    font-size: 0.75rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 9999px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-left: 0.5rem;
 }
 
 /* NAVEGACION CENTRO */
@@ -78,36 +76,18 @@
 }
 
 .navLink {
-    color: white;
-    font-weight: 700;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.5rem;
-    background-color: rgba(255, 255, 255, 0.1);
-    text-decoration: none;
-    transition: background-color 0.2s;
-}
-
-.navLinkFade {
     color: rgba(255, 255, 255, 0.9);
     font-weight: 700;
     padding: 0.5rem 0.75rem;
     border-radius: 0.5rem;
+    background-color: transparent;
     text-decoration: none;
     transition: all 0.2s;
 }
 
-.navLinkFade:hover {
+.navLink:hover {
     color: white;
     background-color: rgba(255, 255, 255, 0.1);
-}
-
-.navLinkActive {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.2);
-    font-weight: 700;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.5rem;
-    text-decoration: none;
 }
 
 /* NAVEGACION DERECHA */
@@ -117,78 +97,18 @@
     gap: 1rem;
 }
 
-.notificationBtn {
-    color: white;
-    padding: 0.5rem;
-    border-radius: 9999px;
-    background-color: rgba(255, 255, 255, 0.1);
-    position: relative;
-    border: none;
-    cursor: pointer;
+.userAvatar {
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 50%;
+    background-color: #FFAD60; /* Brand Orange */
+    border: 2px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.notificationDot {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    height: 0.625rem;
-    width: 0.625rem;
-    background-color: #FFAD60; /* NARANJA DE MARCA */
-    border-radius: 9999px;
-    border: 1px solid white;
-}
-
-.userProfile {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 0.25rem 0.25rem 0.25rem 0.75rem;
-    border-radius: 9999px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.userInfo {
-    text-align: right;
-    display: none;
-}
-
-@media (min-width: 640px) {
-    .userInfo {
-        display: block;
-    }
-}
-
-.welcomeText {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
-    margin: 0;
-}
-
-.userName {
-    font-size: 0.875rem;
     color: white;
     font-weight: 700;
-    line-height: 1;
-    margin: 0;
-}
-
-.avatarCircle {
-    height: 2.25rem;
-    width: 2.25rem;
-    border-radius: 9999px;
-    background-color: white;
-    border: 2px solid #4a6bff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6384FF;
     font-size: 0.875rem;
-    font-weight: 700;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -201,4 +121,8 @@
     flex-direction: column;
     gap: 3rem;
     width: 100%;
+}
+
+.section {
+    scroll-margin-top: 7rem; /* Offset for anchor scrolling */
 }

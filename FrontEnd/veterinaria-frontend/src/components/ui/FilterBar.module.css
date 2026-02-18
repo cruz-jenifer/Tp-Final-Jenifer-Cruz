@@ -1,0 +1,103 @@
+.filterContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+@media (min-width: 640px) {
+    .filterContainer {
+        flex-direction: row;
+        width: auto;
+    }
+}
+
+/* GRUPO DE FILTROS (DROPDOWNS) */
+.filterGroup {
+    position: relative;
+    min-width: 160px;
+}
+
+.selectInput {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #f9fafb; /* gray-50 */
+    border: none;
+    color: #4b5563; /* gray-600 */
+    font-weight: 500;
+    padding: 0.625rem 2.5rem 0.625rem 1rem; /* py-2.5 px-4 pr-10 */
+    border-radius: 9999px; /* full */
+    font-size: 0.875rem; /* text-sm */
+    width: 100%;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.selectInput:hover {
+    background-color: #f3f4f6; /* gray-100 */
+}
+
+.selectInput:focus {
+    box-shadow: 0 0 0 2px rgba(99, 132, 255, 0.5); /* ring-2 primary */
+}
+
+.selectIcon {
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    color: #6384FF; /* primary */
+}
+
+/* BARRA DE BUSQUEDA */
+.searchWrapper {
+    position: relative;
+    width: 100%;
+}
+
+@media (min-width: 640px) {
+    .searchWrapper {
+        width: 18rem; /* w-72 */
+    }
+}
+
+.searchIcon {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    color: #9ca3af; /* gray-400 */
+}
+
+.searchInput {
+    width: 100%;
+    padding-left: 2.5rem; /* pl-10 */
+    padding-right: 1rem; /* pr-4 */
+    padding-top: 0.625rem; /* py-2.5 */
+    padding-bottom: 0.625rem;
+    background-color: #f9fafb; /* bg-gray-50 */
+    border: none;
+    border-radius: 9999px; /* full */
+    font-size: 0.875rem; /* text-sm */
+    color: #4b5563; /* text-gray-600 */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+    transition: all 0.2s;
+    outline: none;
+}
+
+.searchInput::placeholder {
+    color: #9ca3af; /* placeholder-gray-400 */
+}
+
+.searchInput:focus {
+    box-shadow: 0 0 0 2px rgba(99, 132, 255, 0.5); /* ring-2 focus:ring-primary */
+    background-color: white;
+}

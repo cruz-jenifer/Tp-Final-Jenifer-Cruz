@@ -8,18 +8,21 @@ const router = Router();
 // APLICAR SEGURIDAD A TODO EL MODULO
 router.use(authMiddleware);
 
-// RUTA: LISTAR TODOS LOS VETERINARIOS (PUBLICO PARA USUARIOS AUTENTICADOS)
+// LISTAR VETERINARIOS
 router.get('/', VeterinarioController.listarTodos);
 
-// RUTA: VER AGENDA GLOBAL DEL DIA
-// SOLO VETERINARIOS Y ADMINS
+// VER AGENDA
 router.get('/agenda', checkRole(['veterinario', 'admin']), VeterinarioController.verAgenda);
 
-// RUTA: CREAR FICHA MEDICA
-// SOLO VETERINARIOS (EL ADMIN TAMBIEN PUEDE POR SUPERVISION)
+// CREAR HISTORIAL
 router.post('/historial', checkRole(['veterinario', 'admin']), VeterinarioController.crearHistorial);
 
-// RUTA: OBTENER HISTORIAL RECIENTE
+// HISTORIAL RECIENTE
 router.get('/historial-reciente', checkRole(['veterinario', 'admin']), VeterinarioController.obtenerHistorialReciente);
+
+// CRUD VETERINARIOS
+router.post('/', checkRole(['admin']), VeterinarioController.create);
+router.put('/:id', checkRole(['admin']), VeterinarioController.update);
+router.delete('/:id', checkRole(['admin']), VeterinarioController.delete);
 
 export default router;

@@ -1,8 +1,8 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import { pool } from '../config/database';
-import { UserPayload } from '../types/auth.types'; 
+import { UserPayload } from '../types/auth.types';
 
-// INTERFAZ INTERNA DE MODELO
+// INTERFAZ USUARIO
 export interface IUsuario extends RowDataPacket {
     id: number;
     email: string;
@@ -36,4 +36,9 @@ export const create = async (user: { email: string; password?: string; rol: stri
         [user.email, user.password, user.rol]
     );
     return { id: result.insertId, email: user.email, rol: user.rol } as IUsuario;
+};
+
+// ELIMINAR USUARIO
+export const deleteById = async (id: number): Promise<void> => {
+    await pool.query('DELETE FROM usuarios WHERE id = ?', [id]);
 };

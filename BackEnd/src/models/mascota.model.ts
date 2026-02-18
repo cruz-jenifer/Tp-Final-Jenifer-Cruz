@@ -12,6 +12,17 @@ export const findById = async (id: number) => {
     return rows.length > 0 ? rows[0] as IMascota : null;
 };
 
+// BUSCAR TODAS LAS MASCOTAS
+export const findAll = async (): Promise<any[]> => {
+    const query = `
+        SELECT m.*, d.nombre as dueno_nombre, d.apellido as dueno_apellido 
+        FROM mascotas m
+        LEFT JOIN duenos d ON m.dueno_id = d.id
+    `;
+    const [rows] = await pool.query<RowDataPacket[]>(query);
+    return rows;
+};
+
 // BUSCAR MASCOTAS POR DUENO
 export const findByDuenoId = async (duenoId: number): Promise<IMascota[]> => {
     const [rows] = await pool.query<IMascota[]>(
@@ -21,7 +32,7 @@ export const findByDuenoId = async (duenoId: number): Promise<IMascota[]> => {
     return rows;
 };
 
-// CREAR NUEVA MASCOTA
+// CREAR MASCOTA
 export const create = async (mascota: Omit<IMascota, 'id'>): Promise<IMascota> => {
     const [result] = await pool.execute<ResultSetHeader>(
         'INSERT INTO mascotas (nombre, especie, raza, fecha_nacimiento, advertencias, dueno_id) VALUES (?, ?, ?, ?, ?, ?)',

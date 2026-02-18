@@ -62,8 +62,8 @@ describe('Hook useForm', () => {
         const { result } = renderHook(() => useForm(initialState, validations));
 
         act(() => {
-            result.current.handleChange({ target: { name: 'email', value: 'test@example.com' } } as any);
-            result.current.handleChange({ target: { name: 'password', value: '12345' } } as any);
+            result.current.handleChange({ target: { name: 'email', value: 'test@example.com' } } as React.ChangeEvent<HTMLInputElement>);
+            result.current.handleChange({ target: { name: 'password', value: '12345' } } as React.ChangeEvent<HTMLInputElement>);
         });
 
         let isValid;

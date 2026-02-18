@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
-import type { Pet } from '../../types/pet.types';
-import type { RootState } from '../index'; // IMPORTACION DE ROOTSTATE
+import type { Mascota } from '../../types/mascota.types';
+import { api } from '../../config/api';
 
 // ESTADO INICIAL
 interface MascotasState {
-    mascotas: Pet[];
+    mascotas: Mascota[];
     loading: boolean;
     error: string | null;
 }
@@ -15,32 +15,16 @@ const initialState: MascotasState = {
     error: null,
 };
 
-// API BASE URL
-const API_URL = 'http://localhost:3000/api/mascotas';
-
 // OPERACIONES ASINCRONAS (THUNKS)
 export const fetchMascotas = createAsyncThunk(
     'mascotas/fetchMascotas',
-    async (_, { getState, rejectWithValue }) => {
+    async (_, { rejectWithValue }) => {
         try {
-            const token = (getState() as RootState).auth.token;
-            if (!token) throw new Error('No token found');
-
-            const response = await fetch(API_URL, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            return data.data as Pet[];
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+            const response = await api.get<{ data: Mascota[] }>('/mascotas');
+            return response.data;
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
@@ -48,26 +32,13 @@ export const fetchMascotas = createAsyncThunk(
 // ELIMINAR MASCOTA
 export const deleteMascota = createAsyncThunk(
     'mascotas/deleteMascota',
-    async (id: number, { getState, rejectWithValue }) => {
+    async (id: number, { rejectWithValue }) => {
         try {
-            const token = (getState() as RootState).auth.token;
-            if (!token) throw new Error('No token found');
-
-            const response = await fetch(`${API_URL}/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
-            }
-
+            await api.delete(`/mascotas/${id}`);
             return id;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
@@ -83,7 +54,7 @@ const mascotasSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchMascotas.fulfilled, (state, action: PayloadAction<Pet[]>) => {
+            .addCase(fetchMascotas.fulfilled, (state, action: PayloadAction<Mascota[]>) => {
                 state.loading = false;
                 state.mascotas = action.payload;
             })

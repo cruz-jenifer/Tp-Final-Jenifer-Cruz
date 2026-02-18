@@ -1,0 +1,271 @@
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.titleGroup {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.iconBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1rem;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    color: #6384FF;
+}
+
+.pageTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.pageSubtitle {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.headerBadge {
+    background-color: #dbeafe;
+    color: #6384FF;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.formCard {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-left 0.3s ease;
+}
+
+.formTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 1.5rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1rem;
+}
+
+.span2 { grid-column: span 2; }
+.span3 { grid-column: span 3; }
+.span5 { grid-column: span 5; }
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.inputField {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.inputField:focus {
+    outline: none;
+    border-color: #6384FF;
+    box-shadow: 0 0 0 3px rgba(99, 132, 255, 0.1);
+}
+
+.inputError {
+    border-color: #ef4444;
+}
+
+.inputSuccess {
+    border-color: #10b981;
+}
+
+.errorText {
+    color: #ef4444;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.successText {
+    color: #10b981;
+    font-size: 0.75rem;
+}
+
+.infoText {
+    font-size: 0.7rem;
+    color: #6384FF;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.submitBtn {
+    background-color: #6384FF;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.submitBtn:hover {
+    background-color: #4f46e5;
+}
+
+.cancelBtn {
+    padding: 0.75rem;
+    background: none;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.cancelBtn:hover {
+    background-color: #f3f4f6;
+}
+
+/* Table Styles */
+.tableSection {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+.tableTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #374151;
+    margin: 0;
+}
+
+.filterGroup {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.cellId {
+    font-weight: 700;
+    color: #9ca3af;
+}
+
+.cellMascota {
+    display: flex;
+    flex-direction: column;
+}
+
+.petIdBadge {
+    font-size: 0.65rem;
+    background-color: #f3f4f6;
+    color: #6b7280;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-top: 0.2rem;
+    width: fit-content;
+}
+
+.statusBadge {
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.statusPending {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.statusConfirmed {
+    background-color: #d1fae5;
+    color: #059669;
+}
+
+.statusCancelled {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.actionIcon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: transform 0.1s;
+}
+
+.actionIcon:hover {
+    transform: scale(1.1);
+}
+
+.iconEdit { color: #4b5563; }
+.iconDelete { color: #dc2626; }
+.iconCancel { color: #ef4444; }
+
+/* New classes to replace inline styles */
+.headerIcon {
+    font-size: 1.875rem;
+}
+
+.petName {
+    font-weight: 600;
+}
+
+.textMuted {
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.textGray {
+    color: #6b7280;
+}
+
+.actionsContainer {
+    display: flex;
+    gap: 0.25rem;
+}

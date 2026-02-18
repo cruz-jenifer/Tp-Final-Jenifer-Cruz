@@ -13,21 +13,21 @@ export const register = async (userData: IUsuario) => {
     }
 
     const hashedPassword = await bcrypt.hash(userData.password!, 10);
-    
-    // CREACION DE USUARIO
-    const newUser = await userModel.create({ 
-        email: userData.email, 
+
+    // CREAR USUARIO
+    const newUser = await userModel.create({
+        email: userData.email,
         password: hashedPassword,
-        rol: userData.rol || 'cliente' 
+        rol: userData.rol || 'cliente'
     });
-    
+
     return newUser;
 };
 
-// LOGIN DE USUARIO ENRIQUECIDO
+// LOGIN
 export const login = async (credentials: { email: string, password: string }): Promise<LoginResponse> => {
     const user = await userModel.findByEmail(credentials.email);
-    
+
     if (!user || !user.password) {
         throw new Error('CREDENCIALES INVALIDAS');
     }
@@ -37,25 +37,25 @@ export const login = async (credentials: { email: string, password: string }): P
         throw new Error('CREDENCIALES INVALIDAS');
     }
 
-    // GENERACION DE TOKEN
+    // GENERAR TOKEN
     const token = jwt.sign(
-        { id: user.id, email: user.email, rol: user.rol }, 
-        'UTN_PATITAS_2024', 
+        { id: user.id, email: user.email, rol: user.rol },
+        'UTN_PATITAS_2024',
         { expiresIn: '2h' }
     );
 
-    // BUSQUEDA DE PERFIL ASOCIADO
+    // BUSCAR PERFIL
     const perfil = await duenoModel.findByUserId(user.id);
 
-    // RESPUESTA CON TEXTO PLANO Y DATOS DE PERFIL
-    return { 
-        token, 
-        user: { 
-            id: user.id, 
-            email: user.email, 
+    // RESPUESTA
+    return {
+        token,
+        user: {
+            id: user.id,
+            email: user.email,
             rol: user.rol as RolUsuario,
             nombre: perfil ? perfil.nombre : undefined,
             apellido: perfil ? perfil.apellido : undefined
-        } 
+        }
     };
 };

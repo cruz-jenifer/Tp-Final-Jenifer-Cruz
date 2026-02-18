@@ -4,11 +4,23 @@ import { fetchMascotas } from '../../store/slices/mascotasSlice';
 import { fetchServicios } from '../../store/slices/serviciosSlice';
 import { fetchVeterinarios } from '../../store/slices/veterinariosSlice';
 import type { Turno } from '../../types/turno.types';
+import type { Veterinario } from '../../store/slices/veterinariosSlice';
+import type { Servicio } from '../../store/slices/serviciosSlice';
 import styles from './TurnoWizard.module.css';
+
+// TIPO DEL FORMULARIO DE EDICION
+interface EditTurnoFormData {
+    mascota_id: string;
+    servicio_id: string;
+    veterinario_id: string;
+    fecha: string;
+    hora: string;
+    motivo: string;
+}
 
 interface EditTurnoFormProps {
     turno: Turno;
-    onSubmit: (data: any) => void;
+    onSubmit: (data: EditTurnoFormData) => void;
     onCancel: () => void;
 }
 
@@ -257,7 +269,7 @@ export const EditTurnoForm: React.FC<EditTurnoFormProps> = ({ turno, onSubmit, o
                         required
                     >
                         <option value="">-- Seleccionar veterinario --</option>
-                        {veterinarios.map((vet: any) => (
+                        {veterinarios.map((vet: Veterinario) => (
                             <option key={vet.id} value={vet.id}>
                                 {vet.nombre} {vet.apellido}
                             </option>
@@ -276,7 +288,7 @@ export const EditTurnoForm: React.FC<EditTurnoFormProps> = ({ turno, onSubmit, o
                         required
                     >
                         <option value="">-- Seleccionar servicio --</option>
-                        {servicios.map((servicio: any) => (
+                        {servicios.map((servicio: Servicio) => (
                             <option key={servicio.id} value={servicio.id}>
                                 {servicio.nombre}
                             </option>

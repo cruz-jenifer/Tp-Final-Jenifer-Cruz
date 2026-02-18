@@ -2,7 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { AuthState } from '../../types/user.types';
 
 // API BASE URL
-const API_URL = 'http://localhost:3000/api/auth';
+// API BASE URL
+const API_URL = 'http://localhost:3001/api/auth';
 
 // ASYNC THUNKS
 export const loginUser = createAsyncThunk(
@@ -25,8 +26,9 @@ export const loginUser = createAsyncThunk(
             const data = await response.json();
             // Backend : { token: string, user: User }
             return data;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error al iniciar sesión';
+            return rejectWithValue(message);
         }
     }
 );

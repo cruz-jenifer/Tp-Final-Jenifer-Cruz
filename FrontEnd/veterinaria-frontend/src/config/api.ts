@@ -1,9 +1,9 @@
 import { store } from '../store';
 
-const BASE_URL = 'http://localhost:3000/api';
+const BASE_URL = 'http://localhost:3001/api';
 
 // TIPO GENERICO PARA LA RESPUESTA DE LA API
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
     success: boolean;
     data?: T;
     message?: string;
@@ -40,7 +40,7 @@ export const api = {
         return handleResponse(response);
     },
 
-    post: async <T>(url: string, body: any): Promise<T> => {
+    post: async <T>(url: string, body: unknown): Promise<T> => {
         const state = store.getState();
         const token = state.auth.token || localStorage.getItem('token');
 
@@ -57,7 +57,7 @@ export const api = {
         return handleResponse(response);
     },
 
-    put: async <T>(url: string, body: any): Promise<T> => {
+    put: async <T>(url: string, body: unknown): Promise<T> => {
         const state = store.getState();
         const token = state.auth.token || localStorage.getItem('token');
 

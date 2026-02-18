@@ -2,19 +2,19 @@
 import { Request, Response, NextFunction } from 'express';
 import * as MascotaModel from '../models/mascota.model';
 import * as DuenoModel from '../models/dueno.model';
+import * as MascotaService from '../services/mascota.service';
 
 export class MascotaController {
 
-    // LISTAR MIS MASCOTAS (CLIENTE)
+    // LISTAR MASCOTAS
     static async listarMisMascotas(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;
-            if (!userId) throw new Error('Usuario no identificado');
+            if (!userId) throw new Error('USUARIO NO IDENTIFICADO');
 
             const dueno = await DuenoModel.findByUserId(userId);
             if (!dueno) {
-                // Si no es dueño, retornar array vacío o error según lógica negocio
-                // Para evitar errores en frontend, mejor array vacío si es un usuario válido pero sin perfil
+                // SIN PERFIL DE DUENO
                 return res.json({ data: [] });
             }
 
@@ -25,21 +25,29 @@ export class MascotaController {
         }
     }
 
-    // OBTENER MASCOTA POR ID (DETALLE)
+    // OBTENER MASCOTA POR ID
     static async getMascotaById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
             const mascota = await MascotaModel.findById(Number(id));
 
             if (!mascota) {
-                return res.status(404).json({ message: 'Mascota no encontrada' });
+                return res.status(404).json({ message: 'MASCOTA NO ENCONTRADA' });
             }
 
-            // Opcional: Validar que la mascota pertenezca al usuario que la pide (si es cliente)
-            // O si es veterinario puede ver cualquiera.
-            // Por simplicidad ahora devolvemos la mascota.
+
 
             res.json(mascota);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // OBTENER TODAS LAS MASCOTAS
+    static async getAllMascotas(req: Request, res: Response, next: NextFunction) {
+        try {
+            const mascotas = await MascotaService.obtenerTodas();
+            res.json({ data: mascotas });
         } catch (error) {
             next(error);
         }
@@ -51,41 +59,53 @@ export class MascotaController {
             const { id } = req.params;
             const userId = req.user?.id;
 
-            // Validacion basica de propiedad
+            // VALIDAR PROPIEDAD
             const mascota = await MascotaModel.findById(Number(id));
-            if (!mascota) return res.status(404).json({ message: 'Mascota no encontrada' });
+            if (!mascota) return res.status(404).json({ message: 'MASCOTA NO ENCONTRADA' });
 
             const dueno = await DuenoModel.findByUserId(userId!);
 
-            // Si es cliente, verificar que sea su mascota
+            // VERIFICAR PERTENENCIA
             if (req.user?.rol === 'cliente') {
                 if (!dueno || mascota.dueno_id !== dueno.id) {
-                    return res.status(403).json({ message: 'No tienes permiso para eliminar esta mascota' });
+                    return res.status(403).json({ message: 'NO TIENE PERMISO PARA ELIMINAR ESTA MASCOTA' });
                 }
             }
 
             await MascotaModel.deleteById(Number(id));
-            res.json({ message: 'Mascota eliminada correctamente' });
+            res.json({ message: 'MASCOTA ELIMINADA CORRECTAMENTE' });
 
         } catch (error) {
             next(error);
         }
     }
 
-    // CREAR MASCOTA (SI SE NECESITARA)
+    // CREAR MASCOTA
     static async crearMascota(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;
-            const dueno = await DuenoModel.findByUserId(userId!);
+            const role = req.user?.rol;
 
-            if (!dueno) throw new Error('Perfil de dueño no encontrado');
+            if (!userId) throw new Error('USUARIO NO IDENTIFICADO');
 
-            const nuevaMascota = await MascotaModel.create({
-                ...req.body,
-                dueno_id: dueno.id
-            });
+            const nuevaMascota = await MascotaService.registrarMascota(userId, req.body, role!);
 
-            res.status(201).json({ message: 'Mascota creada', data: nuevaMascota });
+            res.status(201).json({ message: 'MASCOTA CREADA', data: nuevaMascota });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // ACTUALIZAR MASCOTA
+    static async actualizarMascota(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const userId = req.user?.id;
+            const role = req.user?.rol;
+
+            await MascotaService.actualizarMascota(Number(id), userId!, { ...req.body, rol: role });
+
+            res.json({ message: 'MASCOTA ACTUALIZADA CORRECTAMENTE' });
         } catch (error) {
             next(error);
         }

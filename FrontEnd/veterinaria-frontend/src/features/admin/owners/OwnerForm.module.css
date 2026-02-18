@@ -103,6 +103,30 @@
     }
 }
 
+/* 12-Column Grid for complex forms (Turnos) */
+.grid12 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: flex-end;
+    position: relative;
+    z-index: 10;
+}
+
+@media (min-width: 768px) {
+    .grid12 {
+        grid-template-columns: repeat(12, 1fr);
+    }
+    
+    .span2 { grid-column: span 2; }
+    .span3 { grid-column: span 3; }
+    .span4 { grid-column: span 4; }
+    .span6 { grid-column: span 6; }
+    .span7 { grid-column: span 7; }
+    .span8 { grid-column: span 8; }
+    .span12 { grid-column: span 12; }
+}
+
 .inputGroup label {
     display: block;
     font-size: 0.875rem;
@@ -129,6 +153,24 @@
     box-shadow: 0 0 0 3px rgba(99, 132, 255, 0.2);
 }
 
+.inputError {
+    border: 1px solid #ef4444;
+    background-color: #fef2f2;
+}
+
+.inputError:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.errorMessage {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    font-weight: 500;
+    display: block;
+}
+
 .addButton {
     width: 100%;
     background-color: #6384FF;
@@ -150,3 +192,268 @@
     background-color: #4a6bff;
     transform: translateY(-2px);
 }
+
+/* ESTILOS REUTILIZABLES PARA TABLAS (Ex-Inline) */
+.tableCard {
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 550px;
+    border: 1px solid #f3f4f6;
+}
+
+.tableHeader {
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tableTitle {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+.tableContent {
+    flex-grow: 1;
+    padding: 0.5rem;
+    overflow-x: auto;
+}
+
+/* MODAL Y OVERLAY (Reutilizables para Pets/History) */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    background-color: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    border: 1px solid #eff6ff;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #9ca3af;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.5rem;
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: #ef4444;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.cancelButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    background-color: white;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.saveButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    background-color: #6384FF;
+    color: white;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(99, 132, 255, 0.4);
+    transition: all 0.2s;
+}
+
+.saveButton:hover:not(:disabled) {
+    background-color: #4a6bff;
+    transform: translateY(-1px);
+}
+
+.saveButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* AVATAR GENERIO (Para tablas) */
+.avatar {
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-right: 1rem;
+}
+
+.avatarOrange {
+    background-color: #ffedd5;
+    color: #ea580c;
+}
+
+.avatarGreen {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.cellTitle {
+    font-weight: 500;
+    color: #111827;
+    font-size: 0.875rem;
+}
+
+
+/* BADGES ESPECIFICOS (Mascotas) */
+.badgeYellow {
+    background-color: #fef9c3;
+    color: #a16207;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* SEARCH BAR EN TABLA */
+.tableTools {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-left: auto;
+}
+
+.searchInput {
+    background-color: #f9fafb;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    width: 200px;
+    color: #374151;
+}
+
+.searchInput:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(99, 132, 255, 0.2);
+}
+
+/* INLINE FORM (Horizontal) */
+.inlineFormCard {
+    background-color: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.inlineFormTitle {
+    color: #f97316; /* Orange default */
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.inlineFormGrid {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.inlineFormGroup {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.inlineLabel {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+

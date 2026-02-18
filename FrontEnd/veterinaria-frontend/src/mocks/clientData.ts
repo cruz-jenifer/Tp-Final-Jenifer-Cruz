@@ -1,10 +1,10 @@
 // DATOS DE PRUEBA PARA EL DASHBOARD DE CLIENTE
 
-import type { Pet } from '../types/pet.types';
+import type { Mascota } from '../types/mascota.types';
 import type { Turno } from '../types/turno.types';
 
 // MOCK DE MASCOTAS
-export const mockPets: Pet[] = [
+export const mockPets: Mascota[] = [
     {
         id: 1,
         nombre: 'Firulais',

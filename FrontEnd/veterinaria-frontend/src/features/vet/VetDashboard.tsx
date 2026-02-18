@@ -1,13 +1,14 @@
-
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { AgendaTable } from './components/AgendaTable';
 import { MedicalHistoryForm } from './components/MedicalHistoryForm';
 import { RecentRecords } from './components/RecentRecords';
-import type { IAgendaItem } from '../../types/historia.types';
+import type { AgendaItem } from '../../types/historial.types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchAgenda } from '../../store/slices/vetSlice';
 // REUSE CLIENT STYLES
-import styles from '../client/ClientDashboard.module.css';
+import clientStyles from '../client/ClientDashboard.module.css';
+import vet from './components/VetComponents.module.css';
 import { logout } from '../../store/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,7 +17,7 @@ export const VetDashboard = () => {
     const navigate = useNavigate();
     const { user } = useAppSelector((state) => state.auth);
 
-    const [selectedTurno, setSelectedTurno] = useState<IAgendaItem | null>(null);
+    const [selectedTurno, setSelectedTurno] = useState<AgendaItem | null>(null);
     const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date().toISOString().split('T')[0]);
 
     const handleLogout = () => {
@@ -34,48 +35,41 @@ export const VetDashboard = () => {
     };
 
     return (
-        <div className={styles.container}>
+        <div className={clientStyles.container}>
             {/* NAVBAR REUSED FROM CLIENT */}
-            <nav className={styles.navbar}>
-                <div className={styles.navContainer}>
-                    <div className={styles.navLeft}>
-                        <div className={styles.logoCircle}>
+            <nav className={clientStyles.navbar}>
+                <div className={clientStyles.navContainer}>
+                    <div className={clientStyles.navLeft}>
+                        <div className={clientStyles.logoCircle}>
                             <span className="material-icons">pets</span>
                         </div>
-                        <span className={styles.brandTitle}>patitas felices</span>
-                        <span className={styles.portalBadge}>Portal Veterinario</span>
+                        <span className={clientStyles.brandTitle}>patitas felices</span>
+                        <span className={clientStyles.portalBadge}>Portal Veterinario</span>
                     </div>
 
-                    <div className={styles.navCenter}>
-                        <a href="#turnos" className={styles.navLink}>Turnos</a>
-                        <a href="#historial" className={styles.navLinkFade}>Historial Clínico</a>
+                    <div className={clientStyles.navCenter}>
+                        <a href="#turnos" className={clientStyles.navLink}>Turnos</a>
+                        <a href="#historial" className={clientStyles.navLinkFade}>Historial Clínico</a>
                     </div>
 
-                    <div className={styles.navRight}>
-                        <button className={styles.notificationBtn}>
+                    <div className={clientStyles.navRight}>
+                        <button className={clientStyles.notificationBtn}>
                             <span className="material-icons">notifications</span>
-                            <span className={styles.notificationDot}></span>
+                            <span className={clientStyles.notificationDot}></span>
                         </button>
-                        <div className={styles.userProfile}>
-                            <div className={styles.userInfo}>
-                                <p className={styles.welcomeText}>Bienvenido,</p>
-                                <p className={styles.userName}>Dr/a. {user?.nombre || 'Veterinario'}</p>
+                        <div className={clientStyles.userProfile}>
+                            <div className={clientStyles.userInfo}>
+                                <p className={clientStyles.welcomeText}>Bienvenido,</p>
+                                <p className={clientStyles.userName}>Dr/a. {user?.nombre || 'Veterinario'}</p>
                             </div>
-                            <div className={styles.avatarCircle}>
+                            <div className={clientStyles.avatarCircle}>
                                 {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'V'}
                             </div>
                         </div>
                         <button
                             onClick={handleLogout}
                             title="Cerrar Sesión"
-                            style={{
-                                background: 'none', border: 'none', color: '#6b7280',
-                                cursor: 'pointer', display: 'flex', alignItems: 'center',
-                                marginLeft: '0.5rem', padding: '0.5rem', borderRadius: '50%',
-                                transition: 'background-color 0.2s'
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
-                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            className={vet.logoutBtn}
                         >
                             <span className="material-icons">logout</span>
                         </button>
@@ -83,32 +77,24 @@ export const VetDashboard = () => {
                 </div>
             </nav>
 
-            <main className={styles.mainContent}>
+            <main className={clientStyles.mainContent}>
                 {/* SECCION 1: MIS TURNOS */}
-                <section id="turnos" className={styles.sectionScroll}>
-                    <div className={styles.sectionHeader}>
-                        <div className={styles.headerTitleGroup}>
-                            <div className={`${styles.iconCircle} ${styles.blueRing}`}>
+                <section id="turnos" className={clientStyles.sectionScroll}>
+                    <div className={clientStyles.sectionHeader}>
+                        <div className={clientStyles.headerTitleGroup}>
+                            <div className={`${clientStyles.iconCircle} ${clientStyles.blueRing}`}>
                                 <span className="material-icons">calendar_today</span>
                             </div>
                             <div>
-                                <h2 className={styles.sectionTitle}>Mis Turnos</h2>
-                                <p className={styles.sectionSubtitle}>Próximas consultas asignadas</p>
+                                <h2 className={clientStyles.sectionTitle}>Mis Turnos</h2>
+                                <p className={clientStyles.sectionSubtitle}>Próximas consultas asignadas</p>
                             </div>
                         </div>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <span style={{
-                                backgroundColor: '#dbeafe', color: '#1e40af',
-                                padding: '0.5rem 1rem', borderRadius: '9999px',
-                                fontWeight: 'bold', fontSize: '0.75rem'
-                            }}>
+                        <div className={vet.counterGroup}>
+                            <span className={vet.counterBadgeBlue}>
                                 ● HOY: {agenda.length}
                             </span>
-                            <span style={{
-                                backgroundColor: '#fff7ed', color: '#9a3412',
-                                padding: '0.5rem 1rem', borderRadius: '9999px',
-                                fontWeight: 'bold', fontSize: '0.75rem'
-                            }}>
+                            <span className={vet.counterBadgeOrange}>
                                 PENDIENTES: {turnosPendientes}
                             </span>
                         </div>
@@ -122,18 +108,18 @@ export const VetDashboard = () => {
                 </section>
 
                 {/* SECCION 2: GESTION MEDICA */}
-                <section id="historial" className={styles.sectionScroll}>
-                    <div className={styles.sectionHeader} style={{ marginTop: '3rem' }}>
-                        <div className={styles.headerTitleGroup}>
-                            <div className={`${styles.iconCircle}`} style={{ color: '#10b981', boxShadow: '0 0 0 4px #ecfdf5' }}>
+                <section id="historial" className={clientStyles.sectionScroll}>
+                    <div className={`${clientStyles.sectionHeader} ${vet.sectionMarginTop}`}>
+                        <div className={clientStyles.headerTitleGroup}>
+                            <div className={`${clientStyles.iconCircle} ${vet.iconGreen}`}>
                                 <span className="material-icons">medical_services</span>
                             </div>
                             <div>
-                                <h2 className={styles.sectionTitle}>Gestión Clínica</h2>
-                                <p className={styles.sectionSubtitle}>Crear y administrar historiales</p>
+                                <h2 className={clientStyles.sectionTitle}>Gestión Clínica</h2>
+                                <p className={clientStyles.sectionSubtitle}>Crear y administrar historiales</p>
                             </div>
                         </div>
-                        <button className={styles.primaryButton} style={{ width: 'auto', backgroundColor: '#10b981' }}>
+                        <button className={`${clientStyles.primaryButton} ${vet.btnGreen}`}>
                             Mis Registros
                         </button>
                     </div>
@@ -145,9 +131,9 @@ export const VetDashboard = () => {
                 </section>
 
                 {/* SECCION 3: RECIENTES */}
-                <section className={styles.sectionScroll} style={{ marginTop: '3rem' }}>
-                    <div className={styles.sectionHeader}>
-                        <h3 className={styles.sectionTitle} style={{ fontSize: '1.25rem' }}>Registros Recientes</h3>
+                <section className={`${clientStyles.sectionScroll} ${vet.sectionMarginTop}`}>
+                    <div className={clientStyles.sectionHeader}>
+                        <h3 className={`${clientStyles.sectionTitle} ${vet.titleSmall}`}>Registros Recientes</h3>
                     </div>
                     <RecentRecords />
                 </section>

@@ -1,0 +1,460 @@
+/* ================================================
+   ESTILOS COMPARTIDOS — COMPONENTES VET
+   Modales, badges de color, busqueda, botones, etc.
+   ================================================ */
+
+/* ---- MODAL BACKDROP ---- */
+.modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ---- MODAL CARD ---- */
+.modalCard {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modalCardCentered {
+    composes: modalCard;
+    text-align: center;
+    position: relative;
+    max-width: 450px;
+}
+
+.modalTitle {
+    margin: 0 0 1rem 0;
+    color: #1f2937;
+}
+
+.modalTitleSpaced {
+    composes: modalTitle;
+    margin-bottom: 1.5rem;
+}
+
+.modalClose {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+}
+
+/* ---- MODAL BOTONES ---- */
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.modalActionsCenter {
+    text-align: right;
+    margin-top: 1.5rem;
+}
+
+.btnCancel {
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    background-color: transparent;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.btnPrimary {
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    background-color: #3b82f6;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: white;
+}
+
+.btnPrimaryFull {
+    composes: btnPrimary;
+    width: 100%;
+    padding: 0.6rem 2rem;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
+}
+
+/* ---- FORMULARIO EN MODAL ---- */
+.formGroup {
+    margin-bottom: 1rem;
+}
+
+.formLabel {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.formInput {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+}
+
+/* ---- PET AVATAR ---- */
+.petAvatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.petAvatarDog {
+    composes: petAvatar;
+    background-color: #fff3cd;
+    color: #b45309;
+}
+
+.petAvatarCat {
+    composes: petAvatar;
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+.petAvatarSmall {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.petAvatarSmallDog {
+    composes: petAvatarSmall;
+    background-color: #fff3cd;
+    color: #b45309;
+}
+
+.petAvatarSmallCat {
+    composes: petAvatarSmall;
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+/* ---- BADGES DE TEXTO ---- */
+.badgePills {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.badgePill {
+    font-size: 0.85rem;
+    color: #6b7280;
+    background-color: #f3f4f6;
+    padding: 0.1rem 0.6rem;
+    border-radius: 99px;
+}
+
+/* ---- FICHA DETALLE ---- */
+.fichaContainer {
+    text-align: left;
+    background-color: #f9fafb;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.fichaGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.fichaLabel {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.fichaValue {
+    margin: 0;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+/* ---- ADVERTENCIAS ---- */
+.warningBox {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: #fef2f2;
+    border-radius: 0.5rem;
+    border: 1px solid #fecaca;
+}
+
+.warningTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #b91c1c;
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.warningText {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #7f1d1d;
+}
+
+/* ---- LOADING OVERLAY ---- */
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.loadingSpinner {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ---- MOTIVO MODAL (TEXTO DESCRIPTIVO) ---- */
+.motivoText {
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+/* ---- FILTRO SELECT / DATE ---- */
+.filterInput {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    font-family: inherit;
+    color: #4b5563;
+    outline: none;
+}
+
+.filterSelect {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.35rem 2rem 0.35rem 0.75rem;
+    font-family: inherit;
+    color: #4b5563;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    appearance: none;
+}
+
+/* ---- SEARCH BAR ---- */
+.searchContainer {
+    position: relative;
+    width: 250px;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.4rem 1rem 0.4rem 2.5rem;
+    border-radius: 9999px;
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    outline: none;
+    font-size: 0.875rem;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #9ca3af;
+}
+
+/* ---- CELL HELPERS ---- */
+.cellColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.cellSubtext {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.cellIdBold {
+    font-weight: bold;
+    color: #6b7280;
+}
+
+.petIdSmall {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* ---- RECORD COLOR AVATARS ---- */
+.colorAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* ---- TRATAMIENTO CELL ---- */
+.diagnosisText {
+    font-size: 0.85rem;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+
+/* ---- ACCIONES CENTRADAS ---- */
+.actionsCentered {
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* ---- FOOTER TABLE ---- */
+.tableFooter {
+    padding: 1rem 2rem;
+    border-top: 1px solid #f3f4f6;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: #9ca3af;
+}
+
+.tableFooterLink {
+    color: #3b82f6;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* ---- FILTER BAR (HEADER) ---- */
+.filterBar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* ---- VET DASHBOARD OVERRIDES ---- */
+.logoutBtn {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-left: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.logoutBtn:hover {
+    background-color: #f3f4f6;
+}
+
+.counterBadge {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+
+.counterBadgeBlue {
+    composes: counterBadge;
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.counterBadgeOrange {
+    composes: counterBadge;
+    background-color: #fff7ed;
+    color: #9a3412;
+}
+
+.counterGroup {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.sectionMarginTop {
+    margin-top: 3rem;
+}
+
+.iconGreen {
+    color: #10b981;
+    box-shadow: 0 0 0 4px #ecfdf5;
+}
+
+.btnGreen {
+    width: auto;
+    background-color: #10b981;
+}
+
+.titleSmall {
+    font-size: 1.25rem;
+}
+
+/* ---- FORM FLEX OVERRIDES (MEDICAL HISTORY) ---- */
+.flexFixed160 {
+    flex: 0 0 160px;
+}
+
+.flexFixed180 {
+    flex: 0 0 180px;
+}
+
+.flexFixedAuto {
+    flex: 0 0 auto;
+    padding-bottom: 2px;
+}
+
+/* ---- TRATAMIENTO COLUMN WIDTH ---- */
+.colWide {
+    width: 40%;
+}
+
+/* ---- PET NAME (MODAL) ---- */
+.petModalName {
+    margin: 0 0 0.25rem 0;
+    color: #1f2937;
+}

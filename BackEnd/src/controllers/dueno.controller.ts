@@ -1,26 +1,26 @@
 import { Request, Response, NextFunction } from 'express';
 import * as duenoService from '../services/dueno.service';
 
-// CREAR PERFIL DE DUENO
+// CREAR DUENO
 export const createPerfil = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // VERIFICACION DE AUTENTICACION
+        // VERIFICAR AUTENTICACION
         if (!req.user) {
-            throw new Error('No autorizado');
+            throw new Error('NO AUTORIZADO');
         }
 
         const { nombre, apellido, telefono } = req.body;
 
-        // VALIDACION DE DATOS OBLIGATORIOS
+        // VALIDAR DATOS
         if (!nombre || !apellido || !telefono) {
-            res.status(400).json({ message: 'Faltan datos requeridos' });
+            res.status(400).json({ message: 'FALTAN DATOS REQUERIDOS' });
             return;
         }
 
-        // LLAMADA AL SERVICIO
+        // CREAR PERFIL
         const nuevoDueno = await duenoService.registrarPerfil(req.user.id, { nombre, apellido, telefono });
 
-        res.status(201).json({ message: 'Perfil creado exitosamente', data: nuevoDueno });
+        res.status(201).json({ message: 'PERFIL CREADO EXITOSAMENTE', data: nuevoDueno });
     } catch (error) {
         next(error);
     }
@@ -29,7 +29,7 @@ export const createPerfil = async (req: Request, res: Response, next: NextFuncti
 // OBTENER MI PERFIL
 export const getMiPerfil = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (!req.user) throw new Error('No autorizado');
+        if (!req.user) throw new Error('NO AUTORIZADO');
 
         const perfil = await duenoService.obtenerPerfil(req.user.id);
 
@@ -46,7 +46,7 @@ export const getMiPerfil = async (req: Request, res: Response, next: NextFunctio
 // ACTUALIZAR MI PERFIL
 export const updatePerfil = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (!req.user) throw new Error('No autorizado');
+        if (!req.user) throw new Error('NO AUTORIZADO');
 
         const datos = req.body;
         const perfilActualizado = await duenoService.actualizarPerfil(req.user.id, datos);
@@ -57,7 +57,7 @@ export const updatePerfil = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-// ELIMINAR DUENO (ADMIN)
+// ELIMINAR DUENO
 export const deleteDueno = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = Number(req.params.id);
@@ -71,11 +71,29 @@ export const deleteDueno = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-// OBTENER TODOS LOS DUENOS (ADMIN)
+// OBTENER TODOS LOS DUENOS
 export const getAllDuenos = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const duenos = await duenoService.obtenerTodos();
         res.json({ data: duenos });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// CREAR DUENO DESDE ADMIN
+export const createDuenoAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { nombre, apellido, email, telefono, dni } = req.body;
+
+        if (!nombre || !apellido || !email || !telefono) {
+            res.status(400).json({ message: 'FALTAN DATOS REQUERIDOS' });
+            return;
+        }
+
+        const nuevoDueno = await duenoService.registrarNuevoDuenoAdmin({ nombre, apellido, email, telefono, dni });
+
+        res.status(201).json({ message: 'DUENO CREADO EXITOSAMENTE', data: nuevoDueno });
     } catch (error) {
         next(error);
     }

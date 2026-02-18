@@ -2,8 +2,10 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { fetchHistorialReciente, deleteHistorial, updateHistorial } from '../../../store/slices/vetSlice';
+import type { HistorialDetalle } from '../../../types/historial.types';
 // ESTILOS REUTILIZADOS
-import styles from '../../../components/ui/Table.module.css';
+import tableStyles from '../../../components/ui/Table.module.css';
+import vet from './VetComponents.module.css';
 import { ActionBtn } from '../../../components/ui/ActionBtn';
 import { Card, CardHeader, CardContent } from '../../../components/ui/Card';
 
@@ -12,7 +14,7 @@ export const RecentRecords = () => {
     const { historialesRecientes, loading } = useAppSelector((state) => state.vet);
 
     // ESTADOS LOCALES PARA MODALES
-    const [editingRecord, setEditingRecord] = useState<any | null>(null);
+    const [editingRecord, setEditingRecord] = useState<HistorialDetalle | null>(null);
 
     // FORMULARIO DE EDICION
     const [editForm, setEditForm] = useState({
@@ -32,7 +34,7 @@ export const RecentRecords = () => {
         }
     };
 
-    const handleEditClick = (record: any) => {
+    const handleEditClick = (record: HistorialDetalle) => {
         setEditingRecord(record);
         setEditForm({
             diagnostico: record.diagnostico,
@@ -56,47 +58,40 @@ export const RecentRecords = () => {
         <Card>
             {/* MODAL DE EDICION (SIMPLE) */}
             {editingRecord && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                    <div style={{
-                        backgroundColor: 'white', padding: '2rem', borderRadius: '1rem',
-                        maxWidth: '500px', width: '90%', boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
-                    }}>
-                        <h3 className={styles.sectionTitle} style={{ marginBottom: '1.5rem' }}>Editar Historial</h3>
+                <div className={vet.modalBackdrop}>
+                    <div className={vet.modalCard}>
+                        <h3 className={vet.modalTitleSpaced}>Editar Historial</h3>
 
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#4b5563' }}>Diagnóstico</label>
+                        <div className={vet.formGroup}>
+                            <label className={vet.formLabel}>Diagnóstico</label>
                             <input
                                 type="text"
                                 value={editForm.diagnostico}
                                 onChange={(e) => setEditForm({ ...editForm, diagnostico: e.target.value })}
-                                style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #d1d5db' }}
+                                className={vet.formInput}
                             />
                         </div>
 
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#4b5563' }}>Tratamiento</label>
+                        <div className={vet.formGroup}>
+                            <label className={vet.formLabel}>Tratamiento</label>
                             <input
                                 type="text"
                                 value={editForm.tratamiento}
                                 onChange={(e) => setEditForm({ ...editForm, tratamiento: e.target.value })}
-                                style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #d1d5db' }}
+                                className={vet.formInput}
                             />
                         </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
+                        <div className={vet.modalActions}>
                             <button
                                 onClick={() => setEditingRecord(null)}
-                                style={{ padding: '0.5rem 1.5rem', cursor: 'pointer', backgroundColor: 'transparent', border: '1px solid #d1d5db', borderRadius: '0.5rem', fontWeight: 600, color: '#6b7280' }}
+                                className={vet.btnCancel}
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={handleSaveEdit}
-                                style={{ padding: '0.5rem 1.5rem', cursor: 'pointer', backgroundColor: '#3b82f6', border: 'none', borderRadius: '0.5rem', fontWeight: 600, color: 'white' }}
+                                className={vet.btnPrimary}
                             >
                                 Guardar Cambios
                             </button>
@@ -110,39 +105,32 @@ export const RecentRecords = () => {
                 icon="history"
             >
                 {/* BARRA DE BUSQUEDA PERSONALIZADA PARA COINCIDIR ESTILOS */}
-                <div style={{ position: 'relative', width: '250px' }}>
+                <div className={vet.searchContainer}>
                     <input
                         type="text"
                         placeholder="Buscar..."
-                        style={{
-                            width: '100%', padding: '0.4rem 1rem 0.4rem 2.5rem', borderRadius: '9999px',
-                            border: '1px solid #e5e7eb', backgroundColor: '#f9fafb', outline: 'none',
-                            fontSize: '0.875rem'
-                        }}
+                        className={vet.searchInput}
                     />
-                    <span className="material-icons" style={{
-                        position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)',
-                        fontSize: '18px', color: '#9ca3af'
-                    }}>search</span>
+                    <span className={`material-icons ${vet.searchIcon}`}>search</span>
                 </div>
             </CardHeader>
 
             <CardContent>
-                <div className={styles.tableContainer}>
-                    <table className={styles.table}>
+                <div className={tableStyles.tableContainer}>
+                    <table className={tableStyles.table}>
                         <thead>
-                            <tr className={styles.tableHeader}>
-                                <th className={styles.textLeft}>FECHA</th>
-                                <th className={styles.textLeft}>MASCOTA</th>
-                                <th className={styles.textLeft} style={{ width: '40%' }}>TRATAMIENTO</th>
-                                <th className={styles.textCenter}>ACCIONES</th>
+                            <tr className={tableStyles.tableHeader}>
+                                <th className={tableStyles.textLeft}>FECHA</th>
+                                <th className={tableStyles.textLeft}>MASCOTA</th>
+                                <th className={`${tableStyles.textLeft} ${vet.colWide}`}>TRATAMIENTO</th>
+                                <th className={tableStyles.textCenter}>ACCIONES</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan={4} className={styles.emptyState}>Cargando...</td></tr>
+                                <tr><td colSpan={4} className={tableStyles.emptyState}>Cargando...</td></tr>
                             ) : historialesRecientes.length === 0 ? (
-                                <tr><td colSpan={4} className={styles.emptyState}>No hay registros recientes</td></tr>
+                                <tr><td colSpan={4} className={tableStyles.emptyState}>No hay registros recientes</td></tr>
                             ) : (
                                 historialesRecientes.map((record) => {
                                     // GENERAR COLOR DE FONDO ALEATORIO BASADO EN ID
@@ -151,58 +139,58 @@ export const RecentRecords = () => {
                                     const colorIdx = record.mascota_id % bgColors.length;
 
                                     return (
-                                        <tr key={record.id} className={styles.tableRow}>
+                                        <tr key={record.id} className={tableStyles.tableRow}>
                                             <td>
-                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                    <span className={styles.cellTextBold}>
+                                                <div className={vet.cellColumn}>
+                                                    <span className={tableStyles.cellTextBold}>
                                                         {new Date(record.fecha).toLocaleDateString()}
                                                     </span>
-                                                    <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                                                    <span className={vet.cellSubtext}>
                                                         {new Date(record.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div className={styles.cellWithIcon}>
-                                                    <div style={{
-                                                        width: '32px', height: '32px', borderRadius: '0.375rem',
-                                                        backgroundColor: bgColors[colorIdx], color: textColors[colorIdx],
-                                                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'
-                                                    }}>
+                                                <div className={tableStyles.cellWithIcon}>
+                                                    <div
+                                                        className={vet.colorAvatar}
+                                                        style={{
+                                                            backgroundColor: bgColors[colorIdx],
+                                                            color: textColors[colorIdx]
+                                                        }}
+                                                    >
                                                         {record.mascota_nombre ? record.mascota_nombre.charAt(0) : '?'}
                                                     </div>
                                                     <div>
-                                                        <div className={styles.cellTextBold}>{record.mascota_nombre}</div>
-                                                        <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>#PET-{record.mascota_id}</span>
+                                                        <div className={tableStyles.cellTextBold}>{record.mascota_nombre}</div>
+                                                        <span className={vet.cellSubtext}>#PET-{record.mascota_id}</span>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                    <span className={styles.cellTextBold}>{record.tratamiento}</span>
-                                                    <span style={{ fontSize: '0.85rem', color: '#6b7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '300px' }}>
+                                                <div className={vet.cellColumn}>
+                                                    <span className={tableStyles.cellTextBold}>{record.tratamiento}</span>
+                                                    <span className={vet.diagnosisText}>
                                                         {record.diagnostico}
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className={styles.textCenter}>
-                                                <div className={styles.actions} style={{ justifyContent: 'center', gap: '0.5rem' }}>
-                                                    <div className={styles.actions} style={{ justifyContent: 'center', gap: '0.5rem' }}>
-                                                        <ActionBtn
-                                                            onClick={() => handleEditClick(record)}
-                                                            icon="edit"
-                                                            label="Editar"
-                                                            variant="primary"
-                                                            title="Editar Registro"
-                                                        />
-                                                        <ActionBtn
-                                                            onClick={() => handleDeleteClick(record.id)}
-                                                            icon="delete"
-                                                            label="Eliminar"
-                                                            variant="danger"
-                                                            title="Eliminar Registro"
-                                                        />
-                                                    </div>
+                                            <td className={tableStyles.textCenter}>
+                                                <div className={`${tableStyles.actions} ${vet.actionsCentered}`}>
+                                                    <ActionBtn
+                                                        onClick={() => handleEditClick(record)}
+                                                        icon="edit"
+                                                        label="Editar"
+                                                        variant="primary"
+                                                        title="Editar Registro"
+                                                    />
+                                                    <ActionBtn
+                                                        onClick={() => handleDeleteClick(record.id)}
+                                                        icon="delete"
+                                                        label="Eliminar"
+                                                        variant="danger"
+                                                        title="Eliminar Registro"
+                                                    />
                                                 </div>
                                             </td>
                                         </tr>

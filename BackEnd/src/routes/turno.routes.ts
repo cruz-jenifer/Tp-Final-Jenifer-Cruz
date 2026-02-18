@@ -11,6 +11,13 @@ router.use(authMiddleware);
 
 // LISTAR MIS TURNOS
 router.get('/mis-turnos', checkRole(['cliente', 'admin']), TurnoController.listarMisTurnos);
+
+// VER AGENDA GLOBAL
+router.get('/agenda', checkRole(['admin']), TurnoController.verAgendaGlobal);
+
+// VERIFICAR DISPONIBILIDAD
+router.get('/check-availability', checkRole(['cliente', 'admin']), TurnoController.checkAvailability);
+
 // CREAR NUEVA RESERVA
 router.post('/',
     [checkRole(['cliente', 'admin']), ...turnoValidators.reservar],
@@ -26,7 +33,7 @@ router.delete('/:id',
 // DETALLE Y REPROGRAMACION
 router.get('/:id', checkRole(['cliente', 'admin']), TurnoController.getOne);
 router.put('/:id',
-    [checkRole(['cliente', 'admin']), ...turnoValidators.cancelar], // Usamos validador de ID existente
+    [checkRole(['cliente', 'admin']), ...turnoValidators.cancelar],
     TurnoController.reprogramar
 );
 

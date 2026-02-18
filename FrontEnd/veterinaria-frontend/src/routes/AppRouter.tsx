@@ -2,11 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import { LoginForm } from '../features/auth/LoginForm';
 import ClientDashboard from '../features/client/ClientDashboard';
-import { ProtectedRoute } from '../components/ProtectedRoute';
+import { ProtectedRoute } from './ProtectedRoute';
 
 import { VetDashboard } from '../features/vet/VetDashboard';
 import { AdminLayout } from '../features/admin/layout/AdminLayout';
-import { OwnersPage } from '../features/admin/owners/OwnersPage';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 
@@ -36,13 +35,7 @@ export const AppRouter = () => {
                 </Route>
 
                 <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-                    <Route path="/admin" element={<AdminLayout />}>
-                        <Route index element={<Navigate to="owners" replace />} />
-                        <Route path="owners" element={<OwnersPage />} />
-                        <Route path="pets" element={<div>TODO: Pets Page</div>} />
-                        <Route path="vets" element={<div>TODO: Vets Page</div>} />
-                        <Route path="history" element={<div>TODO: History Page</div>} />
-                    </Route>
+                    <Route path="/admin" element={<AdminLayout />} />
                 </Route>
 
                 <Route element={<ProtectedRoute />}>

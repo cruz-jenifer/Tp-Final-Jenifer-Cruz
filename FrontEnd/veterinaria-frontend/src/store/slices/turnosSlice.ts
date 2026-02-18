@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { Turno } from '../../types/turno.types';
 import type { RootState } from '../index'; // IMPORTACION DE ROOTSTATE
 
@@ -16,7 +16,7 @@ const initialState: TurnosState = {
 };
 
 // API BASE URL
-const API_URL = 'http://localhost:3000/api/turnos';
+const API_URL = 'http://localhost:3001/api/turnos';
 
 // OPERACIONES ASINCRONAS (THUNKS)
 
@@ -41,8 +41,9 @@ export const fetchMisTurnos = createAsyncThunk(
 
             const data = await response.json();
             return data.data as Turno[]; // RETORNO DE DATOS
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
@@ -72,8 +73,9 @@ export const createTurno = createAsyncThunk(
             // Refetch turnos after creation or return new turno if backend returns it
             // RECARGA DE TURNOS DESPUES DE CREACION
             return await response.json();
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
@@ -99,8 +101,9 @@ export const cancelTurno = createAsyncThunk(
             }
 
             return id;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
@@ -128,8 +131,9 @@ export const updateTurno = createAsyncThunk(
             }
 
             return { id, data };
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
@@ -155,92 +159,113 @@ export const deleteTurno = createAsyncThunk(
             }
 
             return id;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
         }
     }
 );
 
-// SLICE DE TURNOS
+// THUNK LOGIN ADMIN AGENDA
+export const fetchAgendaAdmin = createAsyncThunk(
+    'turnos/fetchAgendaAdmin',
+    async (fecha: string | undefined, { getState, rejectWithValue }) => {
+        try {
+            const token = (getState() as RootState).auth.token;
+            if (!token) throw new Error('No token found');
+
+            const url = fecha ? `${API_URL}/agenda?fecha=${fecha}` : `${API_URL}/agenda`;
+
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Error al cargar agenda');
+            }
+
+            const data = await response.json();
+            return data.turnos || [];
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+// CHECK AVAILABILITY
+export const checkAvailability = createAsyncThunk(
+    'turnos/checkAvailability',
+    async ({ veterinario_id, fecha, hora }: { veterinario_id: number; fecha: string; hora: string }, { getState, rejectWithValue }) => {
+        try {
+            const token = (getState() as RootState).auth.token;
+            if (!token) throw new Error('No token found');
+
+            const response = await fetch(`${API_URL}/check-availability?veterinario_id=${veterinario_id}&fecha=${fecha}&hora=${hora}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Error checking availability');
+
+            const data = await response.json();
+            return data.disponible;
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+// SLICE
 const turnosSlice = createSlice({
     name: 'turnos',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        builder
-            // OBTENER
-            .addCase(fetchMisTurnos.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchMisTurnos.fulfilled, (state, action: PayloadAction<Turno[]>) => {
-                state.loading = false;
-                state.turnos = action.payload;
-            })
-            .addCase(fetchMisTurnos.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            })
-            // CREAR
-            .addCase(createTurno.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(createTurno.fulfilled, (state) => {
-                state.loading = false;
-                // ACTUALIZACION DE ESTADO
-            })
-            .addCase(createTurno.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            })
-            // CANCELAR
-            .addCase(cancelTurno.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(cancelTurno.fulfilled, (state, action: PayloadAction<number>) => {
-                state.loading = false;
-                // ACTUALIZACION DE LISTA
-                const index = state.turnos.findIndex(t => t.id === action.payload);
-                if (index !== -1) {
-                    state.turnos[index].estado = 'cancelado';
-                }
-            })
-            .addCase(cancelTurno.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            })
-            // ACTUALIZAR
-            .addCase(updateTurno.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(updateTurno.fulfilled, (state, action) => {
-                state.loading = false;
-                const index = state.turnos.findIndex(t => t.id === action.payload.id);
-                if (index !== -1) {
-                    state.turnos[index] = { ...state.turnos[index], ...action.payload.data };
-                }
-            })
-            .addCase(updateTurno.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            })
-            // ELIMINAR (FISICO)
-            .addCase(deleteTurno.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(deleteTurno.fulfilled, (state, action) => {
-                state.loading = false;
-                state.turnos = state.turnos.filter(t => t.id !== action.payload);
-            })
-            .addCase(deleteTurno.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            });
-    },
+        // FETCH MIS TURNOS
+        builder.addCase(fetchMisTurnos.pending, (state) => { state.loading = true; state.error = null; });
+        builder.addCase(fetchMisTurnos.fulfilled, (state, action) => { state.loading = false; state.turnos = action.payload; });
+        builder.addCase(fetchMisTurnos.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+
+        // CREATE TURNO
+        builder.addCase(createTurno.pending, (state) => { state.loading = true; state.error = null; });
+        builder.addCase(createTurno.fulfilled, (state) => { state.loading = false; });
+        builder.addCase(createTurno.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+
+        // CANCEL TURNO
+        builder.addCase(cancelTurno.pending, (state) => { state.loading = true; state.error = null; });
+        builder.addCase(cancelTurno.fulfilled, (state, action) => {
+            state.loading = false;
+            const index = state.turnos.findIndex(t => t.id === action.payload);
+            if (index !== -1) state.turnos[index].estado = 'cancelado';
+        });
+        builder.addCase(cancelTurno.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+
+        // UPDATE TURNO
+        builder.addCase(updateTurno.fulfilled, (state, action) => {
+            state.loading = false;
+            const index = state.turnos.findIndex(t => t.id === action.payload.id);
+            if (index !== -1) state.turnos[index] = { ...state.turnos[index], ...action.payload.data };
+        });
+
+        // DELETE TURNO
+        builder.addCase(deleteTurno.fulfilled, (state, action) => {
+            state.loading = false;
+            state.turnos = state.turnos.filter(t => t.id !== action.payload);
+        });
+
+        // FETCH AGENDA ADMIN
+        builder.addCase(fetchAgendaAdmin.pending, (state) => { state.loading = true; state.error = null; });
+        builder.addCase(fetchAgendaAdmin.fulfilled, (state, action) => {
+            state.loading = false;
+            state.turnos = action.payload;
+        });
+        builder.addCase(fetchAgendaAdmin.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+    }
 });
 
+export const { } = turnosSlice.actions;
 export default turnosSlice.reducer;

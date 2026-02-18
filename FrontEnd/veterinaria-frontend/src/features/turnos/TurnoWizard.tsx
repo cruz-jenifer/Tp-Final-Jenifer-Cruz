@@ -5,6 +5,8 @@ import { fetchMascotas } from '../../store/slices/mascotasSlice';
 import { fetchVeterinarios } from '../../store/slices/veterinariosSlice';
 import { fetchServicios } from '../../store/slices/serviciosSlice';
 import styles from './TurnoWizard.module.css';
+import type { Servicio } from '../../store/slices/serviciosSlice';
+import type { Veterinario } from '../../store/slices/veterinariosSlice';
 
 interface TurnoWizardProps {
     onClose: () => void;
@@ -141,8 +143,9 @@ export const TurnoWizard: React.FC<TurnoWizardProps> = ({ onClose }) => {
             await dispatch(createTurno(turnoData)).unwrap();
             await dispatch(fetchMisTurnos());
             onClose();
-        } catch (error: any) {
-            setGeneralError('Error al crear turno: ' + (error.message || error));
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            setGeneralError('Error al crear turno: ' + message);
         }
     };
 
@@ -211,7 +214,7 @@ export const TurnoWizard: React.FC<TurnoWizardProps> = ({ onClose }) => {
                                 className={`${styles.input} ${errors.servicio_id ? styles.inputError : ''}`}
                             >
                                 <option value="">-- Seleccionar --</option>
-                                {servicios.map((servicio: any) => (
+                                {servicios.map((servicio: Servicio) => (
                                     <option key={servicio.id} value={servicio.id}>
                                         {servicio.nombre}
                                     </option>
@@ -294,13 +297,13 @@ export const TurnoWizard: React.FC<TurnoWizardProps> = ({ onClose }) => {
                             </div>
                             <div className={styles.summaryItem}>
                                 <span className={styles.summaryLabel}>Servicio</span>
-                                <span className={styles.summaryValue}>{servicios.find((s: any) => s.id === Number(formData.servicio_id))?.nombre || 'No seleccionado'}</span>
+                                <span className={styles.summaryValue}>{servicios.find((s: Servicio) => s.id === Number(formData.servicio_id))?.nombre || 'No seleccionado'}</span>
                             </div>
                             <div className={styles.summaryItem}>
                                 <span className={styles.summaryLabel}>Veterinario</span>
                                 <span className={styles.summaryValue}>{
                                     formData.veterinario_id
-                                        ? (() => { const vet = veterinarios.find((v: any) => v.id === Number(formData.veterinario_id)); return vet ? `${vet.nombre} ${vet.apellido}` : 'No encontrado'; })()
+                                        ? (() => { const vet = veterinarios.find((v: Veterinario) => v.id === Number(formData.veterinario_id)); return vet ? `${vet.nombre} ${vet.apellido}` : 'No encontrado'; })()
                                         : 'Cualquiera'
                                 }</span>
                             </div>

@@ -1,0 +1,36 @@
+.registerCard {
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(30, 58, 138, 0.05);
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #eff6ff;
+}
+
+.cardCircleDeco {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20rem;
+    height: 20rem;
+    background-color: #eff6ff;
+    border-radius: 9999px;
+    margin-right: -5rem;
+    margin-top: -5rem;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #6384FF;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 10;
+}
