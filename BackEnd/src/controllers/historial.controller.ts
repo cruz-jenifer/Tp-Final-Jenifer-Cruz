@@ -1,54 +1,27 @@
-
 import { Request, Response, NextFunction } from 'express';
-import { RowDataPacket } from 'mysql2';
-import { pool } from '../config/database';
-import { HistorialModel } from '../models/historial.model';
+import { HistorialService } from '../services/historial.service';
+import * as DuenoModel from '../models/dueno.model';
+import { RolNombre } from '../types/enums';
 
-// CREAR HISTORIAL
-export const createHistorial = async (req: Request, res: Response, next: NextFunction) => {
+// CREAR REGISTRO DE HISTORIAL
+export const crearHistorial = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.user) throw new Error('NO AUTORIZADO');
 
-        const { mascota_id, diagnostico, tratamiento, fecha } = req.body;
+        const resultado = await HistorialService.crearRegistro(req.user.id, req.user.rol, req.body);
 
-        if (!mascota_id || !diagnostico || !fecha) {
-            return res.status(400).json({ message: 'FALTAN DATOS OBLIGATORIOS' });
+        res.status(201).json({ success: true, mensaje: 'HISTORIAL ACTUALIZADO', data: resultado });
+
+    } catch (error: unknown) {
+        if (error instanceof Error && error.message.includes('ACCESO DENEGADO')) {
+            return res.status(403).json({ success: false, mensaje: error.message });
         }
-
-        // VALIDAR VETERINARIO
-        const [vetRows] = await pool.query<RowDataPacket[]>(
-            'SELECT id FROM veterinarios WHERE usuario_id = ?',
-            [req.user.id]
-        );
-
-        // FALLBACK ADMIN
-        let veterinarioId: number;
-
-        if (vetRows.length > 0) {
-            veterinarioId = vetRows[0].id;
-        } else if (req.user.rol === 'admin') {
-            veterinarioId = 1; // ID DE SISTEMA
-        } else {
-            return res.status(403).json({ message: 'NO TIENES PERFIL PROFESIONAL PARA FIRMAR HISTORIAL' });
-        }
-
-        const nuevoRegistro = await HistorialModel.create({
-            mascota_id,
-            veterinario_id: veterinarioId,
-            fecha,
-            diagnostico,
-            tratamiento
-        });
-
-        res.status(201).json({ message: 'HISTORIAL ACTUALIZADO', data: nuevoRegistro });
-
-    } catch (error) {
         next(error);
     }
 };
 
 // OBTENER HISTORIAL POR MASCOTA
-export const getHistorialByMascota = async (req: Request, res: Response, next: NextFunction) => {
+export const obtenerHistorialPorMascota = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.user) throw new Error('NO AUTORIZADO');
 
@@ -56,86 +29,62 @@ export const getHistorialByMascota = async (req: Request, res: Response, next: N
         const mascotaId = Number(id);
 
         // VALIDACION DE PROPIEDAD
-        if (req.user.rol === 'cliente') {
-            const [rows] = await pool.query<RowDataPacket[]>(
-                `SELECT m.id 
-                 FROM mascotas m 
-                 INNER JOIN duenos d ON m.dueno_id = d.id 
-                 WHERE m.id = ? AND d.usuario_id = ?`,
-                [mascotaId, req.user.id]
-            );
-
-            if (rows.length === 0) {
-                return res.status(403).json({ message: 'NO ESTAS AUTORIZADO A VER ESTA HISTORIA CLINICA' });
+        if (req.user.rol === RolNombre.CLIENTE) {
+            const dueno = await DuenoModel.findByUserId(req.user.id);
+            if (!dueno) {
+                return res.status(403).json({ success: false, mensaje: 'NO TIENES PERFIL DE DUEÑO' });
             }
         }
 
-        // OBTENER DATOS
-        const historial = await HistorialModel.findByMascotaId(mascotaId);
-        res.json({ data: historial });
-    } catch (error) {
+        const historial = await HistorialService.obtenerPorMascota(mascotaId, req.user.id, req.user.rol);
+        res.json({ success: true, mensaje: 'HISTORIAL OBTENIDO', data: historial });
+    } catch (error: unknown) {
         next(error);
     }
 };
 
-// OBTENER TODOS LOS HISTORIALES
-export const getAllHistorial = async (req: Request, res: Response, next: NextFunction) => {
+// OBTENER TODOS LOS HISTORIALES (ADMIN)
+export const obtenerTodosLosHistoriales = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const historiales = await HistorialModel.findAll();
-        res.json({ data: historiales });
-    } catch (error) {
+        const historiales = await HistorialService.obtenerTodos();
+        res.json({ success: true, mensaje: 'HISTORIALES OBTENIDOS', data: historiales });
+    } catch (error: unknown) {
         next(error);
     }
 };
 
-// ELIMINAR HISTORIAL
-export const deleteHistorial = async (req: Request, res: Response, next: NextFunction) => {
+// ELIMINAR REGISTRO DE HISTORIAL
+export const eliminarHistorial = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.user) throw new Error('NO AUTORIZADO');
         const { id } = req.params;
 
-        const historial = await HistorialModel.findById(Number(id));
-        if (!historial) return res.status(404).json({ message: 'HISTORIAL NO ENCONTRADO' });
+        await HistorialService.eliminarRegistro(Number(id), req.user.id, req.user.rol);
 
-        // VERIFICAR PERMISOS
-        if (req.user.rol !== 'admin') {
-            // BUSCAR VETERINARIO
-            const [vet] = await pool.query<RowDataPacket[]>('SELECT id FROM veterinarios WHERE usuario_id = ?', [req.user.id]);
-            if (!vet.length || vet[0].id !== historial.veterinario_id) {
-                return res.status(403).json({ message: 'NO TIENES PERMISO PARA ELIMINAR ESTE REGISTRO' });
-            }
+        res.json({ success: true, mensaje: 'HISTORIAL ELIMINADO', data: null });
+
+    } catch (error: unknown) {
+        if (error instanceof Error && error.message.includes('PERMISO')) {
+            return res.status(403).json({ success: false, mensaje: error.message });
         }
-
-        await HistorialModel.delete(Number(id));
-        res.json({ message: 'HISTORIAL ELIMINADO' });
-
-    } catch (error) {
         next(error);
     }
 };
 
-// ACTUALIZAR HISTORIAL
-export const updateHistorial = async (req: Request, res: Response, next: NextFunction) => {
+// ACTUALIZAR REGISTRO DE HISTORIAL
+export const actualizarHistorial = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.user) throw new Error('NO AUTORIZADO');
         const { id } = req.params;
-        const { diagnostico, tratamiento, observaciones } = req.body;
 
-        const historial = await HistorialModel.findById(Number(id));
-        if (!historial) return res.status(404).json({ message: 'HISTORIAL NO ENCONTRADO' });
+        await HistorialService.actualizarRegistro(Number(id), req.user.id, req.user.rol, req.body);
 
-        // VERIFICAR PERMISOS
-        if (req.user.rol !== 'admin') {
-            const [vet] = await pool.query<RowDataPacket[]>('SELECT id FROM veterinarios WHERE usuario_id = ?', [req.user.id]);
-            if (!vet.length || vet[0].id !== historial.veterinario_id) {
-                return res.status(403).json({ message: 'NO TIENES PERMISO PARA EDITAR ESTE REGISTRO' });
-            }
+        res.json({ success: true, mensaje: 'HISTORIAL ACTUALIZADO', data: null });
+
+    } catch (error: unknown) {
+        if (error instanceof Error && error.message.includes('PERMISO')) {
+            return res.status(403).json({ success: false, mensaje: error.message });
         }
-
-        await HistorialModel.update(Number(id), { diagnostico, tratamiento, observaciones });
-        res.json({ message: 'HISTORIAL ACTUALIZADO' });
-
-    } catch (error) {
         next(error);
     }
 };

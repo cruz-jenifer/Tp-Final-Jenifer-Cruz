@@ -1,54 +1,44 @@
-
 import { Request, Response, NextFunction } from 'express';
+import { MascotaService } from '../services/mascota.service';
 import * as MascotaModel from '../models/mascota.model';
-import * as DuenoModel from '../models/dueno.model';
-import * as MascotaService from '../services/mascota.service';
 
 export class MascotaController {
 
-    // LISTAR MASCOTAS
+    // LISTAR MASCOTAS PROPIAS
     static async listarMisMascotas(req: Request, res: Response, next: NextFunction) {
         try {
-            const userId = req.user?.id;
-            if (!userId) throw new Error('USUARIO NO IDENTIFICADO');
+            const usuarioId = req.user?.id;
+            if (!usuarioId) throw new Error('USUARIO NO IDENTIFICADO');
 
-            const dueno = await DuenoModel.findByUserId(userId);
-            if (!dueno) {
-                // SIN PERFIL DE DUENO
-                return res.json({ data: [] });
-            }
-
-            const mascotas = await MascotaModel.findByDuenoId(dueno.id);
-            res.json({ data: mascotas });
-        } catch (error) {
+            const mascotas = await MascotaService.listarPropias(usuarioId);
+            res.json({ success: true, mensaje: 'MASCOTAS OBTENIDAS', data: mascotas });
+        } catch (error: unknown) {
             next(error);
         }
     }
 
-    // OBTENER MASCOTA POR ID
-    static async getMascotaById(req: Request, res: Response, next: NextFunction) {
+    // OBTENER POR ID
+    static async obtenerMascotaPorId(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const mascota = await MascotaModel.findById(Number(id));
+            const mascota = await MascotaModel.buscarPorId(Number(id));
 
             if (!mascota) {
-                return res.status(404).json({ message: 'MASCOTA NO ENCONTRADA' });
+                return res.status(404).json({ success: false, mensaje: 'MASCOTA NO ENCONTRADA' });
             }
 
-
-
-            res.json(mascota);
-        } catch (error) {
+            res.json({ success: true, mensaje: 'MASCOTA OBTENIDA', data: mascota });
+        } catch (error: unknown) {
             next(error);
         }
     }
 
-    // OBTENER TODAS LAS MASCOTAS
-    static async getAllMascotas(req: Request, res: Response, next: NextFunction) {
+    // OBTENER TODAS
+    static async obtenerTodasLasMascotas(req: Request, res: Response, next: NextFunction) {
         try {
             const mascotas = await MascotaService.obtenerTodas();
-            res.json({ data: mascotas });
-        } catch (error) {
+            res.json({ success: true, mensaje: 'MASCOTAS OBTENIDAS', data: mascotas });
+        } catch (error: unknown) {
             next(error);
         }
     }
@@ -57,25 +47,19 @@ export class MascotaController {
     static async eliminarMascota(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const userId = req.user?.id;
+            const usuarioId = req.user?.id;
+            const rol = req.user?.rol;
 
-            // VALIDAR PROPIEDAD
-            const mascota = await MascotaModel.findById(Number(id));
-            if (!mascota) return res.status(404).json({ message: 'MASCOTA NO ENCONTRADA' });
+            if (!usuarioId || !rol) throw new Error('USUARIO NO IDENTIFICADO');
 
-            const dueno = await DuenoModel.findByUserId(userId!);
+            await MascotaService.eliminarConValidacion(Number(id), usuarioId, rol);
 
-            // VERIFICAR PERTENENCIA
-            if (req.user?.rol === 'cliente') {
-                if (!dueno || mascota.dueno_id !== dueno.id) {
-                    return res.status(403).json({ message: 'NO TIENE PERMISO PARA ELIMINAR ESTA MASCOTA' });
-                }
+            res.json({ success: true, mensaje: 'MASCOTA ELIMINADA CORRECTAMENTE', data: null });
+
+        } catch (error: unknown) {
+            if (error instanceof Error && error.message.includes('ACCESO DENEGADO')) {
+                return res.status(403).json({ success: false, mensaje: error.message });
             }
-
-            await MascotaModel.deleteById(Number(id));
-            res.json({ message: 'MASCOTA ELIMINADA CORRECTAMENTE' });
-
-        } catch (error) {
             next(error);
         }
     }
@@ -83,15 +67,15 @@ export class MascotaController {
     // CREAR MASCOTA
     static async crearMascota(req: Request, res: Response, next: NextFunction) {
         try {
-            const userId = req.user?.id;
-            const role = req.user?.rol;
+            const usuarioId = req.user?.id;
+            const rol = req.user?.rol;
 
-            if (!userId) throw new Error('USUARIO NO IDENTIFICADO');
+            if (!usuarioId || !rol) throw new Error('USUARIO NO IDENTIFICADO');
 
-            const nuevaMascota = await MascotaService.registrarMascota(userId, req.body, role!);
+            const nuevaMascota = await MascotaService.registrarMascota(usuarioId, req.body, rol);
 
-            res.status(201).json({ message: 'MASCOTA CREADA', data: nuevaMascota });
-        } catch (error) {
+            res.status(201).json({ success: true, mensaje: 'MASCOTA CREADA', data: nuevaMascota });
+        } catch (error: unknown) {
             next(error);
         }
     }
@@ -100,13 +84,18 @@ export class MascotaController {
     static async actualizarMascota(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const userId = req.user?.id;
-            const role = req.user?.rol;
+            const usuarioId = req.user?.id;
+            const rol = req.user?.rol;
 
-            await MascotaService.actualizarMascota(Number(id), userId!, { ...req.body, rol: role });
+            if (!usuarioId || !rol) throw new Error('USUARIO NO IDENTIFICADO');
 
-            res.json({ message: 'MASCOTA ACTUALIZADA CORRECTAMENTE' });
-        } catch (error) {
+            await MascotaService.actualizarMascota(Number(id), usuarioId, { ...req.body, rol });
+
+            res.json({ success: true, mensaje: 'MASCOTA ACTUALIZADA CORRECTAMENTE', data: null });
+        } catch (error: unknown) {
+            if (error instanceof Error && error.message.includes('ACCESO DENEGADO')) {
+                return res.status(403).json({ success: false, mensaje: error.message });
+            }
             next(error);
         }
     }

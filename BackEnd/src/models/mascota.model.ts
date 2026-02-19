@@ -1,69 +1,97 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../config/database';
-import { IMascota } from './interfaces/mascota.interface';
 
-// BUSCAR MASCOTA POR ID
+// INTERFAZ MASCOTA
+export interface Mascota extends RowDataPacket {
+    id: number;
+    dueno_id: number;
+    raza_id: number;
+    nombre: string;
+    fecha_nacimiento: string;
+    created_at: string;
+    raza?: string;
+    especie?: string;
+    dueno_nombre?: string;
+    dueno_apellido?: string;
+}
 
-export const findById = async (id: number) => {
-    const [rows] = await pool.query<RowDataPacket[]>(
-        'SELECT * FROM mascotas WHERE id = ?',
+export interface MascotaCrearDto {
+    dueno_id: number;
+    raza_id: number;
+    nombre: string;
+    fecha_nacimiento: string;
+}
+
+// CONFIGURACIÓN DE CONSULTAS
+const CONSULTA_BASE = `
+    SELECT 
+        m.id,
+        m.dueno_id,
+        m.raza_id,
+        m.nombre,
+        m.fecha_nacimiento,
+        m.created_at,
+        r.nombre as raza,
+        e.nombre as especie,
+        u.nombre as dueno_nombre,
+        u.apellido as dueno_apellido
+    FROM mascotas m
+    JOIN razas r ON m.raza_id = r.id
+    JOIN especies e ON r.especie_id = e.id
+    JOIN duenos d ON m.dueno_id = d.id
+    JOIN usuarios u ON d.usuario_id = u.id
+`;
+
+// OPERACIONES DE BASE DE DATOS
+export const buscarPorId = async (id: number): Promise<Mascota | null> => {
+    const [filas] = await pool.query<Mascota[]>(
+        `${CONSULTA_BASE} WHERE m.id = ?`,
         [id]
     );
-    return rows.length > 0 ? rows[0] as IMascota : null;
+    return filas.length > 0 ? filas[0] : null;
 };
 
-// BUSCAR TODAS LAS MASCOTAS
-export const findAll = async (): Promise<any[]> => {
-    const query = `
-        SELECT m.*, d.nombre as dueno_nombre, d.apellido as dueno_apellido 
-        FROM mascotas m
-        LEFT JOIN duenos d ON m.dueno_id = d.id
-    `;
-    const [rows] = await pool.query<RowDataPacket[]>(query);
-    return rows;
+// ALIAS PARA COMPATIBILIDAD
+export const findById = buscarPorId;
+
+export const buscarTodos = async (): Promise<Mascota[]> => {
+    const [filas] = await pool.query<Mascota[]>(CONSULTA_BASE);
+    return filas;
 };
 
-// BUSCAR MASCOTAS POR DUENO
-export const findByDuenoId = async (duenoId: number): Promise<IMascota[]> => {
-    const [rows] = await pool.query<IMascota[]>(
-        'SELECT * FROM mascotas WHERE dueno_id = ?',
+export const buscarPorDuenoId = async (duenoId: number): Promise<Mascota[]> => {
+    const [filas] = await pool.query<Mascota[]>(
+        `${CONSULTA_BASE} WHERE m.dueno_id = ?`,
         [duenoId]
     );
-    return rows;
+    return filas;
 };
 
-// CREAR MASCOTA
-export const create = async (mascota: Omit<IMascota, 'id'>): Promise<IMascota> => {
-    const [result] = await pool.execute<ResultSetHeader>(
-        'INSERT INTO mascotas (nombre, especie, raza, fecha_nacimiento, advertencias, dueno_id) VALUES (?, ?, ?, ?, ?, ?)',
-        [
-            mascota.nombre || null,
-            mascota.especie || null,
-            mascota.raza || null,
-            mascota.fecha_nacimiento || null,
-            mascota.advertencias || null,
-            mascota.dueno_id
-        ]
-    );
-    return { id: result.insertId, ...mascota } as IMascota;
+export const crear = async (mascota: MascotaCrearDto): Promise<number> => {
+    const [resultado] = await pool.execute<ResultSetHeader>(`
+        INSERT INTO mascotas (dueno_id, raza_id, nombre, fecha_nacimiento) 
+        VALUES (?, ?, ?, ?)
+    `, [mascota.dueno_id, mascota.raza_id, mascota.nombre, mascota.fecha_nacimiento]);
+    return resultado.insertId;
 };
 
-// ELIMINAR MASCOTA
-export const deleteById = async (id: number): Promise<void> => {
+export const eliminarPorId = async (id: number): Promise<void> => {
     await pool.query('DELETE FROM mascotas WHERE id = ?', [id]);
 };
 
-// ACTUALIZAR MASCOTA
-export const update = async (id: number, mascota: Partial<IMascota>): Promise<void> => {
+export const actualizar = async (id: number, mascota: Partial<MascotaCrearDto>): Promise<void> => {
+    const campos: string[] = [];
+    const valores: (string | number)[] = [];
+
+    if (mascota.nombre) { campos.push('nombre = ?'); valores.push(mascota.nombre); }
+    if (mascota.raza_id) { campos.push('raza_id = ?'); valores.push(mascota.raza_id); }
+    if (mascota.fecha_nacimiento) { campos.push('fecha_nacimiento = ?'); valores.push(mascota.fecha_nacimiento); }
+
+    if (campos.length === 0) return;
+
+    valores.push(id);
     await pool.query(
-        'UPDATE mascotas SET nombre = ?, especie = ?, raza = ?, fecha_nacimiento = ?, advertencias = ? WHERE id = ?',
-        [
-            mascota.nombre,
-            mascota.especie,
-            mascota.raza,
-            mascota.fecha_nacimiento,
-            mascota.advertencias,
-            id
-        ]
+        `UPDATE mascotas SET ${campos.join(', ')} WHERE id = ?`,
+        valores
     );
 };

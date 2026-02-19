@@ -7,25 +7,25 @@ async function testGetServicios() {
     console.log('\n🧪 INICIANDO TEST DE INTEGRACION: GET /api/servicios');
     
     try {
-       
-        const response = await fetch('http://localhost:3000/api/servicios');
+        // REALIZAR LA PETICION AL SERVIDOR
+        const respuesta = await fetch('http://localhost:3000/api/servicios');
         
-       
-        const resultado = await response.json() as ApiResponse;
+        // OBTENER EL RESULTADO COM JSON
+        const resultado = await respuesta.json() as ApiResponse;
 
-        if (response.status === 200 && resultado.success === true) {
-            console.log('✅ STATUS 200: OK');
+        if (respuesta.status === 200 && resultado.success === true) {
+            console.log('✅ ESTADO 200: OK');
             console.log('✅ FORMATO JSON: CORRECTO');
             console.log('📊 DATOS RECIBIDOS:');
             console.table(resultado.data);
         } else {
-            console.error('❌ TEST FALLIDO: La respuesta no es la esperada');
+            console.error('❌ TEST FALLIDO: LA RESPUESTA NO ES LA ESPERADA');
             console.log(resultado);
         }
 
     } catch (error) {
-        console.error('❌ ERROR CRITICO: El servidor debe estar corriendo para este test.');
-        console.error('💡 TIP: Ejecuta "npm run dev" en otra terminal primero.');
+        console.error('❌ ERROR CRITICO: EL SERVIDOR DEBE ESTAR CORRIENDO PARA ESTE TEST.');
+        console.error('💡 TIP: EJECUTA "npm run dev" EN OTRA TERMINAL PRIMERO.');
     }
 }
 

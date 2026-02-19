@@ -5,7 +5,7 @@ import { checkRole } from '../middlewares/role.middleware';
 
 const router = Router();
 
-// APLICAR SEGURIDAD A TODO EL MODULO
+// SEGURIDAD GLOBAL DEL MODULO
 router.use(authMiddleware);
 
 // LISTAR VETERINARIOS
@@ -20,9 +20,9 @@ router.post('/historial', checkRole(['veterinario', 'admin']), VeterinarioContro
 // HISTORIAL RECIENTE
 router.get('/historial-reciente', checkRole(['veterinario', 'admin']), VeterinarioController.obtenerHistorialReciente);
 
-// CRUD VETERINARIOS
-router.post('/', checkRole(['admin']), VeterinarioController.create);
-router.put('/:id', checkRole(['admin']), VeterinarioController.update);
-router.delete('/:id', checkRole(['admin']), VeterinarioController.delete);
+// CRUD VETERINARIOS (ADMIN)
+router.post('/', checkRole(['admin']), VeterinarioController.crear);
+router.put('/:id', checkRole(['admin']), VeterinarioController.actualizar);
+router.delete('/:id', checkRole(['admin']), VeterinarioController.eliminar);
 
 export default router;

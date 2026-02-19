@@ -2,10 +2,18 @@ import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import { pool } from '../config/database';
 import { IDueno } from './interfaces/dueno.interface';
 
+// QUERY BASE CON JOIN USUARIOS
+const BASE_SELECT = `
+    SELECT d.id, d.usuario_id, d.telefono, d.dni,
+           u.nombre, u.apellido, u.email
+    FROM duenos d
+    JOIN usuarios u ON d.usuario_id = u.id
+`;
+
 // BUSCAR DUENO POR USUARIO
 export const findByUserId = async (userId: number): Promise<IDueno | null> => {
     const [rows] = await pool.query<IDueno[]>(
-        'SELECT * FROM duenos WHERE usuario_id = ?',
+        `${BASE_SELECT} WHERE d.usuario_id = ?`,
         [userId]
     );
     return rows.length ? rows[0] : null;
@@ -14,28 +22,28 @@ export const findByUserId = async (userId: number): Promise<IDueno | null> => {
 // OBTENER TODOS LOS DUENOS
 export const findAll = async (): Promise<IDueno[]> => {
     const [rows] = await pool.query<IDueno[]>(
-        `SELECT d.*, u.email 
-         FROM duenos d
-         JOIN usuarios u ON d.usuario_id = u.id`
+        `${BASE_SELECT} ORDER BY u.apellido, u.nombre`
     );
     return rows;
 };
 
-// CREAR DUENO
-export const create = async (dueno: Omit<IDueno, 'id'>): Promise<IDueno> => {
+// CREAR DUENO (SOLO COLUMNAS DE LA TABLA DUENOS)
+export const create = async (dueno: { usuario_id: number; telefono: string; dni?: string }): Promise<IDueno> => {
     const [result] = await pool.execute<ResultSetHeader>(
-        'INSERT INTO duenos (usuario_id, nombre, apellido, telefono, dni, clave_temporal) VALUES (?, ?, ?, ?, ?, ?)',
-        [dueno.usuario_id, dueno.nombre, dueno.apellido, dueno.telefono, dueno.dni || null, dueno.clave_temporal || null]
+        'INSERT INTO duenos (usuario_id, telefono, dni) VALUES (?, ?, ?)',
+        [dueno.usuario_id, dueno.telefono, dueno.dni || null]
     );
 
-    return { id: result.insertId, ...dueno } as IDueno;
+    // RETORNAR CON JOIN
+    const creado = await findById(result.insertId);
+    return creado!;
 };
 
-// ACTUALIZAR DUENO
-export const update = async (id: number, datos: Partial<IDueno>): Promise<void> => {
+// ACTUALIZAR DUENO (SOLO COLUMNAS DE LA TABLA DUENOS)
+export const update = async (id: number, datos: { telefono?: string; dni?: string }): Promise<void> => {
     await pool.query(
-        'UPDATE duenos SET nombre = ?, apellido = ?, telefono = ?, dni = ? WHERE id = ?',
-        [datos.nombre, datos.apellido, datos.telefono, datos.dni || null, id]
+        'UPDATE duenos SET telefono = COALESCE(?, telefono), dni = COALESCE(?, dni) WHERE id = ?',
+        [datos.telefono, datos.dni, id]
     );
 };
 
@@ -47,7 +55,7 @@ export const deleteById = async (id: number): Promise<void> => {
 // BUSCAR DUENO POR ID
 export const findById = async (id: number): Promise<IDueno | null> => {
     const [rows] = await pool.query<IDueno[]>(
-        'SELECT * FROM duenos WHERE id = ?',
+        `${BASE_SELECT} WHERE d.id = ?`,
         [id]
     );
     return rows.length ? rows[0] : null;

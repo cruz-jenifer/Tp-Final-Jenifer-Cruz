@@ -1,70 +1,72 @@
-# tp-patitas-felices
-# 🐾 Proyecto Veterinaria Patitas Felices
+# 🐾 Sistema de Gestión Veterinaria "Patitas Felices"
 
-Backend para la gestión de una clínica veterinaria. Incluye autenticación de usuarios y gestión de reservas (turnos).
+Este es el proyecto final para el curso de Backend de la **UTN**. Es una aplicación integral de gestión veterinaria que permite administrar turnos, mascotas, historias clínicas y perfiles de usuarios.
 
-## 🚀 Feats Implementados
-- **Feat 5:** Lógica de Negocio 1:N (Usuarios <-> Reservas). Protección de recursos.
-- **Feat 6:** Robustez (Manejo de errores centralizado y CORS).
+## 🚀 Tecnologías Utilizadas
 
-## 🛠️ Instalación
+### Backend
+- **Node.js** & **Express**
+- **TypeScript** (Tipado estricto, 0 `any`)
+- **MySQL2** (Pool de conexiones, consultas parametrizadas)
+- **JWT** (Autenticación protegida)
+- **Bcrypt** (Hasheo de contraseñas)
+- **MVC Architecture** (Model-View-Service-Controller)
 
-1.  **Clonar el repositorio:**
-    ```bash
-    git clone <repo_url>
-    cd tp-patitas-felices
-    ```
+### Frontend
+- **React** + **Vite**
+- **Redux Toolkit** (Gestión de estado global)
+- **Tailwind CSS** (Diseño moderno y responsive)
 
-2.  **Instalar dependencias:**
-    ```bash
-    npm install
-    ```
+---
 
-3.  **Configurar variables de entorno:**
-    - Copia el archivo de ejemplo: `cp .env.example .env`
-    - Edita `.env` con tus credenciales de MySQL.
+## 🛠️ Instalación y Configuración
 
-4.  **Base de Datos:**
-    - Importa el archivo `dump.sql` en tu gestor de MySQL (Workbench/DBeaver).
+### 1. Clonar el repositorio e instalar dependencias
+```bash
+# Instalar dependencias del proyecto raíz (Backend)
+npm install
 
-5.  **Ejecutar:**
-    - Desarrollo: `npm run dev`
-    - Producción: `npm run build && npm start`
+# Instalar dependencias del Frontend
+cd FrontEnd
+npm install
+```
 
-## 🔗 Endpoints Principales
+### 2. Configuración de Base de Datos
+1.  Crea una base de datos en MySQL llamada `veterinaria_patitas_felices`.
+2.  Importa el archivo `bd_limpio.sql` que se encuentra en la raíz para generar la estructura.
+3.  Configura tu archivo `.env` en la raíz (puedes usar el `.env.example` como base).
 
-### Autenticación
-- `POST /api/auth/register` - Crear cuenta.
-- `POST /api/auth/login` - Iniciar sesión.
+### 3. Inicialización (Seeding)
+Para cargar los datos base y usuarios de prueba (Admin, Vet, Cliente) ejecuta:
+```bash
+npm run db:seed:full
+```
 
-### Dueños
-- `GET /api/duenos` - Listar dueños (Requiere Token).
-- `POST /api/duenos` - Crear dueño (Requiere Token).
-- `PUT /api/duenos/:id` - Actualizar dueño (Requiere Token).
-- `DELETE /api/duenos/:id` - Eliminar dueño (Requiere Token).
+---
 
-### Mascotas
-- `GET /api/mascotas` - Listar mascotas (Requiere Token).
-- `POST /api/mascotas` - Crear mascota (Requiere Token).
-- `PUT /api/mascotas/:id` - Actualizar mascota (Requiere Token).
-- `DELETE /api/mascotas/:id` - Eliminar mascota (Requiere Token).
+## 📖 Documentación de la API
 
-### Turnos
-- `GET /api/turnos` - Ver turnos (Requiere Token).
-- `POST /api/turnos` - Solicitar turno (Requiere Token).
-- `PUT /api/turnos/:id` - Actualizar turno (Requiere Token).
-- `DELETE /api/turnos/:id` - Cancelar turno (Requiere Token).
+### Colección de Postman
+En la raíz del proyecto encontrarás el archivo `tp_final_collection.json`. Puedes importarlo en Postman para probar todos los endpoints documentados:
+- **Auth**: Registro y Login.
+- **Mascotas**: CRUD completo (con validación de dueño).
+- **Turnos**: Gestión de agenda y citas.
+- **Historial**: Reportes médicos (exclusivo Veterinaria/Admin).
 
-### Historial Médico
-- `GET /api/historial` - Listar historiales (Requiere Token).
-- `POST /api/historial` - Crear historial (Requiere Token).
-- `PUT /api/historial/:id` - Actualizar historial (Requiere Token).
-- `DELETE /api/historial/:id` - Eliminar historial (Requiere Token).
+### Endpoints Principales
+- `POST /api/auth/login`: Autenticación.
+- `GET /api/mascotas/mis-mascotas`: Lista tus mascotas.
+- `POST /api/turnos`: Reserva una cita.
+- `DELETE /api/turnos/:id`: Cancela o elimina un turno.
 
-### Veterinarios
-- `GET /api/veterinarios` - Listar veterinarios (Requiere Token).
-- `GET /api/veterinarios/agenda` - Ver agenda del día (Requiere Token).
-- `GET /api/veterinarios/historial-reciente` - Historial reciente (Requiere Token).
+---
 
-### Servicios
-- `GET /api/servicios` - Listar servicios disponibles (Requiere Token).
+## 👥 Usuarios de Prueba (Pass: admin123)
+- **Administrador**: `admin@patitas.com`
+- **Veterinario**: `vet@patitas.com`
+- **Cliente**: `cliente@patitas.com`
+
+---
+
+## ✅ Autor
+- **Jenifer Cruz** - TP Final Backend UTN 2024.

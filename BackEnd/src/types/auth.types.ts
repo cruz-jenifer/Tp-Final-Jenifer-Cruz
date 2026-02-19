@@ -1,5 +1,8 @@
-// DEFINICION DE ROLES
-export type RolUsuario = 'admin' | 'veterinario' | 'cliente';
+import { ApiResponse } from './api.types';
+import { RolNombre } from './enums';
+
+// DEFINICION DE ROLES (USO CENTRALIZADO)
+export type RolUsuario = RolNombre;
 
 // ESTRUCTURA DEL PAYLOAD JWT
 export interface UserPayload {
@@ -8,17 +11,22 @@ export interface UserPayload {
     rol: RolUsuario;
 }
 
-// RESPUESTA DEL LOGIN ENRIQUECIDO
-export interface LoginResponse {
-    token: string;
-    user: {
-        id: number;
-        email: string;
-        rol: RolUsuario;
-        nombre?: string;
-        apellido?: string;
-    };
+// DATOS DE USUARIO EN LOGIN
+export interface UserLoginData {
+    id: number;
+    email: string;
+    rol: RolUsuario;
+    nombre: string;
+    apellido: string;
 }
+
+// RESPUESTA DEL LOGIN ENRIQUECIDO
+export interface LoginResponseData {
+    token: string;
+    user: UserLoginData;
+}
+
+export type LoginApiResponse = ApiResponse<LoginResponseData>;
 
 // EXTENSION DE REQUEST EXPRESS
 declare global {

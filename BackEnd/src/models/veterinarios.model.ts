@@ -1,84 +1,59 @@
-import { RowDataPacket } from 'mysql2';
+import { ResultSetHeader } from 'mysql2';
 import { pool } from '../config/database';
+import { Veterinario, VeterinarioResponse } from '../types/veterinarios';
 
-export interface IVeterinario {
-    id?: number;
-    usuario_id: number;
-    nombre: string;
-    apellido: string;
-    matricula: string;
-    email?: string;
-    clave_temporal?: string;
-}
+// QUERY BASE CON JOIN USUARIOS
+const BASE_SELECT = `
+    SELECT v.id, v.usuario_id, v.matricula,
+           u.nombre, u.apellido, u.email
+    FROM veterinarios v
+    JOIN usuarios u ON v.usuario_id = u.id
+`;
 
-export class VeterinarioModel {
+// BUSCAR POR ID DE USUARIO
+export const findByUserId = async (usuarioId: number): Promise<VeterinarioResponse | null> => {
+    const [rows] = await pool.query<VeterinarioResponse[]>(
+        `${BASE_SELECT} WHERE v.usuario_id = ?`,
+        [usuarioId]
+    );
+    return rows.length ? rows[0] : null;
+};
 
-    // BUSCAR POR ID DE USUARIO
-    static async findByUserId(usuarioId: number): Promise<IVeterinario | null> {
-        const [rows] = await pool.query<RowDataPacket[]>(
-            'SELECT * FROM veterinarios WHERE usuario_id = ?',
-            [usuarioId]
-        );
+// BUSCAR POR ID
+export const findById = async (id: number): Promise<VeterinarioResponse | null> => {
+    const [rows] = await pool.query<VeterinarioResponse[]>(
+        `${BASE_SELECT} WHERE v.id = ?`,
+        [id]
+    );
+    return rows.length ? rows[0] : null;
+};
 
-        if (rows.length === 0) return null;
+// LISTAR TODOS LOS VETERINARIOS
+export const findAll = async (): Promise<VeterinarioResponse[]> => {
+    const [rows] = await pool.query<VeterinarioResponse[]>(
+        `${BASE_SELECT} ORDER BY u.apellido, u.nombre`
+    );
+    return rows;
+};
 
-        return rows[0] as IVeterinario;
-    }
+// CREAR VETERINARIO (SOLO COLUMNAS DE LA TABLA)
+export const create = async (usuario_id: number, matricula: string): Promise<number> => {
+    const [result] = await pool.execute<ResultSetHeader>(
+        'INSERT INTO veterinarios (usuario_id, matricula) VALUES (?, ?)',
+        [usuario_id, matricula]
+    );
+    return result.insertId;
+};
 
-    // BUSCAR POR ID
-    static async findById(id: number): Promise<IVeterinario | null> {
-        const [rows] = await pool.query<RowDataPacket[]>(
-            'SELECT v.*, u.email FROM veterinarios v LEFT JOIN usuarios u ON v.usuario_id = u.id WHERE v.id = ?',
-            [id]
-        );
+// ACTUALIZAR VETERINARIO
+export const update = async (id: number, matricula: string): Promise<void> => {
+    await pool.query(
+        'UPDATE veterinarios SET matricula = ? WHERE id = ?',
+        [matricula, id]
+    );
+};
 
-        if (rows.length === 0) return null;
-
-        return rows[0] as IVeterinario;
-    }
-
-    // LISTAR TODOS LOS VETERINARIOS
-    static async findAll(): Promise<IVeterinario[]> {
-        try {
-            const [rows] = await pool.query<RowDataPacket[]>(
-                'SELECT v.id, v.nombre, v.apellido, v.matricula, v.clave_temporal, u.email FROM veterinarios v LEFT JOIN usuarios u ON v.usuario_id = u.id ORDER BY v.apellido, v.nombre'
-            );
-            return rows as IVeterinario[];
-        } catch (error: any) {
-            // MIGRACION AUTOMATICA
-            if (error.errno === 1054 || error.code === 'ER_BAD_FIELD_ERROR') {
-                console.log('MIGRACION: AGREGANDO COLUMNA CLAVE_TEMPORAL');
-                await pool.query('ALTER TABLE veterinarios ADD COLUMN clave_temporal VARCHAR(255) DEFAULT NULL;');
-                // REINTENTAR
-                const [rows] = await pool.query<RowDataPacket[]>(
-                    'SELECT v.id, v.nombre, v.apellido, v.matricula, v.clave_temporal, u.email FROM veterinarios v LEFT JOIN usuarios u ON v.usuario_id = u.id ORDER BY v.apellido, v.nombre'
-                );
-                return rows as IVeterinario[];
-            }
-            throw error;
-        }
-    }
-
-    // CREAR VETERINARIO
-    static async create(data: { usuario_id: number; nombre: string; apellido: string; matricula: string; clave_temporal?: string }): Promise<IVeterinario> {
-        const [result] = await pool.query<any>(
-            'INSERT INTO veterinarios (usuario_id, nombre, apellido, matricula, clave_temporal) VALUES (?, ?, ?, ?, ?)',
-            [data.usuario_id, data.nombre, data.apellido, data.matricula, data.clave_temporal || null]
-        );
-
-        return { id: result.insertId, ...data };
-    }
-
-    // ACTUALIZAR VETERINARIO
-    static async update(id: number, data: Partial<IVeterinario>): Promise<void> {
-        await pool.query(
-            'UPDATE veterinarios SET ? WHERE id = ?',
-            [data, id]
-        );
-    }
-
-    // ELIMINAR VETERINARIO
-    static async deleteById(id: number): Promise<void> {
-        await pool.query('DELETE FROM veterinarios WHERE id = ?', [id]);
-    }
-}
+// ELIMINAR VETERINARIO
+export const deleteById = async (id: number): Promise<void> => {
+    await pool.query('DELETE FROM veterinarios WHERE id = ?', [id]);
+};

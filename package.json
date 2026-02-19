@@ -4,6 +4,9 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch BackEnd/src/server.ts",
+    "db:seed": "tsx BackEnd/src/scripts/seedRazas.ts",
+    "db:seed:full": "tsx BackEnd/src/scripts/seed.ts",
+    "db:clean": "tsx BackEnd/src/scripts/cleanRazas.ts",
     "build": "tsc",
     "start": "node BackEnd/dist/server.js"
   },

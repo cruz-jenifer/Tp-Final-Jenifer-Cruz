@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { getServicios } from '../controllers/servicio.controller';
+import { obtenerServicios } from '../controllers/servicio.controller';
 
 const router = Router();
 
 // RUTAS PUBLICAS (CATALOGO DE SERVICIOS)
-router.get('/', getServicios);
+router.get('/', obtenerServicios);
 
 export default router;

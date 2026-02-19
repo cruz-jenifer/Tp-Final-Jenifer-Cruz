@@ -10,32 +10,31 @@ const router = Router();
 router.use(authMiddleware);
 
 // LISTAR MIS TURNOS
-router.get('/mis-turnos', checkRole(['cliente', 'admin']), TurnoController.listarMisTurnos);
+router.get('/mis-turnos', checkRole(['cliente', 'dueno', 'admin']), TurnoController.listarMisTurnos);
 
 // VER AGENDA GLOBAL
 router.get('/agenda', checkRole(['admin']), TurnoController.verAgendaGlobal);
 
 // VERIFICAR DISPONIBILIDAD
-router.get('/check-availability', checkRole(['cliente', 'admin']), TurnoController.checkAvailability);
+router.get('/check-availability', checkRole(['cliente', 'dueno', 'admin']), TurnoController.verificarDisponibilidad);
 
 // CREAR NUEVA RESERVA
 router.post('/',
-    [checkRole(['cliente', 'admin']), ...turnoValidators.reservar],
+    [checkRole(['cliente', 'dueno', 'admin']), ...turnoValidators.reservar],
     TurnoController.reservar
 );
 
 // CANCELAR RESERVA
 router.delete('/:id',
-    [checkRole(['cliente', 'admin']), ...turnoValidators.cancelar],
+    [checkRole(['cliente', 'dueno', 'admin']), ...turnoValidators.cancelar],
     TurnoController.cancelarTurno
 );
 
 // DETALLE Y REPROGRAMACION
-router.get('/:id', checkRole(['cliente', 'admin']), TurnoController.getOne);
+router.get('/:id', checkRole(['cliente', 'dueno', 'admin']), TurnoController.obtenerDetalle);
 router.put('/:id',
     [checkRole(['cliente', 'admin']), ...turnoValidators.cancelar],
     TurnoController.reprogramar
 );
-
 
 export default router;

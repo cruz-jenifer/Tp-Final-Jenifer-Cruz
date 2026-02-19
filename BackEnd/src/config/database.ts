@@ -1,9 +1,13 @@
-
 import { createPool } from 'mysql2/promise';
 import path from 'path';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: path.join(__dirname, '../../.env') });
+// PRIORIZAR EL .ENV DE LA RAIZ DEL PROYECTO
+dotenv.config({ path: path.join(__dirname, '../../../.env') });
+// SI NO EXISTE, PROBAR EL DE BACKEND
+if (!process.env.DB_NAME) {
+    dotenv.config({ path: path.join(__dirname, '../../.env') });
+}
 
 // CONFIGURACION DEL POOL DE CONEXIONES
 export const pool = createPool({
@@ -15,17 +19,17 @@ export const pool = createPool({
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    dateStrings: true,
-    charset: 'utf8mb4'
+    dateStrings: true, // Importante para manejar fechas como strings y evitar conversiones automáticas erróneas
+    namedPlaceholders: true // Permite usar :param en lugar de ? (opcional, pero útil)
 });
 
 export const connectDB = async () => {
     try {
         const connection = await pool.getConnection();
-        console.log('🚀 CONEXIÓN A MYSQL EXITOSA');
+        console.log('✨ SISTEMA DE BASE DE DATOS INICIALIZADO');
         connection.release();
     } catch (error) {
-        console.error('❌ ERROR AL CONECTAR A LA BASE DE DATOS:', error);
+        console.error('❌ ERROR FATAL AL CONECTAR A LA BASE DE DATOS:', error);
         process.exit(1);
     }
 };

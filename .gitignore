@@ -1,19 +1,27 @@
-# Dependencias
+# === Node.js & Dependencias ===
 node_modules/
+**/node_modules/
+.npm
+.eslintcache
 
-# Build y Distribución
+# === Build y Distribución ===
 dist/
 dist-ssr/
 build/
 out/
 coverage/
+**/dist/
+**/build/
+**/out/
 
-# Variables de entorno y secretos
+# === Variables de Entorno y Secretos ===
 .env
 .env.*
 !.env.example
+**/.env
+**/.env.*
 
-# Logs y Diagnósticos
+# === Logs y Diagnósticos ===
 logs
 *.log
 npm-debug.log*
@@ -21,39 +29,60 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+netstat.txt
+schema_log.txt
 
-# Archivos de sistema y temporales
+# === Scripts y Pruebas (Ignorados a solicitud del usuario) ===
+scripts/
+tests/
+**/scripts/
+**/tests/
+recursos/
+tp_final_collection.json
+# Ignorar archivos SQL y volcados de base de datos
+*.sql
+*.sqlite
+*.db
+**/backups/
+
+# === Cache de Herramientas ===
+.cache/
+.vite/
+.turbo/
+.vercel/
+**/node_modules/.cache/
+
+# === Archivos de Sistema y Temporales ===
 .DS_Store
 Thumbs.db
+desktop.ini
 tsh_history
 .tmp/
 tmp/
 temp/
-
-# IDEs y Editores
-.vscode/
-.idea/
+*.sw?
 *.swp
 *.swo
+*.bak
+*.tmp
+*.old
+
+# === IDEs y Editores ===
+.vscode/
+!.vscode/extensions.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.local
 
-# TypeScript
+# === TypeScript ===
 *.tsbuildinfo
 
-# Scripts locales o de prueba
-scripts/verify_crud.js
-recursos/
-
-# Directorios de pruebas e2e generados 
+# === E2E & Herramientas de Test ===
 playwright-report/
 test-results/
 
-# Archivos de Agente (Ignorados)
+# === Archivos de Agente (Antigravity) ===
 .agents/
-BackEnd/scripts/
-BackEnd/netstat.txt
-BackEnd/schema_log.txt

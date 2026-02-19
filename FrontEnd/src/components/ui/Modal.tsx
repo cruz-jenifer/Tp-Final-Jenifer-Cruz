@@ -1,0 +1,55 @@
+import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import styles from './Modal.module.css';
+
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    titulo?: string;
+    children: React.ReactNode;
+}
+
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, titulo, children }) => {
+    const overlayRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+
+        if (isOpen) {
+            document.addEventListener('keydown', handleEscape);
+            document.body.style.overflow = 'hidden'; // EVITAR SCROLL DE FONDO
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen, onClose]);
+
+    if (!isOpen) return null;
+
+    const handleOverlayClick = (e: React.MouseEvent) => {
+        if (e.target === overlayRef.current) {
+            onClose();
+        }
+    };
+
+    return createPortal(
+        <div className={styles.overlay} ref={overlayRef} onClick={handleOverlayClick}>
+            <div className={styles.modal}>
+                <div className={styles.header}>
+                    {titulo && <h2 className={styles.title}>{titulo}</h2>}
+                    <button className={styles.closeButton} onClick={onClose}>
+                        &times;
+                    </button>
+                </div>
+                <div className={styles.content}>
+                    {children}
+                </div>
+            </div>
+        </div>,
+        document.body
+    );
+};

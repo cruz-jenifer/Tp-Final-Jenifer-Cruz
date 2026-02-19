@@ -1,12 +1,13 @@
 import { RowDataPacket } from 'mysql2';
 
-// INTERFAZ DUENO
+// INTERFAZ DUENO (COLUMNAS REALES DE LA TABLA)
 export interface IDueno extends RowDataPacket {
     id: number;
     usuario_id: number;
-    nombre: string;
-    apellido: string;
     telefono: string;
     dni?: string;
-    clave_temporal?: string;
+    // CAMPOS DE JOIN CON USUARIOS
+    nombre?: string;
+    apellido?: string;
+    email?: string;
 }

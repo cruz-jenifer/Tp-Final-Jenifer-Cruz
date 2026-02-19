@@ -7,9 +7,9 @@ const app = express();
 
 // CONFIGURACION CORS
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: ['http://localhost:5173', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-token']
 }));
 
 app.use(express.json());

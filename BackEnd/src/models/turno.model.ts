@@ -1,19 +1,24 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import { pool } from '../config/database';
+import { EstadoTurno } from '../types/enums';
 
-export interface ITurno {
-    id?: number;
+// INTERFAZ TURNO
+export interface Turno extends RowDataPacket {
+    id: number;
     mascota_id: number;
-    servicio_id: number;
     veterinario_id: number;
-    fecha_hora: Date | string;
-    motivo: string;
-    estado?: 'pendiente' | 'confirmado' | 'cancelado' | 'realizado';
-    creado_en?: Date;
+    servicio_id: number;
+    fecha: string;
+    hora: string;
+    motivo_consulta: string;
+    estado: EstadoTurno;
+    created_at: string;
 }
 
-export interface ITurnoDetalle extends ITurno {
+// INTERFAZ TURNO CON DETALLE (JOINS)
+export interface TurnoDetalle extends Turno {
     mascota?: string;
+    mascota_especie?: string;
     servicio?: string;
     veterinario_nombre?: string;
     veterinario_apellido?: string;
@@ -21,177 +26,134 @@ export interface ITurnoDetalle extends ITurno {
     dueno_apellido?: string;
 }
 
+export interface CreateTurnoDto {
+    mascota_id: number;
+    veterinario_id: number;
+    servicio_id: number;
+    fecha: string;
+    hora: string;
+    motivo_consulta: string;
+}
+
+// QUERY BASE CON JOINS (REUTILIZABLE)
+const BASE_DETAIL_SELECT = `
+    SELECT 
+        t.id, 
+        t.fecha, 
+        t.hora,
+        t.estado,
+        t.motivo_consulta,
+        t.mascota_id,
+        t.servicio_id,
+        t.veterinario_id,
+        t.created_at,
+        m.nombre as mascota, 
+        e.nombre as mascota_especie,
+        ud.nombre as dueno_nombre, 
+        ud.apellido as dueno_apellido,
+        ts.nombre as servicio,
+        uv.nombre as veterinario_nombre,
+        uv.apellido as veterinario_apellido
+    FROM turnos t
+    JOIN mascotas m ON t.mascota_id = m.id
+    JOIN razas r ON m.raza_id = r.id
+    JOIN especies e ON r.especie_id = e.id
+    JOIN duenos d ON m.dueno_id = d.id
+    JOIN usuarios ud ON d.usuario_id = ud.id
+    JOIN tipos_servicios ts ON t.servicio_id = ts.id
+    JOIN veterinarios v ON t.veterinario_id = v.id
+    JOIN usuarios uv ON v.usuario_id = uv.id
+`;
+
 export class TurnoModel {
 
     // VALIDAR DISPONIBILIDAD
-    static async validarDisponibilidad(veterinarioId: number, fechaHora: string): Promise<boolean> {
+    static async validarDisponibilidad(veterinarioId: number, fecha: string, hora: string): Promise<boolean> {
         const [rows] = await pool.query<RowDataPacket[]>(
-            'SELECT COUNT(*) as count FROM turnos WHERE veterinario_id = ? AND fecha_hora = ?',
-            [veterinarioId, fechaHora]
+            'SELECT COUNT(*) as count FROM turnos WHERE veterinario_id = ? AND fecha = ? AND hora = ?',
+            [veterinarioId, fecha, hora]
         );
         return rows[0].count === 0;
     }
 
     // CREAR TURNO
-    static async create(turno: ITurno): Promise<number> {
+    static async create(turno: CreateTurnoDto): Promise<number> {
         const [result] = await pool.query<ResultSetHeader>(
-            'INSERT INTO turnos (mascota_id, servicio_id, veterinario_id, fecha_hora, motivo, estado) VALUES (?, ?, ?, ?, ?, ?)',
+            'INSERT INTO turnos (mascota_id, veterinario_id, servicio_id, fecha, hora, motivo_consulta, estado) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [
                 turno.mascota_id,
-                turno.servicio_id,
                 turno.veterinario_id,
-                turno.fecha_hora,
-                turno.motivo,
-                'pendiente'
+                turno.servicio_id,
+                turno.fecha,
+                turno.hora,
+                turno.motivo_consulta,
+                EstadoTurno.PENDIENTE
             ]
         );
         return result.insertId;
     }
 
     // BUSCAR POR DUENO
-    static async findAllByDuenoId(duenoId: number): Promise<ITurnoDetalle[]> {
+    static async findAllByDuenoId(duenoId: number): Promise<TurnoDetalle[]> {
         const query = `
-            SELECT 
-                t.id, 
-                t.fecha_hora, 
-                t.estado,
-                t.motivo,
-                t.mascota_id,
-                t.servicio_id,
-                t.veterinario_id,
-                m.nombre as mascota, 
-                s.nombre as servicio, 
-                v.nombre as veterinario_nombre,
-                v.apellido as veterinario_apellido
-            FROM turnos t
-            JOIN mascotas m ON t.mascota_id = m.id
-            JOIN servicios s ON t.servicio_id = s.id
-            JOIN veterinarios v ON t.veterinario_id = v.id
+            ${BASE_DETAIL_SELECT}
             WHERE m.dueno_id = ?
             ORDER BY 
                 CASE 
-                    WHEN t.estado = 'cancelado' THEN 1 
+                    WHEN t.estado = ? THEN 1 
                     ELSE 0 
                 END ASC,
-                t.fecha_hora ASC
+                t.fecha ASC, t.hora ASC
         `;
-        const [rows] = await pool.query<RowDataPacket[]>(query, [duenoId]);
-        return rows as ITurnoDetalle[];
+        const [rows] = await pool.query<TurnoDetalle[]>(query, [duenoId, EstadoTurno.CANCELADO]);
+        return rows;
     }
 
     // BUSCAR POR FECHA
-    static async findAllByFecha(fecha: string): Promise<ITurnoDetalle[]> {
+    static async findAllByFecha(fecha: string): Promise<TurnoDetalle[]> {
         const query = `
-            SELECT 
-                t.id, 
-                t.fecha_hora, 
-                t.estado, 
-                t.motivo,
-                t.mascota_id,
-                m.nombre as mascota, 
-                m.especie as mascota_especie,
-                d.nombre as dueno_nombre, 
-                d.apellido as dueno_apellido,
-                s.nombre as servicio
-            FROM turnos t
-            JOIN mascotas m ON t.mascota_id = m.id
-            JOIN duenos d ON m.dueno_id = d.id
-            JOIN servicios s ON t.servicio_id = s.id
-            WHERE DATE(t.fecha_hora) = ?
-            ORDER BY t.fecha_hora ASC
+            ${BASE_DETAIL_SELECT}
+            WHERE t.fecha = ?
+            ORDER BY t.hora ASC
         `;
-
-
-        const [rows] = await pool.query<RowDataPacket[]>(query, [fecha]);
-        return rows as ITurnoDetalle[];
+        const [rows] = await pool.query<TurnoDetalle[]>(query, [fecha]);
+        return rows;
     }
 
     // BUSCAR TURNOS FUTUROS
-    static async findAllFuture(): Promise<ITurnoDetalle[]> {
+    static async findAllFuture(): Promise<TurnoDetalle[]> {
         const query = `
-            SELECT 
-                t.id, 
-                t.fecha_hora, 
-                t.estado, 
-                t.motivo,
-                t.mascota_id,
-                m.nombre as mascota, 
-                m.especie as mascota_especie,
-                d.nombre as dueno_nombre, 
-                d.apellido as dueno_apellido,
-                s.nombre as servicio,
-                v.nombre as veterinario_nombre,
-                v.apellido as veterinario_apellido
-            FROM turnos t
-            JOIN mascotas m ON t.mascota_id = m.id
-            JOIN duenos d ON m.dueno_id = d.id
-            JOIN servicios s ON t.servicio_id = s.id
-            JOIN veterinarios v ON t.veterinario_id = v.id
-            WHERE t.fecha_hora >= CURDATE()
-            ORDER BY t.fecha_hora ASC
+            ${BASE_DETAIL_SELECT}
+            WHERE t.fecha >= CURDATE()
+            ORDER BY t.fecha ASC, t.hora ASC
         `;
-        const [rows] = await pool.query<RowDataPacket[]>(query);
-        return rows as ITurnoDetalle[];
+        const [rows] = await pool.query<TurnoDetalle[]>(query);
+        return rows;
     }
 
     // BUSCAR TODOS LOS TURNOS
-    static async findAll(): Promise<ITurnoDetalle[]> {
+    static async findAll(): Promise<TurnoDetalle[]> {
         const query = `
-            SELECT 
-                t.id, 
-                t.fecha_hora, 
-                t.estado, 
-                t.motivo,
-                t.mascota_id,
-                t.veterinario_id,
-                t.servicio_id,
-                m.nombre as mascota, 
-                m.especie as mascota_especie,
-                d.nombre as dueno_nombre, 
-                d.apellido as dueno_apellido,
-                s.nombre as servicio,
-                v.nombre as veterinario_nombre,
-                v.apellido as veterinario_apellido
-            FROM turnos t
-            JOIN mascotas m ON t.mascota_id = m.id
-            JOIN duenos d ON m.dueno_id = d.id
-            JOIN servicios s ON t.servicio_id = s.id
-            JOIN veterinarios v ON t.veterinario_id = v.id
-            ORDER BY t.fecha_hora DESC
+            ${BASE_DETAIL_SELECT}
+            ORDER BY t.fecha DESC, t.hora DESC
         `;
-        const [rows] = await pool.query<RowDataPacket[]>(query);
-        return rows as ITurnoDetalle[];
+        const [rows] = await pool.query<TurnoDetalle[]>(query);
+        return rows;
     }
 
     // BUSCAR POR VETERINARIO Y FECHA
-    static async findAllByVeterinarioIdAndFecha(veterinarioId: number, fecha: string): Promise<ITurnoDetalle[]> {
+    static async findAllByVeterinarioIdAndFecha(veterinarioId: number, fecha: string): Promise<TurnoDetalle[]> {
         const query = `
-            SELECT 
-                t.id, 
-                t.fecha_hora, 
-                t.estado, 
-                t.motivo,
-                t.mascota_id,
-                m.nombre as mascota, 
-                m.especie as mascota_especie,
-                d.nombre as dueno_nombre, 
-                d.apellido as dueno_apellido,
-                s.nombre as servicio,
-                s.nombre as servicio_nombre
-            FROM turnos t
-            JOIN mascotas m ON t.mascota_id = m.id
-            JOIN duenos d ON m.dueno_id = d.id
-            JOIN servicios s ON t.servicio_id = s.id
-            WHERE t.veterinario_id = ? AND DATE(t.fecha_hora) = ?
-            ORDER BY t.fecha_hora ASC
+            ${BASE_DETAIL_SELECT}
+            WHERE t.veterinario_id = ? AND t.fecha = ?
+            ORDER BY t.hora ASC
         `;
-
-        const [rows] = await pool.query<RowDataPacket[]>(query, [veterinarioId, fecha]);
-        return rows as ITurnoDetalle[];
+        const [rows] = await pool.query<TurnoDetalle[]>(query, [veterinarioId, fecha]);
+        return rows;
     }
 
-    // CANCELAR TURNO
-    static async updateStatus(id: number, estado: 'cancelado'): Promise<void> {
+    // ACTUALIZAR ESTADO
+    static async updateStatus(id: number, estado: EstadoTurno): Promise<void> {
         await pool.query(
             'UPDATE turnos SET estado = ? WHERE id = ?',
             [estado, id]
@@ -204,26 +166,35 @@ export class TurnoModel {
     }
 
     // BUSCAR POR ID
-    static async findById(id: number): Promise<ITurno | null> {
-        const [rows] = await pool.query<RowDataPacket[]>(
+    static async findById(id: number): Promise<Turno | null> {
+        const [rows] = await pool.query<Turno[]>(
             'SELECT * FROM turnos WHERE id = ?',
             [id]
         );
         if (rows.length === 0) return null;
-        return rows[0] as ITurno;
+        return rows[0];
+    }
+
+    // BUSCAR POR ID CON DETALLE
+    static async findByIdDetalle(id: number): Promise<TurnoDetalle | null> {
+        const query = `${BASE_DETAIL_SELECT} WHERE t.id = ?`;
+        const [rows] = await pool.query<TurnoDetalle[]>(query, [id]);
+        if (rows.length === 0) return null;
+        return rows[0];
     }
 
     // ACTUALIZAR TURNO
-    static async update(id: number, datos: Partial<ITurno>): Promise<void> {
+    static async update(id: number, datos: Partial<CreateTurnoDto>): Promise<void> {
         await pool.query(
             `UPDATE turnos SET 
-                fecha_hora = COALESCE(?, fecha_hora), 
+                fecha = COALESCE(?, fecha), 
+                hora = COALESCE(?, hora),
                 veterinario_id = COALESCE(?, veterinario_id), 
                 servicio_id = COALESCE(?, servicio_id),
                 mascota_id = COALESCE(?, mascota_id),
-                motivo = COALESCE(?, motivo) 
+                motivo_consulta = COALESCE(?, motivo_consulta) 
              WHERE id = ?`,
-            [datos.fecha_hora, datos.veterinario_id, datos.servicio_id, datos.mascota_id, datos.motivo, id]
+            [datos.fecha, datos.hora, datos.veterinario_id, datos.servicio_id, datos.mascota_id, datos.motivo_consulta, id]
         );
     }
 }

@@ -5,20 +5,20 @@ import * as historialController from '../controllers/historial.controller';
 
 const router = Router();
 
-// APLICAR SEGURIDAD A TODO EL MODULO
+// SEGURIDAD GLOBAL DEL MODULO
 router.use(authMiddleware);
 
-// CREAR HISTORIAL
-router.post('/', checkRole(['veterinario', 'admin']), historialController.createHistorial);
+// CREAR REGISTRO
+router.post('/', checkRole(['veterinario', 'admin']), historialController.crearHistorial);
 
-// VER TODOS
-router.get('/admin/all', checkRole(['admin']), historialController.getAllHistorial);
+// VER TODO EL HISTORIAL (ADMIN)
+router.get('/admin/all', checkRole(['admin']), historialController.obtenerTodosLosHistoriales);
 
-// LEER HISTORIAL
-router.get('/:id', checkRole(['cliente', 'veterinario', 'admin']), historialController.getHistorialByMascota);
+// VER HISTORIAL DE MASCOTA
+router.get('/:id', checkRole(['cliente', 'veterinario', 'admin']), historialController.obtenerHistorialPorMascota);
 
-// MODIFICAR Y ELIMINAR
-router.delete('/:id', checkRole(['veterinario', 'admin']), historialController.deleteHistorial);
-router.put('/:id', checkRole(['veterinario', 'admin']), historialController.updateHistorial);
+// ELIMINAR Y ACTUALIZAR
+router.delete('/:id', checkRole(['veterinario', 'admin']), historialController.eliminarHistorial);
+router.put('/:id', checkRole(['veterinario', 'admin']), historialController.actualizarHistorial);
 
 export default router;
