@@ -1,16 +1,15 @@
 import { Router } from 'express';
 import { MascotaController } from '../controllers/mascota.controller';
-import { authMiddleware } from '../middlewares/auth.middleware';
+import { autenticar, autorizar } from '../middlewares/auth.middleware';
 import { validateMascota } from '../validators/mascota.validator';
-import { checkRole } from '../middlewares/role.middleware';
 
 const router = Router();
 
 // APLICAR AUTH A TODAS LAS RUTAS
-router.use(authMiddleware);
+router.use(autenticar);
 
 // MASCOTAS ADMIN
-router.get('/admin/all', checkRole(['admin']), MascotaController.obtenerTodasLasMascotas);
+router.get('/admin/all', autorizar(['admin']), MascotaController.obtenerTodasLasMascotas);
 
 // RUTAS GENERALES
 router.get('/', MascotaController.listarMisMascotas);

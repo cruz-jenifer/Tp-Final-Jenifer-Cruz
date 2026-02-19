@@ -2,32 +2,52 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserPayload } from '../types/auth.types';
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+// MIDDLEWARE PARA VERIFICAR LA IDENTIDAD DEL USUARIO
+export const autenticar = (req: Request, res: Response, next: NextFunction) => {
     try {
-        const authHeader = req.headers.authorization;
+        const cabeceraAutorizacion = req.headers.authorization;
 
-        if (!authHeader) {
+        if (!cabeceraAutorizacion) {
             return res.status(401).json({
-                success: false,
-                message: 'ACCESO DENEGADO: Falta el token',
-                error_code: 'MISSING_TOKEN'
+                exito: false,
+                mensaje: 'ACCESO DENEGADO: TOKEN NO ENCONTRADO'
             });
         }
 
-        const token = authHeader.replace('Bearer ', '').trim();
-        const secret = process.env.JWT_SECRET || 'UTN_PATITAS_2024';
+        const token = cabeceraAutorizacion.replace('Bearer ', '').trim();
+        const secreto = process.env.JWT_SECRET || 'UTN_PATITAS_SECRET_KEY';
 
-        const decoded = jwt.verify(token, secret) as UserPayload;
+        const decodificado = jwt.verify(token, secreto) as UserPayload;
 
-        req.user = decoded;
+        req.user = decodificado;
         next();
 
     } catch (error: unknown) {
-        // ERROR DE AUTH MANEJADO SILENCIOSAMENTE EN PRODUCCION
         return res.status(403).json({
-            success: false,
-            message: 'TOKEN INVALIDO O EXPIRADO',
-            error_code: 'INVALID_TOKEN'
+            exito: false,
+            mensaje: 'TOKEN INVALIDO O EXPIRADO'
         });
     }
+};
+
+// MIDDLEWARE PARA VERIFICAR PERMISOS POR ROL
+export const autorizar = (rolesPermitidos: string[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+
+        if (!req.user) {
+            return res.status(401).json({
+                exito: false,
+                mensaje: 'ACCESO DENEGADO: USUARIO NO IDENTIFICADO'
+            });
+        }
+
+        if (!rolesPermitidos.includes(req.user.rol)) {
+            return res.status(403).json({
+                exito: false,
+                mensaje: 'SIN PERMISOS: ACCESO RESTRINGIDO'
+            });
+        }
+
+        next();
+    };
 };

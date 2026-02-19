@@ -38,7 +38,7 @@ export const mockPets: Mascota[] = [
 export const mockTurnos: Turno[] = [
     {
         id: 1,
-        fecha: '2023-11-20',
+        fecha: '2026-11-20',
         hora: '10:00:00',
         motivo_consulta: 'Vacunación anual',
         estado: 'pendiente',
@@ -50,7 +50,7 @@ export const mockTurnos: Turno[] = [
     },
     {
         id: 2,
-        fecha: '2023-11-22',
+        fecha: '2026-11-22',
         hora: '15:30:00',
         motivo_consulta: 'Consulta general',
         estado: 'confirmado',
@@ -62,7 +62,7 @@ export const mockTurnos: Turno[] = [
     },
     {
         id: 3,
-        fecha: '2023-10-15',
+        fecha: '2026-10-15',
         hora: '09:00:00',
         motivo_consulta: 'Corte de uñas',
         estado: 'completado',
@@ -74,7 +74,7 @@ export const mockTurnos: Turno[] = [
     },
     {
         id: 4,
-        fecha: '2023-12-01',
+        fecha: '2026-12-01',
         hora: '11:00:00',
         motivo_consulta: 'Desparasitación',
         estado: 'cancelado',

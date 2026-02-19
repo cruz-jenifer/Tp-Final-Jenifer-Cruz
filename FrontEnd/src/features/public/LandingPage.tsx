@@ -187,7 +187,7 @@ export const LandingPage: React.FC = () => {
                 </div>
 
                 <div className="barra_inferior">
-                    <p>© 2023 Patitas Felices Veterinaria. Todos los derechos reservados.</p>
+                    <p>© 2026 Jenifer Cruz - Patitas Felices Veterinaria. Todos los derechos reservados.</p>
                     <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>Av. Rivadavia 1234, CABA, Buenos Aires, Argentina</p>
                     <div className="redes_sociales">
                         <a href="#">Facebook</a>

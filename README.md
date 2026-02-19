@@ -69,4 +69,4 @@ En la raíz del proyecto encontrarás el archivo `tp_final_collection.json`. Pue
 ---
 
 ## ✅ Autor
-- **Jenifer Cruz** - TP Final Backend UTN 2024.
+- **Jenifer Cruz** - TP Final Backend UTN 2026.

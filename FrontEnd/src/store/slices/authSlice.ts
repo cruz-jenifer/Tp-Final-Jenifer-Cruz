@@ -34,22 +34,41 @@ export const iniciarSesion = createAsyncThunk(
     }
 );
 
-// GESTIÓN DE ALMACENAMIENTO LOCAL
+// RECUPERACION SEGURA DEL USUARIO ALMACENADO
 const obtenerUsuarioAlmacenado = () => {
     const almacenado = localStorage.getItem('user');
-    if (!almacenado || almacenado === 'undefined') return null;
+
+    // VALIDACION DE VALORES NULOS O INDEFINIDOS EN CADENA
+    if (!almacenado || almacenado === 'undefined' || almacenado === 'null') {
+        return null;
+    }
+
     try {
         return JSON.parse(almacenado);
-    } catch {
+    } catch (e: unknown) {
+        console.error('ERROR AL PARSEAR USUARIO DEL STORAGE:', e);
         return null;
     }
 };
 
-// ESTADO INICIAL ACTUALIZADO
+// RECUPERACION SEGURA DEL TOKEN
+const obtenerTokenAlmacenado = () => {
+    const token = localStorage.getItem('token');
+    if (!token || token === 'undefined' || token === 'null') {
+        return null;
+    }
+    return token;
+};
+
+// CONFIGURACION DEL ESTADO INICIAL
+const usuarioPersistido = obtenerUsuarioAlmacenado();
+const tokenPersistido = obtenerTokenAlmacenado();
+
 const estadoInicial: EstadoAutenticacion = {
-    usuario: obtenerUsuarioAlmacenado(),
-    token: localStorage.getItem('token'),
-    estaAutenticado: !!localStorage.getItem('token'),
+    usuario: usuarioPersistido,
+    token: tokenPersistido,
+    // SOLO MARCAR COMO AUTENTICADO SI AMBOS DATOS SON VALIDOS
+    estaAutenticado: !!(usuarioPersistido && tokenPersistido),
     cargando: false,
     error: null,
 };

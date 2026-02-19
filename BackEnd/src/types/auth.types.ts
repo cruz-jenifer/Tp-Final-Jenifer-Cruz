@@ -28,7 +28,7 @@ export interface LoginResponseData {
 
 export type LoginApiResponse = ApiResponse<LoginResponseData>;
 
-// EXTENSION DE REQUEST EXPRESS
+// EXTENSION DE LA INTERFAZ REQUEST DE EXPRESS
 declare global {
     namespace Express {
         interface Request {

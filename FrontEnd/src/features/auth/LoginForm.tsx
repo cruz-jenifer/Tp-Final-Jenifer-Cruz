@@ -78,6 +78,18 @@ export const LoginForm: React.FC = () => {
     return (
         <div className={estilos.loginContainer}>
             <div className={estilos.formWrapper}>
+                {/* BOTON PARA REGRESAR A INICIO */}
+                <div className={estilos.homeButton}>
+                    <button
+                        onClick={() => navegar('/')}
+                        className={estilos.homeLink}
+                        title="Volver a la página principal"
+                    >
+                        <span className="material-icons" style={{ fontSize: '1.2rem' }}>arrow_back</span>
+                        VOLVER A HOME
+                    </button>
+                </div>
+
                 {/* ENCABEZADO Y LOGO */}
                 <div className={estilos.header}>
                     <span className={`material-icons ${estilos.logoIcon}`}>pets</span>
@@ -162,7 +174,7 @@ export const LoginForm: React.FC = () => {
             </div>
 
             <div className={estilos.footer}>
-                © 2026 Patitas Felices Veterinaria. Todos los derechos reservados.
+                © 2026 Jenifer Cruz - Patitas Felices Veterinaria. Todos los derechos reservados.
             </div>
         </div>
     );

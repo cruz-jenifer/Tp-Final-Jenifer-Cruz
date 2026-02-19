@@ -1,40 +1,30 @@
 import { Router } from 'express';
 import { TurnoController } from '../controllers/turno.controller';
-import { authMiddleware } from '../middlewares/auth.middleware';
-import { checkRole } from '../middlewares/role.middleware';
+import { autenticar, autorizar } from '../middlewares/auth.middleware';
 import { turnoValidators } from '../validators/turno.validators';
+import { RolNombre } from '../types/enums';
 
 const router = Router();
 
-// MIDDLEWARE GLOBAL
-router.use(authMiddleware);
+// LISTAR TURNOS DEL USUARIO LOGUEADO
+router.get('/mis-turnos', autenticar, autorizar([RolNombre.CLIENTE, RolNombre.ADMIN]), TurnoController.listarMisTurnos);
 
-// LISTAR MIS TURNOS
-router.get('/mis-turnos', checkRole(['cliente', 'dueno', 'admin']), TurnoController.listarMisTurnos);
+// VER AGENDA COMPLETA (SOLO ADMINISTRADORES)
+router.get('/agenda', autenticar, autorizar([RolNombre.ADMIN]), TurnoController.verAgendaGlobal);
 
-// VER AGENDA GLOBAL
-router.get('/agenda', checkRole(['admin']), TurnoController.verAgendaGlobal);
+// VERIFICAR DISPONIBILIDAD DE HORARIOS
+router.get('/check-availability', autenticar, TurnoController.verificarDisponibilidad);
 
-// VERIFICAR DISPONIBILIDAD
-router.get('/check-availability', checkRole(['cliente', 'dueno', 'admin']), TurnoController.verificarDisponibilidad);
+// RESERVAR UN NUEVO TURNO
+router.post('/', autenticar, turnoValidators.reservar, TurnoController.reservar);
 
-// CREAR NUEVA RESERVA
-router.post('/',
-    [checkRole(['cliente', 'dueno', 'admin']), ...turnoValidators.reservar],
-    TurnoController.reservar
-);
+// CANCELAR O ELIMINAR RESERVAS
+router.delete('/:id', autenticar, turnoValidators.cancelar, TurnoController.cancelarTurno);
 
-// CANCELAR RESERVA
-router.delete('/:id',
-    [checkRole(['cliente', 'dueno', 'admin']), ...turnoValidators.cancelar],
-    TurnoController.cancelarTurno
-);
+// OBTENER DETALLE DE UN TURNO
+router.get('/:id', autenticar, TurnoController.obtenerDetalle);
 
-// DETALLE Y REPROGRAMACION
-router.get('/:id', checkRole(['cliente', 'dueno', 'admin']), TurnoController.obtenerDetalle);
-router.put('/:id',
-    [checkRole(['cliente', 'admin']), ...turnoValidators.cancelar],
-    TurnoController.reprogramar
-);
+// REPROGRAMAR TURNO EXISTENTE
+router.put('/:id', autenticar, turnoValidators.cancelar, TurnoController.reprogramar);
 
 export default router;
