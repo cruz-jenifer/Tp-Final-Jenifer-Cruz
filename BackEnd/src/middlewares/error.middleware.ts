@@ -52,9 +52,9 @@ export const errorMiddleware = (error: unknown, req: Request, res: Response, nex
     error_code: errorCode
   };
 
-  // SOLO LOGUEAR ERRORES CRÍTICOS (500) EN DESARROLLO
+  // REGISTRO DE ERRORES EN DESARROLLO
   if (process.env.NODE_ENV === 'development' && statusCode === 500) {
-    console.error('❌ STACK TRACE:', error);
+    console.error('STACK TRACE:', error);
   }
 
   return res.status(statusCode).json(response);

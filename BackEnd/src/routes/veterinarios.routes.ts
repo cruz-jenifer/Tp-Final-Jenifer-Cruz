@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { VeterinarioController } from '../controllers/veterinarios.controller';
 import { autenticar, autorizar } from '../middlewares/auth.middleware';
+import { validateVeterinario, validateVeterinarioUpdate } from '../validators/veterinario.validator';
 
 const router = Router();
 
@@ -19,9 +20,13 @@ router.post('/historial', autorizar(['veterinario', 'admin']), VeterinarioContro
 // HISTORIAL RECIENTE
 router.get('/historial-reciente', autorizar(['veterinario', 'admin']), VeterinarioController.obtenerHistorialReciente);
 
-// CRUD VETERINARIOS (ADMIN)
-router.post('/', autorizar(['admin']), VeterinarioController.crear);
-router.put('/:id', autorizar(['admin']), VeterinarioController.actualizar);
+// CREAR VETERINARIO
+router.post('/', autorizar(['admin']), validateVeterinario, VeterinarioController.crear);
+
+// ACTUALIZAR VETERINARIO
+router.put('/:id', autorizar(['admin']), validateVeterinarioUpdate, VeterinarioController.actualizar);
+
+// ELIMINAR VETERINARIO
 router.delete('/:id', autorizar(['admin']), VeterinarioController.eliminar);
 
 export default router;

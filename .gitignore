@@ -83,6 +83,3 @@ temp/
 # === E2E & Herramientas de Test ===
 playwright-report/
 test-results/
-
-# === Archivos de Agente (Antigravity) ===
-.agents/

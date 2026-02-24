@@ -14,10 +14,10 @@ const startServer = async () => {
 
         // LEVANTAR EL SERVIDOR
         app.listen(PORT, () => {
-            console.log(`🚀 SERVIDOR ACTIVO | PUERTO: ${PORT} | ENTORNO: ${process.env.NODE_ENV}`);
+            console.log(`SERVIDOR ACTIVO | PUERTO: ${PORT} | ENTORNO: ${process.env.NODE_ENV}`);
         });
     } catch (error) {
-        console.error('❌ ERROR CRÍTICO AL INICIAR EL SERVIDOR:', error);
+        console.error('ERROR CRITICO AL INICIAR EL SERVIDOR:', error);
         process.exit(1);
     }
 };

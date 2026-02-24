@@ -8,21 +8,21 @@ export enum EstadoTurno {
     COMPLETADO = 'completado'
 }
 
-// ROLES DE USUARIO (IDs de Base de Datos)
+// ROLES DE USUARIO POR IDENTIFICADOR
 export enum RolId {
     ADMIN = 1,
     VETERINARIO = 2,
     CLIENTE = 3
 }
 
-// NOMBRES DE ROLES (Strings para lógica de negocio)
+// NOMBRES DE ROLES
 export enum RolNombre {
     ADMIN = 'admin',
     VETERINARIO = 'veterinario',
     CLIENTE = 'cliente'
 }
 
-// FORMATO DE RESPUESTA PARA EL ERROR MIDDLEWARE
+// INTERFAZ DE ERROR PERSONALIZADO
 export interface AppError extends Error {
     statusCode?: number;
     details?: string;

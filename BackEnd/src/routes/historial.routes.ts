@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { autenticar, autorizar } from '../middlewares/auth.middleware';
 import * as historialController from '../controllers/historial.controller';
+import { validateHistorial, validateHistorialUpdate } from '../validators/historial.validator';
 
 const router = Router();
 
@@ -8,16 +9,18 @@ const router = Router();
 router.use(autenticar);
 
 // CREAR REGISTRO
-router.post('/', autorizar(['veterinario', 'admin']), historialController.crearHistorial);
+router.post('/', autorizar(['veterinario', 'admin']), validateHistorial, historialController.crearHistorial);
 
-// VER TODO EL HISTORIAL (ADMIN)
+// LISTAR TODOS LOS HISTORIALES
 router.get('/admin/all', autorizar(['admin']), historialController.obtenerTodosLosHistoriales);
 
-// VER HISTORIAL DE MASCOTA
+// OBTENER HISTORIAL POR MASCOTA
 router.get('/:id', autorizar(['cliente', 'veterinario', 'admin']), historialController.obtenerHistorialPorMascota);
 
-// ELIMINAR Y ACTUALIZAR
+// ELIMINAR REGISTRO
 router.delete('/:id', autorizar(['veterinario', 'admin']), historialController.eliminarHistorial);
-router.put('/:id', autorizar(['veterinario', 'admin']), historialController.actualizarHistorial);
+
+// ACTUALIZAR REGISTRO
+router.put('/:id', autorizar(['veterinario', 'admin']), validateHistorialUpdate, historialController.actualizarHistorial);
 
 export default router;
